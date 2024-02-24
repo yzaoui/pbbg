@@ -76,16 +76,6 @@ dependencies {
     testIntegrationRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = Versions.JUNIT_JUPITER)
 }
 
-tasks.withType<ShadowJar> {
-    archiveClassifier.set("")
-}
-
-ktor {
-    fatJar {
-        archiveFileName.set("app.jar")
-    }
-}
-
 val testIntegration = task<Test>("testIntegration") {
     description = "Runs integration tests."
     group = "verification"
