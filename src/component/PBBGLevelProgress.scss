@@ -1,0 +1,16 @@
+.PBBGLevelProgress {
+    display: inline-block;
+    width: 5em;
+    height: 1em;
+
+    .outer {
+        height: 100%;
+        border: 1px solid black;
+        box-sizing: border-box;
+    }
+
+    .inner {
+        height: 100%;
+        background: var(--fill-color, linear-gradient(#6de1ff, #00789c));
+    }
+}

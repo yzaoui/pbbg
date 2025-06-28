@@ -1,0 +1,54 @@
+.Market {
+    display: grid;
+    grid-template-areas: "header header" "gold gold" "for-sale inventory";
+    grid-template-columns: 50% 50%;
+    text-align: center;
+
+    > h1 {
+        grid-area: header;
+    }
+
+    > .gold {
+        grid-area: gold;
+    }
+
+    > .for-sale {
+        grid-area: for-sale;
+    }
+
+    > .inventory {
+        grid-area: inventory;
+    }
+
+    .GameMarket, .UserMarket {
+        margin: 0 16px;
+
+        > ul {
+            display: flex;
+            flex-direction: row;
+            margin: 0;
+            border: 1px solid black;
+            list-style-type: none;
+            padding: 8px;
+        }
+    }
+
+    .MarketItemEntry {
+        margin-right: 6px;
+    }
+
+    .footer {
+        border: 1px solid black;
+        border-top-width: 0;
+        text-align: right;
+        padding: 4px;
+
+        > :not(:last-child) {
+            margin-right: 8px;
+        }
+
+        &[data-not-enough-gold] {
+            color: red;
+        }
+    }
+}

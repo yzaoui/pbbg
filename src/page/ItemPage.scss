@@ -1,0 +1,37 @@
+.ItemPage {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid black;
+
+    > * {
+        padding: 12px;
+    }
+
+    > :nth-child(1) {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #b4f7ea9e;
+
+        h2 {
+            margin: 0;
+        }
+    }
+
+    > :nth-child(2) {
+        background-color: #8ee0ff96;
+
+        h4 {
+            margin: 0;
+        }
+    }
+
+    .ItemHistoryEntryDescription {
+        display: block;
+        font-weight: bold;
+    }
+
+    .ItemHistoryEntryDate {
+        font-style: italic;
+    }
+}

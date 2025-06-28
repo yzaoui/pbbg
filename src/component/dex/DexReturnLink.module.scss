@@ -1,0 +1,13 @@
+.return {
+    padding: 8px;
+    border: 1px solid black;
+    border-radius: 10px;
+    text-decoration: none;
+    text-align: center;
+    margin-bottom: 6px;
+
+    &:hover {
+        color: white;
+        background-color: #0390f9;
+    }
+}

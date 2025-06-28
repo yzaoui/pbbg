@@ -1,0 +1,10 @@
+.MineListRow {
+    > td:nth-child(1), > td:nth-child(2) {
+        color: white;
+        text-shadow: 2px 2px black;
+    }
+
+    > td:nth-child(3) > button {
+        width: 100%;
+    }
+}

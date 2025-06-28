@@ -1,0 +1,9 @@
+.AboutPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .version {
+        font-weight: bold;
+    }
+}

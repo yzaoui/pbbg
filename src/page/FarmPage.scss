@@ -1,0 +1,128 @@
+.FarmPage {
+    .ExpandablePlotList {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        .PlotList {
+            display: contents;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+
+            .Plot {
+                $borderWidth: 1px;
+                $margin: 8px;
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                border: $borderWidth solid black;
+                border-radius: 4px;
+                margin: $margin;
+                cursor: move;
+
+                &.is-drop-target {
+                    border: ($borderWidth + 1px) dashed green;
+                    opacity: 0.5;
+                    margin: $margin - 1px;
+
+                    &.is-over {
+                        opacity: 1;
+                        border-style: solid;
+                    }
+                }
+            }
+        }
+
+        .ExpandPlots {
+            position: relative;
+            display: flex;
+            width: 130px;
+            height: 175px;
+            border: 1px solid black;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin: 8px;
+            //background-image: url(../img/lock.svg);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 100%;
+
+            &::before {
+                content: "";
+                position: absolute;
+                z-index: -1;
+                width: 100%;
+                height: 100%;
+                background-image: url(../img/lock.svg);
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: 100%;
+            }
+
+            button {
+                background-image: url(../img/plus.svg);
+                background-color: green;
+                border-radius: 20px;
+                margin: auto;
+                height: 32px;
+            }
+        }
+    }
+
+    .PlotHeader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 32px;
+        text-align: center;
+        padding: 2px 8px;
+        border-bottom: 1px dotted black;
+    }
+
+    .PlotImage {
+        display: inline-block;
+        align-self: center;
+        width: 128px;
+        height: 128px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+
+        img {
+            width: 128px;
+            height: 128px;
+            position: absolute;
+        }
+    }
+
+    .PlotFooter {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-top: 1px dotted black;
+
+        > * {
+            margin-top: 5px;
+        }
+
+        > *:last-child {
+            margin-bottom: 5px;
+        }
+    }
+
+    .overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #00000059;
+        z-index: 1;
+
+        .spinner-holder {
+            display: inline-block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+}

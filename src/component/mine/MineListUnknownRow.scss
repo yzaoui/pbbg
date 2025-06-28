@@ -1,0 +1,8 @@
+.MineListUnknownRow {
+    background-color: #38383826;
+    color: #797979;
+
+    > td:nth-child(3) > button {
+        width: 100%;
+    }
+}

@@ -1,0 +1,102 @@
+.FriendsPage {
+    display: flex;
+
+    .FriendsContainer {
+        display: flex;
+        width: 100%;
+
+        .FriendsNav {
+            width: 200px;
+
+            ul {
+                margin: 0 20px 0 0;
+                padding: 0;
+                list-style: none;
+
+                a {
+                    display: block;
+                    padding: 10px;
+                    text-decoration: none;
+
+                    &.active, &.active:hover {
+                        background-color: #4784f1;
+                        color: white;
+                    }
+
+                    &:hover {
+                        background-color: #6295f1;;
+                        color: white;
+                    }
+                }
+            }
+        }
+
+        .FriendsContent {
+            flex: 1;
+
+            .FriendsSectionHeader {
+                display: flex;
+                width: 100%;
+                background-color: #0086d4;
+                color: white;
+
+                span {
+                    padding: 14px;
+                }
+            }
+
+            > * > *:not(:first-child) {
+              margin-top: 12px;
+            }
+        }
+    }
+
+    .FriendUL {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        > li {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .FriendItem {
+            width: 180px;
+            height: 40px;
+            line-height: 35px;
+            text-align: center;
+            border: 1px solid black;
+            background-color: cornflowerblue;
+            color: white;
+
+            &:hover {
+                box-shadow: 2px 2px 5px rgba( 0, 0, 0, 0.4);
+            }
+        }
+    }
+
+    .AddFriendsContentBody {
+        display: flex;
+        flex-direction: column;
+
+        > *:not(:first-child) {
+            margin-top: 12px;
+        }
+
+        input {
+            padding: 8px;
+
+            &::placeholder {
+                font-style: italic;
+            }
+        }
+    }
+}

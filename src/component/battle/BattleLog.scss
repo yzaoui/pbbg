@@ -1,0 +1,71 @@
+.BattleLog {
+    display: flex;
+    flex-direction: column;
+
+    > h1 {
+        display: inline-block;
+        margin: 0 0 0 8px;
+        padding: 4px 10px;
+        font-size: 1em;
+        border-width: 1px 1px 0 1px;
+        border-style: solid;
+        border-color: black;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        align-self: start;
+    }
+
+    > div {
+        flex-grow: 1;
+        border: 1px solid black;
+        overflow-y: scroll;
+
+        > ol {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            background-color: #d6d9f7cf;
+
+            > li {
+                padding: 6px;
+
+                &:nth-child(even) {
+                    background-color: #edf1ffcf;
+                }
+            }
+        }
+    }
+}
+
+.HealthEffectResult {
+    > .damage {
+        color: red;
+    }
+
+    > .ally, > .enemy {
+        font-weight: bold;
+        cursor: default;
+        border-radius: 4px;
+        padding: 0 4px;
+    }
+
+    > .ally {
+        color: #1d1dd2;
+        text-shadow: 1px 1px 1px #9a9aff;
+
+        &:hover {
+            background-color: #aeb0ff96;
+            text-shadow: none;
+        }
+    }
+
+    > .enemy {
+        color: #c31600;
+        text-shadow: 1px 1px 1px #bb9a96;
+
+        &:hover {
+            background-color: #ffaeae96;
+            text-shadow: none;
+        }
+    }
+}

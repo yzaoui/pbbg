@@ -1,0 +1,26 @@
+.LevelInfo {
+    display: inline-block;
+    width: 200px;
+    height: 26px;
+    position: relative;
+    padding: 4px;
+    box-sizing: border-box;
+
+    > .PBBGLevelProgress {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        --fill-color: linear-gradient(#c4ffec, #60c7c3);
+    }
+
+    > span {
+        position: relative;
+        display: block;
+        text-align: center;
+        font-weight: bold;
+    }
+}

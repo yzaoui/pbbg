@@ -1,0 +1,69 @@
+$inactiveBoxShadow: #636363 0 2px;
+$activeBoxShadow: #272727 0 1px;
+$focusBoxShadow: 0 0 0 3px #13b50080;
+
+.PlotProgressButton {
+  --inner-color: #13b500;
+  --outer-color: #13b50038;
+  --border-color: #13b500;
+
+  cursor: pointer;
+  color: white;
+  width: 90%;
+  height: 32px;
+  padding: 0;
+  background: var(--outer-color) none;
+  border: 1px ridge var(--border-color);
+  border-radius: 4px;
+  box-shadow: $inactiveBoxShadow;
+  transition: background-color 150ms ease-in;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+
+  &:not(:disabled) {
+    &:hover {
+      --outer-color: rgba(18, 115, 0, 0.22);
+      --inner-color: #179500;
+      --border-color: #139d00;
+    }
+
+    &:active {
+      transform: translateY(1px);
+      border-style: inset;
+      box-shadow: $activeBoxShadow;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: $focusBoxShadow, $inactiveBoxShadow;
+
+      &:active {
+        box-shadow: $focusBoxShadow, $activeBoxShadow;
+      }
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    box-shadow: initial;
+    opacity: 0.7;
+    border-style: dashed;
+  }
+
+  .inner {
+    display: inline-block;
+    height: 100%;
+    background-color: var(--inner-color);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transition: all 150ms ease-in;
+  }
+
+  .label {
+    text-shadow: 1px 1px 3px #0000008a;
+    z-index: -1;
+  }
+}

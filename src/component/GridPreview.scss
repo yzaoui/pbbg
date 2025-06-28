@@ -1,0 +1,21 @@
+.GridPreview {
+    display: inline-block;
+
+    > table {
+        border-collapse: collapse;
+    }
+
+    > table, td {
+        border: 1px solid black;
+    }
+
+    td {
+        width: 16px;
+        height: 16px;
+        border: 1px solid black;
+    }
+
+    td[data-in-range] {
+        background-color: green;
+    }
+}

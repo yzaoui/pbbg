@@ -1,0 +1,39 @@
+.BattleQueue {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    > ol {
+        list-style: none;
+        padding: 0;
+
+        > li {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border: 2px solid black;
+            margin: 4px;
+            box-sizing: border-box;
+            transition: transform 100ms ease-in;
+
+            &[data-hovered] {
+                border-width: 3px;
+                box-shadow: #0000001f 0 1px 6px, #0000001f 0 1px 4px;
+                transform: translateY(-6px);
+            }
+
+            &[data-side="ally"] {
+                border-color: darkblue;
+            }
+
+            &[data-side="enemy"] {
+                border-color: darkred;
+            }
+
+            > img {
+                display: block;
+                margin: auto;
+            }
+        }
+    }
+}

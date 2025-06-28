@@ -1,0 +1,18 @@
+.PatchNotesModal {
+    footer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        border-top: 1px solid #dee2e6;
+    }
+
+    h1, h2 {
+        padding-bottom: .3em;
+        border-bottom: 1px solid #eaecef;
+    }
+
+    h1 {
+        text-align: center;
+    }
+}

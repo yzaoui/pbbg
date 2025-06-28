@@ -1,0 +1,20 @@
+.EquipmentSlot {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background-color: #8f8f8f;
+    border: 1px solid black;
+
+    &.equipped {
+        background-color: white;
+    }
+
+    &.loading {
+        background: #8f8f8f80;
+    }
+
+    > img {
+        width: 100%;
+        height: 100%;
+    }
+}

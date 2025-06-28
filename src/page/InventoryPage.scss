@@ -1,0 +1,39 @@
+.InventoryPage {
+    display: flex;
+    flex-direction: column;
+
+    .player-equipment {
+        position: relative;
+        align-self: center;
+
+        .player-portrait {
+            width: 128px;
+            height: 192px;
+        }
+    }
+
+    .inventory-container {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        border: 1px solid #717171;
+
+        .inventory-item {
+            list-style-type: none;
+            margin: 2px;
+            line-height: 0;
+
+            > * {
+                line-height: normal;
+            }
+
+            &:not(:hover) {
+                .InventoryItemTooltip {
+                    display: none;
+                }
+            }
+        }
+    }
+}

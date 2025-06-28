@@ -1,0 +1,41 @@
+.detailed-dex {
+    background-color: #c4ceff;
+    border: 1px solid #7aa2f9;
+    border-radius: 10px;
+    text-align: center;
+
+    > div.body {
+        background-color: #e0e6ff;
+    }
+
+    > * {
+        padding: 4px;
+        margin: 0;
+
+        &:not(:last-child) {
+            border-bottom: 1px solid #7aa2f9;
+        }
+
+        &:first-child {
+            border-radius: 10px 10px 0 0;
+        }
+
+        &:last-child {
+            border-radius: 0 0 10px 10px;
+        }
+    }
+
+    .item-sprite {
+        width: 64px;
+        height: 64px;
+    }
+
+    table {
+        margin-left: auto;
+        margin-right: auto;
+
+        th, td {
+            padding: 2px 6px;
+        }
+    }
+}

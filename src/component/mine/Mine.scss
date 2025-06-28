@@ -1,0 +1,68 @@
+.Mine {
+    overflow: auto;
+
+    > table {
+        table-layout: fixed;
+        border-spacing: 0;
+        border: 1px solid black;
+        margin: auto;
+    }
+
+    &[data-can-mine] {
+        > table {
+            cursor: pointer;
+        }
+    }
+
+    &[data-submitting] {
+        > table {
+            cursor: wait;
+        }
+    }
+
+    tr {
+        height: 18px;
+    }
+
+    td {
+        padding: 0;
+        min-width: 18px;
+        min-height: 18px;
+        overflow: hidden;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+    }
+
+    img {
+        display: block;
+        margin: auto;
+        width: 16px;
+        height: 16px;
+    }
+
+    &:not([data-submitting]) {
+        td[data-in-range] {
+            background-color: limegreen;
+        }
+    }
+
+    td[data-submitting] {
+        animation: submitting-cell-anim 1.5s;
+        animation-iteration-count: infinite;
+    }
+}
+
+@keyframes submitting-cell-anim {
+    0% {
+        background-color: #258b25;
+    }
+
+    50% {
+        background-color: #9d9d9d;
+    }
+
+    100% {
+        background-color: #258b25;
+    }
+}

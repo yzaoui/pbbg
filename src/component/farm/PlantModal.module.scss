@@ -1,0 +1,39 @@
+.PlantModal {
+    min-width: 400px;
+    min-height: 100px;
+
+    > * {
+        padding: 16px;
+    }
+
+    header {
+        border-bottom: 1px solid #dee2e6;
+
+        h1 {
+            margin: 0;
+            font-size: 1.3em;
+        }
+    }
+
+    main {
+        > *:not(:first-child) {
+            margin-top: 8px;
+        }
+    }
+
+    footer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        border-top: 1px solid #dee2e6;
+
+        > :not(:last-child) {
+            margin-right: 4px;
+        }
+
+        > :not(:first-child) {
+            margin-left: 4px;
+        }
+    }
+}

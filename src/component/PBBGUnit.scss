@@ -1,0 +1,56 @@
+.PBBGUnit {
+    display: inline-flex;
+    flex-direction: row;
+    width: 21em;
+    border: 1px solid #333333;
+    padding: 6px;
+    background-color: #e9ebff;
+
+    &:not([data-dead]) {
+        box-shadow: #0000001f 0 1px 6px, #0000001f 0 1px 4px;
+    }
+
+    &[data-dead] {
+        background-color: #4e313114;
+        border-color: #80808080;
+        opacity: 0.6;
+    }
+
+    .sprite {
+        width: 64px;
+        height: 64px;
+        margin-right: 8px;
+    }
+
+    &[data-facing="left"] {
+        .sprite {
+            transform: scaleX(-1);
+        }
+    }
+
+    .name {
+        font-size: 1.05em;
+        font-weight: bold;
+    }
+
+    .stat-container {
+        background: #0400ff1a;
+        border-radius: 4px;
+        padding: 0 2px;
+    }
+
+    > div > div > *:not(:first-child) {
+        margin-left: 5px;
+    }
+
+    .hp-bar {
+        width: 140px;
+        height: 11px;
+        --bar-background-color: linear-gradient(#53ff52, #0f9c16);
+    }
+
+    .exp-bar {
+        width: 160px;
+        height: 8px;
+    }
+}

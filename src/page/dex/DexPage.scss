@@ -1,0 +1,53 @@
+.DexPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    > a {
+        display: inline-block;
+        width: 200px;
+        border: 3px solid black;
+        border-top: 0;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+
+        &:hover {
+            color: white;
+            background-color: #0390f9;
+        }
+
+        &:first-child {
+            border-top: 3px solid black;
+            border-radius: 10px 10px 0 0;
+        }
+
+        &:last-child {
+            border-radius: 0 0 10px 10px;
+        }
+    }
+}
+
+div.dex-header {
+    padding: 4px;
+    background-color: #c4ceff;
+    border: 1px solid #7aa2f9;
+    text-align: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom: none;
+}
+
+div.dex-header > h1 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+div.dex-container {
+    padding: 4px;
+    background-color: #c4ceff;
+    border: 1px solid #7aa2f9;
+    text-align: center;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}

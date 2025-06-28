@@ -1,0 +1,36 @@
+.MineLog {
+    font-size: 13px;
+    min-height: 140px;
+    max-height: 222px;
+    overflow-y: scroll;
+    flex: 1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background-color: #d6d9f7cf;
+
+    &.expanded {
+        max-height: 590px;
+    }
+
+    > .ItemResult, > .LevelUp {
+        height: 22px;
+        padding: 4px;
+        box-sizing: border-box;
+    }
+
+    > .ItemResult > img {
+        max-height: 100%;
+        box-sizing: border-box;
+        vertical-align: top;
+        margin-right: 3px;
+    }
+
+    > .LevelUp {
+        color: #04b104;
+    }
+
+    > *:nth-child(even) {
+        background-color: #edf1ffcf;
+    }
+}

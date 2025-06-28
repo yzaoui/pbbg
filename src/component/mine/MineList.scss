@@ -1,0 +1,35 @@
+.MineList {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    table-layout: fixed;
+
+    > thead {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+
+        th {
+            padding: 12px 8px;
+            background-color: #7924da;
+            color: white;
+
+            &:nth-child(2) {
+                width: 125px;
+            }
+
+            &:nth-child(3) {
+                width: 200px;
+            }
+        }
+    }
+
+    > tbody td {
+        padding: 8px;
+    }
+
+    > thead th, > tbody td {
+        border: 1px solid #909090;
+        text-align: center;
+    }
+}

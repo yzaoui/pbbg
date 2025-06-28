@@ -1,0 +1,15 @@
+.AppHeader {
+    min-height: 100px;
+}
+
+@media screen and (min-width: 600px) {
+    .AppHeader {
+        min-height: 50px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .AppHeader {
+        min-height: 50px;
+    }
+}

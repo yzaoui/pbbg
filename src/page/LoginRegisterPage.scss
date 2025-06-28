@@ -1,0 +1,24 @@
+.LoginRegisterPage-form {
+    margin: 0 auto;
+    width: 330px;
+
+    > * {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+
+    > input {
+        padding: .375rem .75rem;
+        line-height: 1.5;
+    }
+
+    > button {
+        padding: 0.7rem 1rem;
+    }
+}
+
+.LoginRegisterPage-login-link {
+    margin: 0 auto;
+}

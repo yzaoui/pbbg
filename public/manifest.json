@@ -1,0 +1,20 @@
+{
+  "short_name": "PBBG",
+  "name": "PBBG",
+  "icons": [
+    {
+      "src": "android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "android-chrome-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "https://pbbg-react.bitwiserain.com",
+  "display": "standalone",
+  "theme_color": "#e1e4ff",
+  "background_color": "#e1e4ff"
+}
