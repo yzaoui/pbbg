@@ -1,5 +1,4 @@
 import * as RxJS from "rxjs";
-import { API_ROOT } from "../helper/const";
 import authHeader from "../helper/auth-header";
 import handleResponse from "../helper/handle-response";
 import * as MarketEndpoint from "./market";
@@ -7,7 +6,7 @@ import jsonHeader from "../helper/json-header";
 
 const marketService = {
     getMarkets: () => RxJS.from(
-        fetch(`${API_ROOT}/api/market`, {
+        fetch("/api/market", {
             method: "GET",
             headers: authHeader()
         }).then(
@@ -15,7 +14,7 @@ const marketService = {
         )
     ),
     buy: (req: MarketEndpoint.BuyRequest) => RxJS.from(
-        fetch(`${API_ROOT}/api/market/buy`, {
+        fetch("/api/market/buy", {
             method: "POST",
             headers: { ...jsonHeader(), ...authHeader() },
             body: JSON.stringify(req)
@@ -24,7 +23,7 @@ const marketService = {
         )
     ),
     sell: (req: MarketEndpoint.SellRequest) => RxJS.from(
-        fetch(`${API_ROOT}/api/market/sell`, {
+        fetch("/api/market/sell", {
             method: "POST",
             headers: { ...jsonHeader(), ...authHeader() },
             body: JSON.stringify(req)

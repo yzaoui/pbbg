@@ -1,0 +1,79 @@
+version: "3.9"
+
+services:
+  # Backend Service
+  backend:
+    build:
+      context: ./backend
+      target: prod
+    container_name: pbbg-backend
+    environment:
+      - KTOR_ENV=prod
+      - PORT=8080
+      - JDBC_ADDRESS=postgresql://db:5432/pbbg?user=postgres&password=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - pbbg-network
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend/react
+      target: prod
+    container_name: pbbg-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - pbbg-network
+
+  # Database Service
+  db:
+    image: postgres:15-alpine
+    container_name: pbbg-db
+    environment:
+      POSTGRES_DB: pbbg
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pbbg"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - pbbg-network
+
+  # Database Management
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pbbg-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - pbbg-network
+
+networks:
+  pbbg-network:
+    driver: bridge
+
+volumes:
+  postgresdata:

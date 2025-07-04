@@ -10,7 +10,6 @@ import com.bitwiserain.pbbg.app.domain.usecase.InvalidItemException
 import com.bitwiserain.pbbg.app.domain.usecase.InvalidUnitException
 import com.bitwiserain.pbbg.app.respondFail
 import com.bitwiserain.pbbg.app.respondSuccess
-import com.bitwiserain.pbbg.app.serverRootURL
 import com.bitwiserain.pbbg.app.user
 import com.bitwiserain.pbbg.app.view.model.MyUnitEnumJSON
 import com.bitwiserain.pbbg.app.view.model.dex.DexItemJSON
@@ -27,19 +26,18 @@ fun Route.dexAPI(dexUC: DexUC) = route("/dex") {
     route("/items/{id?}") {
         get {
             val itemEnumId = call.parameters["id"]?.toInt()
-            val serverRootURL = call.request.serverRootURL
 
             if (itemEnumId == null) {
                 // Calling for entire item dex
                 val dex = dexUC.getDexItems(call.user.id)
 
-                call.respondSuccess(dex.toJSON(serverRootURL = serverRootURL))
+                call.respondSuccess(dex.toJSON())
             } else {
                 // Calling for specific item
                 try {
                     val item = dexUC.getIndividualDexBaseItem(call.user.id, itemEnumId)
 
-                    call.respondSuccess(item.toJSON(serverRootURL = serverRootURL))
+                    call.respondSuccess(item.toJSON())
                 } catch (e: InvalidItemException) {
                     call.respondFail(HttpStatusCode.NotFound)
                 }
@@ -50,19 +48,18 @@ fun Route.dexAPI(dexUC: DexUC) = route("/dex") {
     route("/units/{id?}") {
         get {
             val unitEnumId = call.parameters["id"]?.toInt()
-            val serverRootURL = call.request.serverRootURL
 
             if (unitEnumId == null) {
                 // Calling for entire unit dex
                 val dex = dexUC.getDexUnits(call.user.id)
 
-                call.respondSuccess(dex.toJSON(serverRootURL = serverRootURL))
+                call.respondSuccess(dex.toJSON())
             } else {
                 // Calling for specific unit
                 try {
                     val unit = dexUC.getDexUnit(call.user.id, unitEnumId)
 
-                    call.respondSuccess(unit.toJSON(serverRootURL = serverRootURL))
+                    call.respondSuccess(unit.toJSON())
                 } catch (e: InvalidUnitException) {
                     call.respondFail(HttpStatusCode.NotFound)
                 }
@@ -73,19 +70,18 @@ fun Route.dexAPI(dexUC: DexUC) = route("/dex") {
     route("/plants/{id?}") {
         get {
             val plantId = call.parameters["id"]?.toInt()
-            val serverRootURL = call.request.serverRootURL
 
             if (plantId == null) {
                 // Calling for entire plant dex
                 val dex = dexUC.getDexPlants(call.user.id)
 
-                call.respondSuccess(dex.toJSON(serverRootURL = serverRootURL))
+                call.respondSuccess(dex.toJSON())
             } else {
                 // Calling for specific plant
                 try {
                     val plant = dexUC.getDexPlant(call.user.id, plantId)
 
-                    call.respondSuccess(plant.toJSON(serverRootURL = serverRootURL))
+                    call.respondSuccess(plant.toJSON())
                 } catch (e: Exception) {
                     call.respondFail(HttpStatusCode.NotFound)
                 }
@@ -95,12 +91,12 @@ fun Route.dexAPI(dexUC: DexUC) = route("/dex") {
 }
 
 // TODO: Find appropriate place for this adapter
-fun MyUnitEnum.toJSON(serverRootURL: String) = MyUnitEnumJSON(
+fun MyUnitEnum.toJSON() = MyUnitEnumJSON(
     id = ordinal + 1,
     friendlyName = friendlyName,
     description = description,
-    fullURL = "$serverRootURL/img/unit/$spriteName.gif",
-    iconURL = "$serverRootURL/img/unit-icon/$spriteName.png",
+    fullURL = "/img/unit/$spriteName.gif",
+    iconURL = "/img/unit-icon/$spriteName.png",
     baseHP = baseHP,
     baseAtk = baseAtk,
     baseDef = baseDef,
@@ -108,22 +104,22 @@ fun MyUnitEnum.toJSON(serverRootURL: String) = MyUnitEnumJSON(
     baseRes = baseRes
 )
 
-private fun DexItems.toJSON(serverRootURL: String): DexItemsJSON = DexItemsJSON(
-    discoveredItems = discoveredItems.associate { it.ordinal + 1 to it.baseItem.toJSON(serverRootURL = serverRootURL) }.toSortedMap(),
+private fun DexItems.toJSON(): DexItemsJSON = DexItemsJSON(
+    discoveredItems = discoveredItems.associate { it.ordinal + 1 to it.baseItem.toJSON() }.toSortedMap(),
     lastItemId = lastItemId
 )
 
-private fun DexItem.toJSON(serverRootURL: String): DexItemJSON = when (this) {
-    is DexItem.DiscoveredDexItem -> DexItemJSON.DiscoveredDexItemJSON(baseItem.toJSON(serverRootURL = serverRootURL))
+private fun DexItem.toJSON(): DexItemJSON = when (this) {
+    is DexItem.DiscoveredDexItem -> DexItemJSON.DiscoveredDexItemJSON(baseItem.toJSON())
     is DexItem.UndiscoveredDexItem -> DexItemJSON.UndiscoveredDexItemJSON(id)
 }
 
-private fun DexUnits.toJSON(serverRootURL: String): DexUnitsJSON = DexUnitsJSON(
-    discoveredUnits = discoveredUnits.associate { it.ordinal + 1 to it.toJSON(serverRootURL = serverRootURL) }.toSortedMap(),
+private fun DexUnits.toJSON(): DexUnitsJSON = DexUnitsJSON(
+    discoveredUnits = discoveredUnits.associate { it.ordinal + 1 to it.toJSON() }.toSortedMap(),
     lastUnitId = lastUnitId
 )
 
-private fun DexPlants.toJSON(serverRootURL: String): DexPlantsJSON = DexPlantsJSON(
-    discoveredPlants = discoveredPlants.mapValues { it.value.toJSON(serverRootURL = serverRootURL) }.toSortedMap(),
+private fun DexPlants.toJSON(): DexPlantsJSON = DexPlantsJSON(
+    discoveredPlants = discoveredPlants.mapValues { it.value.toJSON() }.toSortedMap(),
     lastPlantId = lastPlantId
 )

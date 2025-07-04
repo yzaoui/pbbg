@@ -2,11 +2,10 @@ import authHeader from "../helper/auth-header";
 import handleResponse from "../helper/handle-response";
 import * as DexEndpoint from "./dex";
 import * as RxJS from "rxjs";
-import { API_ROOT } from "../helper/const";
 
 const dexService = {
     getUnits: () => RxJS.from(
-        fetch(`${API_ROOT}/api/dex/units`, {
+        fetch("/api/dex/units", {
             method: "GET",
             headers: authHeader()
         }).then(
@@ -14,7 +13,7 @@ const dexService = {
         )
     ),
     getUnit: (id: string) => RxJS.from(
-        fetch(`${API_ROOT}/api/dex/units/${id}`, {
+        fetch(`/api/dex/units/${id}`, {
             method: "GET",
             headers: authHeader(),
         }).then(
@@ -22,7 +21,7 @@ const dexService = {
         )
     ),
     getItems: () => RxJS.from(
-        fetch(`${API_ROOT}/api/dex/items`, {
+        fetch("/api/dex/items", {
             method: "GET",
             headers: authHeader()
         }).then(
@@ -30,7 +29,7 @@ const dexService = {
         )
     ),
     getItem: (id: string) => RxJS.from(
-        fetch(`${API_ROOT}/api/dex/items/${id}`, {
+        fetch(`/api/dex/items/${id}`, {
             method: "GET",
             headers: authHeader()
         }).then(
@@ -38,7 +37,7 @@ const dexService = {
         )
     ),
     getPlants: () => RxJS.from(
-        fetch(`${API_ROOT}/api/dex/plants`, {
+        fetch("/api/dex/plants", {
             method: "GET",
             headers: authHeader()
         }).then(
@@ -46,7 +45,7 @@ const dexService = {
         )
     ),
     getPlant: (id: string) => RxJS.from(
-        fetch(`${API_ROOT}/api/dex/plants/${id}`, {
+        fetch(`/api/dex/plants/${id}`, {
             method: "GET",
             headers: authHeader()
         }).then(

@@ -7,7 +7,6 @@ import com.bitwiserain.pbbg.app.domain.usecase.SquadInBattleException
 import com.bitwiserain.pbbg.app.domain.usecase.UnitUC
 import com.bitwiserain.pbbg.app.respondFail
 import com.bitwiserain.pbbg.app.respondSuccess
-import com.bitwiserain.pbbg.app.serverRootURL
 import com.bitwiserain.pbbg.app.user
 import com.bitwiserain.pbbg.app.view.model.MyUnitJSON
 import io.ktor.server.application.call
@@ -25,7 +24,7 @@ fun Route.squadAPI(unitUC: UnitUC) = route("/squad") {
     get {
         val squad = unitUC.getSquad(call.user.id)
 
-        call.respondSuccess(squad.toJSON(serverRootURL = call.request.serverRootURL))
+        call.respondSuccess(squad.toJSON())
     }
 
     route("/heal") {
@@ -40,7 +39,7 @@ fun Route.squadAPI(unitUC: UnitUC) = route("/squad") {
             try {
                 val healedSquad = unitUC.healSquad(call.user.id)
 
-                call.respondSuccess(healedSquad.toJSON(serverRootURL = call.request.serverRootURL))
+                call.respondSuccess(healedSquad.toJSON())
             } catch (e: SquadInBattleException) {
                 call.respondFail("Can't heal squad while a battle is in session.")
             }
@@ -53,11 +52,11 @@ private class SquadJSON(
     val units: List<MyUnitJSON>
 )
 
-private fun Squad.toJSON(serverRootURL: String) = SquadJSON(
-    units = units.map { it.toJSON(serverRootURL = serverRootURL) }
+private fun Squad.toJSON() = SquadJSON(
+    units = units.map { it.toJSON() }
 )
 
-fun MyUnit.toJSON(serverRootURL: String) = MyUnitJSON(
+fun MyUnit.toJSON() = MyUnitJSON(
     id = id,
     name = enum.friendlyName,
     baseUnitId = enum.ordinal,
@@ -66,6 +65,6 @@ fun MyUnit.toJSON(serverRootURL: String) = MyUnitJSON(
     atk = atk,
     def = def,
     levelProgress = UnitExperienceManager.getLevelProgress(exp).toJSON(),
-    idleAnimationURL = "$serverRootURL/img/unit/${enum.spriteName}.gif",
-    iconURL = "$serverRootURL/img/unit-icon/${enum.spriteName}.png"
+    idleAnimationURL = "/img/unit/${enum.spriteName}.gif",
+    iconURL = "/img/unit-icon/${enum.spriteName}.png"
 )

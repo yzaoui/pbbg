@@ -78,7 +78,6 @@ import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
-import io.ktor.server.request.ApplicationRequest
 import io.ktor.server.response.respond
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
@@ -310,10 +309,6 @@ fun Application.makeToken(userId: Int): String = JWT.create()
     .withIssuer(environment.config.property("jwt.issuer").getString())
     .withClaim("user.id", userId)
     .sign(Algorithm.HMAC256(environment.config.property("jwt.secret").getString()))
-
-val ApplicationRequest.serverRootURL get() = with(local) {
-    "$scheme://$serverHost${if (serverPort != 80) ":$serverPort" else ""}"
-}
 
 /**********
  * BCrypt *

@@ -1,8 +1,6 @@
 import React from "react";
 import goldSrc from "../img/gold.png";
 
-export const API_ROOT = import.meta.env.VITE_API_ROOT;
-
 export const USERNAME_REGEX = {
     pattern: "[A-Za-z0-9_]{1,15}",
     description: "Username must consist of 1-15 letters, numbers, and/or underscores"

@@ -3,11 +3,10 @@ import jsonHeader from "../helper/json-header";
 import handleResponse from "../helper/handle-response";
 import * as MineEndpoint from "./mine";
 import * as RxJS from "rxjs";
-import { API_ROOT } from "../helper/const";
 
 const mineService = {
     getMine: () => RxJS.from(
-        fetch(`${API_ROOT}/api/mine`, {
+        fetch("/api/mine", {
             method: "GET",
             headers: authHeader()
         }).then(
@@ -15,7 +14,7 @@ const mineService = {
         )
     ),
     getMineTypes: () => RxJS.from(
-        fetch(`${API_ROOT}/api/mine/types`, {
+        fetch("/api/mine/types", {
             method: "GET",
             headers: authHeader()
         }).then(
@@ -23,7 +22,7 @@ const mineService = {
         )
     ),
     enterMine: (req: MineEndpoint.MineEnterRequest) => RxJS.from(
-        fetch(`${API_ROOT}/api/mine/generate`, {
+        fetch("/api/mine/generate", {
             method: "POST",
             headers: { ...jsonHeader(), ...authHeader() },
             body: JSON.stringify(req)
@@ -32,7 +31,7 @@ const mineService = {
         )
     ),
     exitMine: () => RxJS.from(
-        fetch(`${API_ROOT}/api/mine/exit`, {
+        fetch("/api/mine/exit", {
             method: "POST",
             headers: { ...jsonHeader(), ...authHeader() }
         }).then(
@@ -40,7 +39,7 @@ const mineService = {
         )
     ),
     performMineAction: (req: MineEndpoint.MineActionRequest) => RxJS.from(
-        fetch(`${API_ROOT}/api/mine/perform`, {
+        fetch("/api/mine/perform", {
             method: "POST",
             headers: { ...jsonHeader(), ...authHeader() },
             body: JSON.stringify(req)

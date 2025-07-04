@@ -7,7 +7,6 @@ import com.bitwiserain.pbbg.app.domain.usecase.MarketUC
 import com.bitwiserain.pbbg.app.domain.usecase.NotEnoughGoldException
 import com.bitwiserain.pbbg.app.respondFail
 import com.bitwiserain.pbbg.app.respondSuccess
-import com.bitwiserain.pbbg.app.serverRootURL
 import com.bitwiserain.pbbg.app.user
 import com.bitwiserain.pbbg.app.view.model.market.MarketItemJSON
 import com.bitwiserain.pbbg.app.view.model.market.MarketJSON
@@ -28,7 +27,7 @@ fun Route.market(marketUC: MarketUC) = route("/market") {
     get {
         val markets = marketUC.getMarkets(call.user.id)
 
-        call.respondSuccess(markets.toJSON(serverRootURL = call.request.serverRootURL))
+        call.respondSuccess(markets.toJSON())
     }
 
     /**
@@ -44,7 +43,7 @@ fun Route.market(marketUC: MarketUC) = route("/market") {
 
             val markets = marketUC.buy(call.user.id, params.orders.map { MarketOrder(it.id, it.quantity) })
 
-            call.respondSuccess(markets.toJSON(serverRootURL = call.request.serverRootURL))
+            call.respondSuccess(markets.toJSON())
         } catch (e: NotEnoughGoldException) {
             call.respondFail(mapOf("message" to "Not enough gold to make this transaction."))
         }
@@ -62,7 +61,7 @@ fun Route.market(marketUC: MarketUC) = route("/market") {
 
         val markets = marketUC.sell(call.user.id, params.orders.map { MarketOrder(it.id, it.quantity) })
 
-        call.respondSuccess(markets.toJSON(serverRootURL = call.request.serverRootURL))
+        call.respondSuccess(markets.toJSON())
     }
 }
 
@@ -72,12 +71,12 @@ private data class MarketOrderListParams(val orders: List<MarketOrderParams>)
 @Serializable
 private data class MarketOrderParams(val id: Long, val quantity: Int? = null)
 
-fun Market.toJSON(serverRootURL: String) = MarketJSON(
-    items = items.map { MarketItemJSON(it.value.item.toJSON(it.key, serverRootURL = serverRootURL), it.value.price) }
+fun Market.toJSON() = MarketJSON(
+    items = items.map { MarketItemJSON(it.value.item.toJSON(it.key), it.value.price) }
 )
 
-fun UserAndGameMarkets.toJSON(serverRootURL: String) = UserAndGameMarketsJSON(
+fun UserAndGameMarkets.toJSON() = UserAndGameMarketsJSON(
     gold = gold,
-    userMarket = userMarket.toJSON(serverRootURL = serverRootURL),
-    gameMarket = gameMarket.toJSON(serverRootURL = serverRootURL)
+    userMarket = userMarket.toJSON(),
+    gameMarket = gameMarket.toJSON()
 )
