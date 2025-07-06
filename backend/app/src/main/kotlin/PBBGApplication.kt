@@ -3,6 +3,9 @@ package com.bitwiserain.pbbg.app
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.bitwiserain.pbbg.app.RateLimitConfig.AUTHENTICATED_RATE_LIMIT_NAME
+import com.bitwiserain.pbbg.app.RateLimitConfig.PUBLIC_RATE_LIMIT_NAME
+import com.bitwiserain.pbbg.app.RateLimitConfig.configureRateLimiting
 import com.bitwiserain.pbbg.app.db.Transaction
 import com.bitwiserain.pbbg.app.db.model.User
 import com.bitwiserain.pbbg.app.db.repository.DexTableImpl
@@ -77,6 +80,7 @@ import io.ktor.server.http.content.static
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.ratelimit.rateLimit
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
 import io.ktor.server.routing.route
@@ -213,27 +217,32 @@ fun Application.mainWithDependencies(clock: Clock) {
             cause.printStackTrace()
         }
     }
+    configureRateLimiting(clock)
     routing {
         route("/api") {
-            registerAPI(registerUser)
-            loginAPI(login)
-            item(itemUC)
-            unit(unitUC)
-            authenticate(optional = false) {
-                userStats(getUserStats)
-                inventoryAPI(inventoryUC, equipmentUC)
-                market(marketUC)
-                battleAPI(battleUC, generateBattle, getBattle)
-                mine(submitMineAction, getMine, getAvailableMines, generateMine, exitMine)
-                farm(farmUC, clock)
-                dexAPI(dexUC)
-                squadAPI(unitUC)
-                friends(friendsUC)
-                settings(changePassword)
-                about(aboutUC)
+            rateLimit(PUBLIC_RATE_LIMIT_NAME) {
+                registerAPI(registerUser)
+                loginAPI(login)
+                item(itemUC)
+                unit(unitUC)
             }
-            authenticate(optional = true) {
-                user(userProfileUC)
+            rateLimit(AUTHENTICATED_RATE_LIMIT_NAME) {
+                authenticate(optional = false) {
+                    userStats(getUserStats)
+                    inventoryAPI(inventoryUC, equipmentUC)
+                    market(marketUC)
+                    battleAPI(battleUC, generateBattle, getBattle)
+                    mine(submitMineAction, getMine, getAvailableMines, generateMine, exitMine)
+                    farm(farmUC, clock)
+                    dexAPI(dexUC)
+                    squadAPI(unitUC)
+                    friends(friendsUC)
+                    settings(changePassword)
+                    about(aboutUC)
+                }
+                authenticate(optional = true) {
+                    user(userProfileUC)
+                }
             }
         }
         static("img") {
