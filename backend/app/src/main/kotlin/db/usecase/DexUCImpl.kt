@@ -55,7 +55,7 @@ class DexUCImpl(private val transaction: Transaction, private val dexTable: DexT
     override fun getDexPlants(userId: Int): DexPlants {
         // TODO: Make sure user has discovered these plants
         return DexPlants(
-            discoveredPlants = PlantEnum.entries.associate { it.ordinal + 1 to it.basePlant },
+            discoveredPlants = PlantEnum.entries.associate { it.id to it.basePlant },
             lastPlantId = PlantEnum.entries.lastIndex + 1
         )
     }

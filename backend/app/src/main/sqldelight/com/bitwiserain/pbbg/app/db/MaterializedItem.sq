@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS "MaterializedItem" (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    item_enum_id INTEGER NOT NULL,
+    quantity INTEGER
+);
+
+-- Get item by ID
+getItem:
+SELECT * FROM "MaterializedItem" WHERE id = ?;
+
+-- Insert a new materialized item and return the generated ID
+insertItemAndGetId:
+INSERT INTO "MaterializedItem" (item_enum_id, quantity)
+VALUES (?, ?)
+RETURNING id;
+
+-- Update quantity by adding delta
+updateQuantity:
+UPDATE "MaterializedItem"
+SET quantity = quantity + ?
+WHERE id = ?;

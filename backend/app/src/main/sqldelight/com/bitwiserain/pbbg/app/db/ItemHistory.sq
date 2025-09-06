@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS "ItemHistory" (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    materialized_item_id BIGINT NOT NULL REFERENCES "MaterializedItem"(id),
+    item_history_type TEXT NOT NULL,
+    time_epoch_seconds BIGINT NOT NULL
+);
+
+-- Get item history for materialized item
+getItemHistory:
+SELECT * FROM "ItemHistory" WHERE materialized_item_id = ? ORDER BY time_epoch_seconds DESC;
+
+-- Insert item history entry
+insertItemHistory:
+INSERT INTO "ItemHistory" (materialized_item_id, item_history_type, time_epoch_seconds) VALUES (?, ?, ?);

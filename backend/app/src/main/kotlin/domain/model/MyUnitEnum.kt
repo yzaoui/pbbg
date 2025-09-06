@@ -1,6 +1,7 @@
 package com.bitwiserain.pbbg.app.domain.model
 
 enum class MyUnitEnum(
+    val id: Int,
     val friendlyName: String,
     val spriteName: String,
     val description: String,
@@ -11,6 +12,7 @@ enum class MyUnitEnum(
     val baseRes: Int
 ) {
     ICE_CREAM_WIZARD(
+        1,
         "Ice-Cream Wizard",
         "ice-cream-wizard",
         "Trained in the mystic arts of dairy goodness, this wizard can swirl up quite the storm.",
@@ -22,6 +24,7 @@ enum class MyUnitEnum(
 
     ),
     TWOLIP(
+        2,
         "Twolip",
         "twolip",
         "It's a manifestation of the essence of love. Don't be so quick to fall for its gentle appearance—" +
@@ -33,6 +36,7 @@ enum class MyUnitEnum(
         baseRes = 8
     ),
     CARPSHOOTER(
+        3,
         "Carpshooter",
         "carpshooter",
         "Carpshooter uses the skills it has honed through determination and its sense of duty. This allows it to " +
@@ -44,6 +48,7 @@ enum class MyUnitEnum(
         baseRes = 9
     ),
     FLAMANGO(
+        4,
         "Flamango",
         "flamango",
         "This tropical avian isn't shy to pecking away any unwanted attention its colorful exterior and wonderful " +
@@ -53,5 +58,12 @@ enum class MyUnitEnum(
         baseDef = 14,
         baseInt = 8,
         baseRes = 6
-    )
+    );
+
+    companion object {
+        private val idMap = entries.associateBy { it.id }
+
+        fun fromId(id: Int): MyUnitEnum = idMap[id]
+            ?: throw IllegalArgumentException("Unknown MyUnitEnum id: $id")
+    }
 }

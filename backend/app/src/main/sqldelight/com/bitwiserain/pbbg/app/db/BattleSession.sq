@@ -1,0 +1,31 @@
+CREATE TABLE IF NOT EXISTS "BattleSession" (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INTEGER NOT NULL UNIQUE REFERENCES "User"(id),
+    battle_queue TEXT NOT NULL DEFAULT ''
+);
+
+-- Create battle session and get ID
+createBattleSessionAndGetId:
+INSERT INTO "BattleSession" (user_id)
+VALUES (?)
+RETURNING id;
+
+-- Get battle session ID for user
+getBattleSessionId:
+SELECT id FROM "BattleSession" WHERE user_id = ?;
+
+-- Check if battle is in progress for user
+isBattleInProgress:
+SELECT COUNT(*) > 0 FROM "BattleSession" WHERE user_id = ?;
+
+-- Delete battle session by ID
+deleteBattle:
+DELETE FROM "BattleSession" WHERE id = ?;
+
+-- Get battle queue by session ID
+getBattleQueue:
+SELECT battle_queue FROM "BattleSession" WHERE id = ?;
+
+-- Update battle queue by session ID
+updateBattleQueue:
+UPDATE "BattleSession" SET battle_queue = ? WHERE id = ?;

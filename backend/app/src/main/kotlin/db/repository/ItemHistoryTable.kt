@@ -1,14 +1,9 @@
 package com.bitwiserain.pbbg.app.db.repository
 
+import com.bitwiserain.pbbg.app.db.generated.Database
 import com.bitwiserain.pbbg.app.domain.model.itemdetails.ItemHistory
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import java.time.Instant
 
 interface ItemHistoryTable {
@@ -18,28 +13,23 @@ interface ItemHistoryTable {
     fun getItemHistoryList(itemId: Long): List<ItemHistory>
 }
 
-class ItemHistoryTableImpl : ItemHistoryTable {
-
-    object Exposed : Table(name = "ItemHistory") {
-        val itemId = reference("item_id", MaterializedItemTableImpl.Exposed)
-        val date = long("date")
-        val info = text("info")
-    }
+class ItemHistoryTableImpl(private val database: Database) : ItemHistoryTable {
 
     override fun insertItemHistory(itemId: Long, itemHistory: ItemHistory) {
-        Exposed.insert {
-            it[Exposed.itemId] = EntityID(itemId, MaterializedItemTableImpl.Exposed)
-            it[Exposed.date] = itemHistory.date.epochSecond
-            it[Exposed.info] = Json.encodeToString(itemHistory.info)
-        }
+        database.itemHistoryQueries.insertItemHistory(
+            itemId,
+            Json.encodeToString(itemHistory.info),
+            itemHistory.date.epochSecond,
+        )
     }
 
-    override fun getItemHistoryList(itemId: Long): List<ItemHistory> = Exposed
-        .select { Exposed.itemId.eq(itemId) }
-        .map { it.toItemHistory() }
-
-    private fun ResultRow.toItemHistory() = ItemHistory(
-        date = Instant.ofEpochSecond(this[Exposed.date]),
-        info = Json.decodeFromString(this[Exposed.info])
-    )
+    override fun getItemHistoryList(itemId: Long): List<ItemHistory> =
+        database.itemHistoryQueries.getItemHistory(itemId)
+            .executeAsList()
+            .map {
+                ItemHistory(
+                    date = Instant.ofEpochSecond(it.time_epoch_seconds),
+                    info = Json.decodeFromString(it.item_history_type),
+                )
+            }
 }

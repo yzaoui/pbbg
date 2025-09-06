@@ -1,18 +1,15 @@
 package com.bitwiserain.pbbg.app.db.repository.farm
 
-import com.bitwiserain.pbbg.app.db.repository.UserTableImpl
+import com.bitwiserain.pbbg.app.db.GetPlot
+import com.bitwiserain.pbbg.app.db.GetPlots
+import com.bitwiserain.pbbg.app.db.Transaction
+import com.bitwiserain.pbbg.app.db.generated.Database
+import com.bitwiserain.pbbg.app.domain.model.farm.MaterializedPlant
+import com.bitwiserain.pbbg.app.domain.model.farm.PlantEnum
 import com.bitwiserain.pbbg.app.domain.model.farm.Plot
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
+import java.time.Instant
 
 interface PlotTable {
 
@@ -25,57 +22,69 @@ interface PlotTable {
     fun getPlot(userId: Int, plotId: Long): Plot?
 }
 
-class PlotTableImpl : PlotTable {
+class PlotTableImpl(
+    private val database: Database,
+    private val transaction: Transaction
+) : PlotTable {
 
-    object Exposed : LongIdTable(name = "Plot") {
+    override fun createAndGetEmptyPlot(userId: Int): Plot = transaction {
+        val newPlotId = database.plotQueries.createAndGetEmptyPlotId(userId).executeAsOne()
 
-        val userId = reference("user_id", UserTableImpl.Exposed)
-        val plantId = reference("plant_id", MaterializedPlantTableImpl.Exposed, ReferenceOption.SET_NULL).nullable()
-    }
-
-    override fun createAndGetEmptyPlot(userId: Int): Plot {
-        val newPlotId = Exposed.insertAndGetId {
-            it[Exposed.userId] = EntityID(userId, UserTableImpl.Exposed)
-        }.value
-
-        val currentPlotIdList: List<Long?> = PlotListTableImpl.Exposed
-            .select { PlotListTableImpl.Exposed.userId.eq(userId) }
-            .single()[PlotListTableImpl.Exposed.plotIdList]
+        val currentPlotIdList: List<Long?> = database.plotListQueries.get(userId).executeAsOne()
             .let(Json::decodeFromString)
 
         val updatedPlotIdListJSON = Json.encodeToString(currentPlotIdList + newPlotId)
 
-        PlotListTableImpl.Exposed.update({ PlotListTableImpl.Exposed.userId.eq(userId) }) {
-            it[PlotListTableImpl.Exposed.plotIdList] = updatedPlotIdListJSON
-        }
+        database.plotListQueries.updatePlotIdList(updatedPlotIdListJSON, userId)
 
-        return Plot(newPlotId, null)
+        Plot(newPlotId, null)
     }
 
     override fun updatePlot(userId: Int, plotId: Long, plantId: Long) {
-        Exposed.update({ Exposed.userId.eq(userId) and Exposed.id.eq(plotId) }) {
-            it[Exposed.plantId] = EntityID(plantId, MaterializedPlantTableImpl.Exposed)
-        }
+        database.plotQueries.updatePlot(plant_id = plantId, user_id = userId, id = plotId)
     }
 
     override fun getPlots(userId: Int): List<Plot> =
-        (Exposed leftJoin MaterializedPlantTableImpl.Exposed)
-            .select { Exposed.userId.eq(userId) }
+        database.plotQueries.getPlots(userId)
+            .executeAsList()
             .map { it.toPlot() }
 
-    override fun getPlot(userId: Int, plotId: Long) =
-        (Exposed leftJoin MaterializedPlantTableImpl.Exposed)
-            .select { Exposed.userId.eq(userId) and Exposed.id.eq(plotId) }
-            .singleOrNull()
-            ?.toPlot()
+    override fun getPlot(userId: Int, plotId: Long): Plot? =
+        database.plotQueries.getPlot(userId, plotId).executeAsOneOrNull()?.toPlot()
 
-
-    private fun ResultRow.toPlot(): Plot {
-        val plantId = this[Exposed.plantId]?.value
-
+    private fun GetPlots.toPlot(): Plot {
         return Plot(
-            id = this[Exposed.id].value,
-            plant = if (plantId != null) plantId to toMaterializedPlant() else null
+            id = id,
+            plant = if (plant_id != null) plant_id to toMaterializedPlant() else null
         )
+    }
+
+    private fun GetPlots.toMaterializedPlant(): MaterializedPlant {
+        // This function assumes `plant_id` isn't false, therefore neither is `plant_enum_id` nor `cycle_start`
+        val plantEnum = PlantEnum.fromId(plant_enum_id!!)
+        val cycleStart = Instant.ofEpochSecond(cycle_start!!)
+
+        return when (plantEnum) {
+            PlantEnum.APPLE_TREE -> MaterializedPlant.AppleTree(cycleStart, harvests!!)
+            PlantEnum.TOMATO_PLANT -> MaterializedPlant.TomatoPlant(cycleStart)
+        }
+    }
+
+    private fun GetPlot.toPlot(): Plot {
+        return Plot(
+            id = id,
+            plant = if (plant_id != null) plant_id to toMaterializedPlant() else null
+        )
+    }
+
+    private fun GetPlot.toMaterializedPlant(): MaterializedPlant {
+        // This function assumes `plant_id` isn't false, therefore neither is `plant_enum_id` nor `cycle_start`
+        val plantEnum = PlantEnum.fromId(plant_enum_id!!)
+        val cycleStart = Instant.ofEpochSecond(cycle_start!!)
+
+        return when (plantEnum) {
+            PlantEnum.APPLE_TREE -> MaterializedPlant.AppleTree(cycleStart, harvests!!)
+            PlantEnum.TOMATO_PLANT -> MaterializedPlant.TomatoPlant(cycleStart)
+        }
     }
 }

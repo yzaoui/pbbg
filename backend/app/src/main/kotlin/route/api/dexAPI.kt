@@ -92,7 +92,7 @@ fun Route.dexAPI(dexUC: DexUC) = route("/dex") {
 
 // TODO: Find appropriate place for this adapter
 fun MyUnitEnum.toJSON() = MyUnitEnumJSON(
-    id = ordinal + 1,
+    id = id,
     friendlyName = friendlyName,
     description = description,
     fullURL = "/img/unit/$spriteName.gif",
@@ -105,7 +105,7 @@ fun MyUnitEnum.toJSON() = MyUnitEnumJSON(
 )
 
 private fun DexItems.toJSON(): DexItemsJSON = DexItemsJSON(
-    discoveredItems = discoveredItems.associate { it.ordinal + 1 to it.baseItem.toJSON() }.toSortedMap(),
+    discoveredItems = discoveredItems.associate { it.id to it.baseItem.toJSON() }.toSortedMap(),
     lastItemId = lastItemId
 )
 
@@ -115,7 +115,7 @@ private fun DexItem.toJSON(): DexItemJSON = when (this) {
 }
 
 private fun DexUnits.toJSON(): DexUnitsJSON = DexUnitsJSON(
-    discoveredUnits = discoveredUnits.associate { it.ordinal + 1 to it.toJSON() }.toSortedMap(),
+    discoveredUnits = discoveredUnits.associate { it.id to it.toJSON() }.toSortedMap(),
     lastUnitId = lastUnitId
 )
 

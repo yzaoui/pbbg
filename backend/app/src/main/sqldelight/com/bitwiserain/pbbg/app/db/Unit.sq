@@ -1,0 +1,30 @@
+CREATE TABLE IF NOT EXISTS "Unit" (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    unit_enum_id INTEGER NOT NULL,
+    hp INTEGER NOT NULL,
+    max_hp INTEGER NOT NULL,
+    atk INTEGER NOT NULL,
+    def INTEGER NOT NULL,
+    int INTEGER NOT NULL,
+    res INTEGER NOT NULL,
+    exp BIGINT NOT NULL
+);
+
+-- Insert a new unit and return the generated ID
+insertUnitAndGetId:
+INSERT INTO "Unit" (unit_enum_id, hp, max_hp, atk, def, int, res, exp)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+RETURNING id;
+
+-- Update unit stats
+updateUnit:
+UPDATE "Unit"
+SET hp = ?, max_hp = ?, atk = ?, def = ?, int = ?, res = ?, exp = ?
+WHERE id = ?;
+
+-- Get unit by ID
+getUnit:
+SELECT * FROM "Unit" WHERE id = ?;
+
+deleteUnit:
+DELETE FROM "Unit" WHERE id IN ?;

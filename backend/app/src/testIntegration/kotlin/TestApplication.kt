@@ -1,9 +1,5 @@
 package com.bitwiserain.pbbg.app.testintegration
 
-import com.bitwiserain.pbbg.app.BCryptHelper
-import com.bitwiserain.pbbg.app.SchemaHelper
-import com.bitwiserain.pbbg.app.db.Transaction
-import com.bitwiserain.pbbg.app.db.repository.UserTable
 import com.bitwiserain.pbbg.app.mainWithDependencies
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -19,22 +15,71 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
-import org.h2.Driver
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.Clock
 
-fun initDatabase(): Transaction {
-    val db = Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", Driver::class.qualifiedName!!)
-    val transaction: Transaction = object : Transaction {
-        override fun <T> invoke(block: () -> T): T = transaction(db) { block() }
-    }
-    SchemaHelper.createTables(transaction)
-    return transaction
+@Testcontainers
+object PostgreSQLTestContainer {
+    @Container
+    @JvmStatic
+    val postgres: PostgreSQLContainer<*> = PostgreSQLContainer("postgres:15-alpine")
+        .withDatabaseName("testdb")
+        .withUsername("testuser")
+        .withPassword("testpass")
+        .withReuse(true) // Reuse container across test runs for faster execution
 }
 
-fun createTestUserAndGetId(transaction: Transaction, userTable: UserTable, username: String = "username", password: String = "password"): Int = transaction {
-    userTable.createUserAndGetId(username, BCryptHelper.hashPassword(password), Clock.systemUTC().instant())
+fun clearDatabase() {
+    val container = PostgreSQLTestContainer.postgres
+
+    // Ensure container is started
+    if (!container.isRunning) {
+        container.start()
+    }
+
+    // Create a connection to clear all data
+    val connection = java.sql.DriverManager.getConnection(
+        container.jdbcUrl,
+        container.username,
+        container.password
+    )
+
+    connection.use { conn ->
+        val statement = conn.createStatement()
+
+        // Disable foreign key checks temporarily
+        statement.execute("SET session_replication_role = replica")
+
+        // Get all table names and truncate them
+        val tablesResult = statement.executeQuery("""
+            SELECT tablename FROM pg_tables 
+            WHERE schemaname = 'public' 
+            AND tablename NOT LIKE 'pg_%'
+        """.trimIndent())
+
+        val tableNames = mutableListOf<String>()
+        while (tablesResult.next()) {
+            tableNames.add(tablesResult.getString("tablename"))
+        }
+        tablesResult.close()
+
+        // Truncate all tables
+        for (tableName in tableNames) {
+            try {
+                statement.execute("TRUNCATE TABLE \"$tableName\" RESTART IDENTITY CASCADE")
+            } catch (e: Exception) {
+                // Ignore errors for tables that might not exist or have dependencies
+                println("Warning: Could not truncate table $tableName: ${e.message}")
+            }
+        }
+
+        // Re-enable foreign key checks
+        statement.execute("SET session_replication_role = DEFAULT")
+
+        statement.close()
+    }
 }
 
 suspend fun ApplicationTestBuilder.registerUserAndGetToken(
@@ -52,10 +97,17 @@ suspend fun ApplicationTestBuilder.registerUserAndGetToken(
 }
 
 fun testApp(clock: Clock, block: suspend ApplicationTestBuilder.() -> Unit) = testApplication {
+    val container = PostgreSQLTestContainer.postgres
+
+    // Ensure container is started before configuring the application
+    if (!container.isRunning) {
+        container.start()
+    }
+
     environment {
         config = MapApplicationConfig().apply {
             put("ktor.environment", "prod")
-            put("jdbc.address", "h2:mem:test;DB_CLOSE_DELAY=-1")
+            put("jdbc.address", "postgresql://${container.host}:${container.getMappedPort(5432)}/${container.databaseName}?user=${container.username}&password=${container.password}")
             put("jwt.issuer", "PBBG")
             put("jwt.realm", "PBBG API Server")
             put("jwt.secret", "eShVmYp3s6v9y\$B&E)H@McQfTjWnZr4t")

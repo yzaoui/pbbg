@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS "MarketInventory" (
+    market_id INTEGER NOT NULL REFERENCES "Market"(id),
+    materialized_item_id BIGINT NOT NULL REFERENCES "MaterializedItem"(id),
+    PRIMARY KEY (market_id, materialized_item_id)
+);
+
+-- Get items for a user by joining with Market table
+getItems:
+SELECT mi.id, mi.item_enum_id, mi.quantity
+FROM "MarketInventory" inv
+INNER JOIN "MaterializedItem" mi ON inv.materialized_item_id = mi.id
+INNER JOIN "Market" m ON inv.market_id = m.id
+WHERE m.user_id = ?;
+
+-- Insert multiple items for a user (requires getting market_id first)
+insertItem:
+INSERT INTO "MarketInventory" (market_id, materialized_item_id)
+VALUES (?, ?);
+
+-- Remove items by materialized item IDs
+removeItems:
+DELETE FROM "MarketInventory"
+WHERE materialized_item_id IN ?;

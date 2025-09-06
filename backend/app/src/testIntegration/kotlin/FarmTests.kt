@@ -1,6 +1,5 @@
 package com.bitwiserain.pbbg.app.testintegration
 
-import com.bitwiserain.pbbg.app.SchemaHelper
 import com.bitwiserain.pbbg.app.testintegration.api.GETInventory
 import com.bitwiserain.pbbg.app.testintegration.api.GETPlots
 import com.bitwiserain.pbbg.app.testintegration.api.POSTPlant
@@ -18,18 +17,19 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@Testcontainers
 class FarmTests {
     private val clock = MutableClock()
-    private val transaction = initDatabase()
 
     @AfterEach
-    fun dropDatabase() {
-        SchemaHelper.dropTables(transaction)
+    fun cleanup() {
+        clearDatabase()
     }
 
     @Test

@@ -1,12 +1,7 @@
 package com.bitwiserain.pbbg.app.db.repository
 
+import com.bitwiserain.pbbg.app.db.generated.Database
 import com.bitwiserain.pbbg.app.domain.model.UserStats
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
 
 interface UserStatsTable {
 
@@ -21,47 +16,32 @@ interface UserStatsTable {
     fun updateFarmingExp(userId: Int, farmingExp: Long)
 }
 
-class UserStatsTableImpl : UserStatsTable {
-
-    object Exposed : Table(name = "UserStats") {
-        val userId = reference("user_id", UserTableImpl.Exposed)
-        val gold = long("gold").default(0)
-        val miningExp = long("mining_exp").default(0)
-        val farmingExp = long("farming_exp").default(0)
-    }
+class UserStatsTableImpl(private val database: Database) : UserStatsTable {
 
     override fun createUserStats(userId: Int) {
-        Exposed.insert {
-            it[Exposed.userId] = EntityID(userId, UserTableImpl.Exposed)
-        }
+        database.userStatsQueries.createUserStats(userId)
     }
 
-    override fun getUserStats(userId: Int) = Exposed
-        .select { Exposed.userId.eq(userId) }
-        .map { it.toUserStats() }
-        .single()
+    override fun getUserStats(userId: Int): UserStats =
+        database.userStatsQueries.getUserStats(userId)
+            .executeAsOne()
+            .let { row ->
+                UserStats(
+                    gold = row.gold,
+                    miningExp = row.mining_exp,
+                    farmingExp = row.farming_exp
+                )
+            }
 
     override fun updateGold(userId: Int, gold: Long) {
-        Exposed.update({ Exposed.userId.eq(userId) }) {
-            it[Exposed.gold] = gold
-        }
+        database.userStatsQueries.updateGold(gold, userId)
     }
 
     override fun updateMiningExp(userId: Int, miningExp: Long) {
-        Exposed.update({ Exposed.userId.eq(userId) }) {
-            it[Exposed.miningExp] = miningExp
-        }
+        database.userStatsQueries.updateMiningExp(miningExp, userId)
     }
 
     override fun updateFarmingExp(userId: Int, farmingExp: Long) {
-        Exposed.update({ Exposed.userId.eq(userId) }) {
-            it[Exposed.farmingExp] = farmingExp
-        }
+        database.userStatsQueries.updateFarmingExp(farmingExp, userId)
     }
 }
-
-private fun ResultRow.toUserStats(): UserStats = UserStats(
-    gold = this[UserStatsTableImpl.Exposed.gold],
-    miningExp = this[UserStatsTableImpl.Exposed.miningExp],
-    farmingExp = this[UserStatsTableImpl.Exposed.farmingExp]
-)

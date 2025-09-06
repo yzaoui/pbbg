@@ -4,18 +4,13 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
-        maven { url = uri("https://kotlin.bintray.com/ktor") }
-        maven { url = uri("https://kotlin.bintray.com/kotlinx") }
-        maven { url = uri("https://dl.bintray.com/kotlin/exposed") }
+        maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
 
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
-        maven { url = uri("https://kotlin.bintray.com/ktor") }
-        maven { url = uri("https://kotlin.bintray.com/kotlinx") }
-        maven { url = uri("https://dl.bintray.com/kotlin/exposed") }
     }
 }
 

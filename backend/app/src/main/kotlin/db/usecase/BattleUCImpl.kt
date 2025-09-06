@@ -3,10 +3,8 @@ package com.bitwiserain.pbbg.app.db.usecase
 import com.bitwiserain.pbbg.app.db.Transaction
 import com.bitwiserain.pbbg.app.db.repository.SquadTable
 import com.bitwiserain.pbbg.app.db.repository.UnitTable
-import com.bitwiserain.pbbg.app.db.repository.UnitTableImpl
 import com.bitwiserain.pbbg.app.db.repository.battle.BattleEnemyTable
 import com.bitwiserain.pbbg.app.db.repository.battle.BattleSessionTable
-import com.bitwiserain.pbbg.app.db.repository.execAndMap
 import com.bitwiserain.pbbg.app.domain.model.MyUnit
 import com.bitwiserain.pbbg.app.domain.model.battle.Battle
 import com.bitwiserain.pbbg.app.domain.model.battle.BattleAction
@@ -110,11 +108,9 @@ class BattleUCImpl(
     }
 
     private fun deleteBattle(battle: Battle, battleSession: Long) = transaction {
-        // Delete enemies, since they only exist within this battle
-        val enemyIdCSV = battle.enemies.asSequence().map { it.id }.joinToString()
-
         battleSessionTable.deleteBattle(battleSession)
 
-        "DELETE FROM ${UnitTableImpl.Exposed.tableName} WHERE ${UnitTableImpl.Exposed.id.name} IN ($enemyIdCSV)".execAndMap {}
+        // Delete enemies, since they only exist within this battle
+        unitTable.deleteUnits(battle.enemies.map { it.id })
     }
 }

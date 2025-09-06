@@ -12,7 +12,7 @@ sealed class BaseItem {
         val basePlant: BasePlant
     }
 
-    val id: Int get() = enum.ordinal + 1
+    val id: Int get() = enum.id
     abstract val enum: ItemEnum
     abstract val friendlyName: String
     abstract val spriteName: String

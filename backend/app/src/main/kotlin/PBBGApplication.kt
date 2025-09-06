@@ -1,12 +1,15 @@
 package com.bitwiserain.pbbg.app
 
+import app.cash.sqldelight.driver.jdbc.asJdbcDriver
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.bitwiserain.pbbg.app.RateLimitConfig.AUTHENTICATED_RATE_LIMIT_NAME
 import com.bitwiserain.pbbg.app.RateLimitConfig.PUBLIC_RATE_LIMIT_NAME
 import com.bitwiserain.pbbg.app.RateLimitConfig.configureRateLimiting
+import com.bitwiserain.pbbg.app.db.SQLDelightTransaction
 import com.bitwiserain.pbbg.app.db.Transaction
+import com.bitwiserain.pbbg.app.db.generated.Database
 import com.bitwiserain.pbbg.app.db.model.User
 import com.bitwiserain.pbbg.app.db.repository.DexTableImpl
 import com.bitwiserain.pbbg.app.db.repository.FriendsTableImpl
@@ -90,10 +93,10 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
+import java.sql.Connection
+import java.sql.DriverManager
 import java.time.Clock
+import javax.sql.DataSource
 
 enum class ApplicationEnvironment {
     DEV,
@@ -117,39 +120,45 @@ fun Application.mainWithDependencies(clock: Clock) {
      *************/
     val jdbcAddress = environment.config.property("jdbc.address").getString()
 
-    val db = Database.connect("jdbc:$jdbcAddress", when {
-        jdbcAddress.startsWith("h2:") -> org.h2.Driver::class.qualifiedName!!
-        jdbcAddress.startsWith("postgresql:") -> org.postgresql.Driver::class.qualifiedName!!
-        else -> throw RuntimeException("Only H2 and PostgreSQL databases are currently supported.")
-    })
-
-    val transaction: Transaction = object : Transaction {
-        override fun <T> invoke(block: () -> T): T = transaction(db) { block() }
+    // Create DataSource and driver
+    val dataSource = object : DataSource {
+        override fun getConnection(): Connection = DriverManager.getConnection("jdbc:$jdbcAddress")
+        override fun getConnection(username: String?, password: String?): Connection = DriverManager.getConnection("jdbc:$jdbcAddress", username, password)
+        override fun getLogWriter() = null
+        override fun setLogWriter(out: java.io.PrintWriter?) {}
+        override fun setLoginTimeout(seconds: Int) {}
+        override fun getLoginTimeout() = 0
+        override fun getParentLogger() = throw UnsupportedOperationException()
+        override fun <T : Any?> unwrap(iface: Class<T>?): T = throw UnsupportedOperationException()
+        override fun isWrapperFor(iface: Class<*>?): Boolean = false
     }
+    val driver = dataSource.asJdbcDriver()
+    val database = Database(driver)
+    val transaction: Transaction = SQLDelightTransaction(database)
 
-    SchemaHelper.createTables(transaction)
+    Database.Schema.create(driver)
 
     install(CallLogging)
 
     // Tables
-    val battleEnemyTable = BattleEnemyTableImpl()
-    val battleSessionTable = BattleSessionTableImpl()
-    val dexTable = DexTableImpl()
-    val friendsTable = FriendsTableImpl()
-    val inventoryTable = InventoryTableImpl()
-    val itemHistoryTable = ItemHistoryTableImpl()
-    val marketTable = MarketTableImpl()
-    val marketInventoryTable = MarketInventoryTableImpl()
-    val materializedItemTable = MaterializedItemTableImpl()
-    val materializedPlantTable = MaterializedPlantTableImpl()
-    val mineCellTable = MineCellTableImpl()
-    val mineSessionTable = MineSessionTableImpl()
-    val plotTable = PlotTableImpl()
-    val plotListTable = PlotListTableImpl()
-    val squadTable = SquadTableImpl()
-    val unitTable = UnitTableImpl()
-    val userTable = UserTableImpl()
-    val userStatsTable = UserStatsTableImpl()
+    val battleEnemyTable = BattleEnemyTableImpl(database)
+    val battleSessionTable = BattleSessionTableImpl(database)
+    val dexTable = DexTableImpl(database, transaction)
+    val friendsTable = FriendsTableImpl(database)
+    val inventoryTable = InventoryTableImpl(database, transaction)
+    val itemHistoryTable = ItemHistoryTableImpl(database)
+    val marketTable = MarketTableImpl(database)
+    val marketInventoryTable = MarketInventoryTableImpl(database, transaction)
+    val materializedItemTable = MaterializedItemTableImpl(database)
+    val materializedPlantTable = MaterializedPlantTableImpl(database)
+    val mineCellTable = MineCellTableImpl(database, transaction)
+    val mineSessionTable = MineSessionTableImpl(database)
+    val plotTable = PlotTableImpl(database, transaction)
+    val plotListTable = PlotListTableImpl(database, transaction)
+    val squadTable = SquadTableImpl(database, transaction)
+    val unitTable = UnitTableImpl(database)
+    val userTable = UserTableImpl(database)
+    val userStatsTable = UserStatsTableImpl(database)
 
     val getUserStats = GetUserStatsUCImpl(transaction, userStatsTable)
     val changePassword = ChangePasswordUCImpl(transaction, userTable)
@@ -325,29 +334,6 @@ fun Application.makeToken(userId: Int): String = JWT.create()
 object BCryptHelper {
     fun hashPassword(password: String): ByteArray = BCrypt.withDefaults().hash(12, password.toByteArray())
     fun verifyPassword(attemptedPassword: String, expectedPasswordHash: ByteArray) = BCrypt.verifyer().verify(attemptedPassword.toByteArray(), expectedPasswordHash).verified
-}
-
-/**********
- * Schema *
- **********/
-object SchemaHelper {
-    fun createTables(transaction: Transaction) = transaction {
-        SchemaUtils.create(
-            UserTableImpl.Exposed, MineSessionTableImpl.Exposed, MineCellTableImpl.Exposed, MaterializedItemTableImpl.Exposed, InventoryTableImpl.Exposed,
-            UserStatsTableImpl.Exposed, UnitTableImpl.Exposed, SquadTableImpl.Exposed, BattleSessionTableImpl.Exposed, BattleEnemyTableImpl.Exposed, DexTableImpl.Exposed,
-            MarketTableImpl.Exposed, MarketInventoryTableImpl.Exposed, ItemHistoryTableImpl.Exposed, PlotTableImpl.Exposed, PlotListTableImpl.Exposed,
-            MaterializedPlantTableImpl.Exposed, FriendsTableImpl.Exposed
-        )
-    }
-
-    fun dropTables(transaction: Transaction) = transaction {
-        SchemaUtils.drop(
-            UserTableImpl.Exposed, MineSessionTableImpl.Exposed, MineCellTableImpl.Exposed, MaterializedItemTableImpl.Exposed, InventoryTableImpl.Exposed,
-            UserStatsTableImpl.Exposed, UnitTableImpl.Exposed, SquadTableImpl.Exposed, BattleSessionTableImpl.Exposed, BattleEnemyTableImpl.Exposed, DexTableImpl.Exposed,
-            MarketTableImpl.Exposed, MarketInventoryTableImpl.Exposed, ItemHistoryTableImpl.Exposed, PlotTableImpl.Exposed, PlotListTableImpl.Exposed,
-            MaterializedPlantTableImpl.Exposed, FriendsTableImpl.Exposed
-        )
-    }
 }
 
 /***************
