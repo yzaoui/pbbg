@@ -1,1 +1,4 @@
 .env
+
+# IDE files
+.idea/misc.xml
