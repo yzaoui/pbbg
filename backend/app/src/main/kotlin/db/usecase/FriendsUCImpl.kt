@@ -19,6 +19,11 @@ class FriendsUCImpl(private val transaction: Transaction, private val friendsTab
     override fun getFriends(userId: Int): Friends = transaction {
         // TODO: Could combine these into a single query
         val friendships = friendsTable.getFriends(userId)
+
+        if (friendships.isEmpty()) {
+            return@transaction Friends(emptyList())
+        }
+
         val users = userTable.getUsersById(friendships.map { it.userId })
 
         Friends(friendships.map { FriendInfo(it.userId, users.getValue(it.userId).username, it.friendship) })

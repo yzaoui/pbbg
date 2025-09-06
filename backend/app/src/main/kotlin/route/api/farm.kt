@@ -85,7 +85,7 @@ private fun MaterializedPlant.toJSON(now: Instant) = MaterializedPlantJSON(
 )
 
 fun IBasePlant.toJSON() = BasePlantJSON(
-    id = enum.ordinal + 1,
+    id = enum.id,
     name = friendlyName,
     description = description,
     icon = "/img/plant-icon/$spriteName.png",

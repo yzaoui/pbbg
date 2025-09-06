@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS "UserStats" (
+    user_id INTEGER PRIMARY KEY REFERENCES "User"(id),
+    gold BIGINT NOT NULL DEFAULT 0,
+    mining_exp BIGINT NOT NULL DEFAULT 0,
+    farming_exp BIGINT NOT NULL DEFAULT 0
+);
+
+-- Create user stats for a new user
+createUserStats:
+INSERT INTO "UserStats" (user_id) VALUES (?);
+
+-- Get user stats by user ID
+getUserStats:
+SELECT * FROM "UserStats" WHERE user_id = ?;
+
+-- Update gold amount
+updateGold:
+UPDATE "UserStats" SET gold = ? WHERE user_id = ?;
+
+-- Update mining experience
+updateMiningExp:
+UPDATE "UserStats" SET mining_exp = ? WHERE user_id = ?;
+
+-- Update farming experience
+updateFarmingExp:
+UPDATE "UserStats" SET farming_exp = ? WHERE user_id = ?;

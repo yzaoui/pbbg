@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS "MineCell" (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    mine_id INTEGER NOT NULL REFERENCES "MineSession"(id) ON DELETE CASCADE,
+    x INTEGER NOT NULL,
+    y INTEGER NOT NULL,
+    mine_entity_id INTEGER NOT NULL
+);
+
+-- Get mine grid as map of coordinates to entities
+getGrid:
+SELECT x, y, mine_entity_id FROM "MineCell" WHERE mine_id = ?;
+
+-- Get all mine cells for a mine session
+getMineCells:
+SELECT * FROM "MineCell" WHERE mine_id = ?;
+
+-- Insert a single mine cell
+insertCell:
+INSERT INTO "MineCell" (mine_id, x, y, mine_entity_id) VALUES (?, ?, ?, ?);
+
+-- Delete cells by IDs
+deleteCells:
+DELETE FROM "MineCell" WHERE id IN ?;

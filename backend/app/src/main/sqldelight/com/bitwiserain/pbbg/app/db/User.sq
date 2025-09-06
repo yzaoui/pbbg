@@ -1,0 +1,36 @@
+CREATE TABLE IF NOT EXISTS "User" (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    username VARCHAR(20) NOT NULL UNIQUE,
+    password_hash BYTEA NOT NULL,
+    joined_epoch_seconds BIGINT NOT NULL
+);
+
+-- Insert a new user and return the generated ID
+insertUser:
+INSERT INTO "User" (username, password_hash, joined_epoch_seconds)
+VALUES (?, ?, ?)
+RETURNING id;
+
+-- Get user by username
+getUserByUsername:
+SELECT id, username, password_hash, joined_epoch_seconds FROM "User" WHERE username = ?;
+
+-- Get user by ID
+getUserById:
+SELECT id, username, password_hash, joined_epoch_seconds FROM "User" WHERE id = ?;
+
+-- Get users by multiple IDs
+getUsersById:
+SELECT id, username, password_hash, joined_epoch_seconds FROM "User" WHERE id IN ?;
+
+-- Check if user exists by ID
+userExists:
+SELECT EXISTS(SELECT 1 FROM "User" WHERE id = ?);
+
+-- Search users by username (case insensitive)
+searchUsers:
+SELECT id, username, password_hash, joined_epoch_seconds FROM "User" WHERE LOWER(username) LIKE LOWER('%' || ? || '%');
+
+-- Update user password
+updatePassword:
+UPDATE "User" SET password_hash = ? WHERE id = ?;

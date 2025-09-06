@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS "Squad" (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_id INTEGER NOT NULL REFERENCES "User"(id),
+    unit_id BIGINT NOT NULL REFERENCES "Unit"(id)
+);
+
+-- Get a single ally in a user's squad
+getAlly:
+SELECT u.id, u.unit_enum_id, u.hp, u.max_hp, u.atk, u.def, u.int, u.res, u.exp
+FROM "Squad" s
+INNER JOIN "Unit" u ON s.unit_id = u.id
+WHERE s.user_id = ? AND u.id = ?;
+
+-- Get all allies in a user's squad
+getAllies:
+SELECT u.id, u.unit_enum_id, u.hp, u.max_hp, u.atk, u.def, u.int, u.res, u.exp
+FROM "Squad" s
+INNER JOIN "Unit" u ON s.unit_id = u.id
+WHERE s.user_id = ?;
+
+-- Insert a unit into squad
+insertUnit:
+INSERT INTO "Squad" (user_id, unit_id) VALUES (?, ?);

@@ -1,7 +1,6 @@
 package com.bitwiserain.pbbg.app.testintegration
 
 import com.bitwiserain.pbbg.app.RateLimitConfig
-import com.bitwiserain.pbbg.app.SchemaHelper
 import com.bitwiserain.pbbg.app.testintegration.response.RegisterResponse
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -18,18 +17,19 @@ import kotlinx.serialization.json.jsonObject
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@Testcontainers
 class RateLimitTest {
-    private val transaction = initDatabase()
     private val clock = MutableClock()
     private val json = Json { ignoreUnknownKeys = true }
 
     @AfterEach
-    fun dropDatabase() {
-        SchemaHelper.dropTables(transaction)
+    fun cleanup() {
+        clearDatabase()
     }
 
     @Test

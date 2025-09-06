@@ -31,4 +31,8 @@ class UnitTableTestImpl(private val units: MutableMap<Long, MyUnit> = mutableMap
     }
 
     override fun getUnit(unitId: Long): MyUnit? = units[unitId]
+
+    override fun deleteUnits(unitIds: Collection<Long>) {
+        unitIds.forEach { units.remove(it) }
+    }
 }

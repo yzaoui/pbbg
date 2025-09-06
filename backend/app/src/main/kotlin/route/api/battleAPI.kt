@@ -1,6 +1,11 @@
 package com.bitwiserain.pbbg.app.route.api
 
-import com.bitwiserain.pbbg.app.domain.model.battle.*
+import com.bitwiserain.pbbg.app.domain.model.battle.Battle
+import com.bitwiserain.pbbg.app.domain.model.battle.BattleAction
+import com.bitwiserain.pbbg.app.domain.model.battle.BattleActionResult
+import com.bitwiserain.pbbg.app.domain.model.battle.BattleReward
+import com.bitwiserain.pbbg.app.domain.model.battle.Turn
+import com.bitwiserain.pbbg.app.domain.model.battle.UnitEffect
 import com.bitwiserain.pbbg.app.domain.usecase.BattleAlreadyInProgressException
 import com.bitwiserain.pbbg.app.domain.usecase.BattleUC
 import com.bitwiserain.pbbg.app.domain.usecase.GenerateBattleUC
@@ -9,10 +14,18 @@ import com.bitwiserain.pbbg.app.domain.usecase.NoAlliesAliveException
 import com.bitwiserain.pbbg.app.respondFail
 import com.bitwiserain.pbbg.app.respondSuccess
 import com.bitwiserain.pbbg.app.user
-import com.bitwiserain.pbbg.app.view.model.battle.*
+import com.bitwiserain.pbbg.app.view.model.battle.BattleActionResultJSON
+import com.bitwiserain.pbbg.app.view.model.battle.BattleJSON
+import com.bitwiserain.pbbg.app.view.model.battle.BattleRewardJSON
+import com.bitwiserain.pbbg.app.view.model.battle.TurnJSON
+import com.bitwiserain.pbbg.app.view.model.battle.UnitEffectJSON
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
-import io.ktor.server.routing.*
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.param
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
 import kotlinx.serialization.Serializable
 
 fun Route.battleAPI(battleUC: BattleUC, generateBattle: GenerateBattleUC, getBattle: GetBattleUC) = route("/battle") {

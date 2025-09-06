@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS "BattleEnemy" (
+    battle_session_id BIGINT NOT NULL REFERENCES "BattleSession"(id) ON DELETE CASCADE,
+    unit_id BIGINT NOT NULL REFERENCES "Unit"(id) ON DELETE CASCADE,
+    PRIMARY KEY (battle_session_id, unit_id)
+);
+
+-- Get single enemy unit for battle session
+getEnemy:
+SELECT u.id, u.unit_enum_id, u.hp, u.max_hp, u.atk, u.def, u.int, u.res, u.exp
+FROM "BattleEnemy" be
+INNER JOIN "Unit" u ON be.unit_id = u.id
+WHERE be.battle_session_id = ? AND u.id = ?;
+
+-- Get all enemy units for battle session
+getEnemies:
+SELECT u.id, u.unit_enum_id, u.hp, u.max_hp, u.atk, u.def, u.int, u.res, u.exp
+FROM "BattleEnemy" be
+INNER JOIN "Unit" u ON be.unit_id = u.id
+WHERE be.battle_session_id = ?;
+
+-- Insert enemy into battle session
+insertEnemy:
+INSERT INTO "BattleEnemy" (battle_session_id, unit_id) VALUES (?, ?);

@@ -1,14 +1,7 @@
 package com.bitwiserain.pbbg.app.db.repository.battle
 
-import com.bitwiserain.pbbg.app.db.repository.UserTableImpl
+import com.bitwiserain.pbbg.app.db.generated.Database
 import com.bitwiserain.pbbg.app.domain.model.battle.BattleQueue
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
 
 interface BattleSessionTable {
 
@@ -31,48 +24,27 @@ interface BattleSessionTable {
     fun updateBattleQueue(battleSession: Long, battleQueue: BattleQueue)
 }
 
-class BattleSessionTableImpl : BattleSessionTable {
+class BattleSessionTableImpl(private val database: Database) : BattleSessionTable {
 
-    object Exposed : LongIdTable(name = "BattleSession") {
+    override fun createBattleSessionAndGetId(userId: Int): Long =
+        database.battleSessionQueries.createBattleSessionAndGetId(userId).executeAsOne()
 
-        val userId = reference("user_id", UserTableImpl.Exposed)
-        val battleQueue = text("battle_queue")
-    }
+    override fun getBattleSessionId(userId: Int): Long? =
+        database.battleSessionQueries.getBattleSessionId(userId).executeAsOneOrNull()
 
-    override fun createBattleSessionAndGetId(userId: Int): Long = Exposed.insertAndGetId {
-        it[Exposed.userId] = EntityID(userId, UserTableImpl.Exposed)
-        it[Exposed.battleQueue] = ""
-    }.value
+    override fun isBattleInProgress(userId: Int): Boolean =
+        database.battleSessionQueries.isBattleInProgress(userId).executeAsOne()
 
-    /**
-     * Get a user's battle session ID, if any.
-     */
-    override fun getBattleSessionId(userId: Int): Long? = Exposed
-        .select { Exposed.userId eq userId }
-        .singleOrNull()
-        ?.run { get(Exposed.id).value }
-
-    override fun isBattleInProgress(userId: Int): Boolean = Exposed
-        .select { Exposed.userId eq userId }.count() > 0
-
-    /**
-     * Delete a battle session entry.
-     */
     override fun deleteBattle(battleSession: Long) {
-        Exposed.deleteWhere { Exposed.id eq battleSession }
+        database.battleSessionQueries.deleteBattle(battleSession)
     }
 
     override fun getBattleQueue(battleSession: Long): BattleQueue {
-        val turnsString = Exposed.select { Exposed.id eq battleSession}
-            .single()
-            .get(Exposed.battleQueue)
-
+        val turnsString = database.battleSessionQueries.getBattleQueue(battleSession).executeAsOne()
         return BattleQueue.fromJSON(turnsString)
     }
 
     override fun updateBattleQueue(battleSession: Long, battleQueue: BattleQueue) {
-        Exposed.update({ Exposed.id eq battleSession }) {
-            it[Exposed.battleQueue] = battleQueue.toJSON()
-        }
+        database.battleSessionQueries.updateBattleQueue(battleQueue.toJSON(), battleSession)
     }
 }

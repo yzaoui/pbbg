@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS "Dex" (
+    user_id INTEGER NOT NULL REFERENCES "User"(id),
+    base_item_id INTEGER NOT NULL,
+    PRIMARY KEY (user_id, base_item_id)
+);
+
+-- Check if user has dex entry
+hasEntry:
+SELECT EXISTS(SELECT 1 FROM "Dex" WHERE user_id = ? AND base_item_id = ?);
+
+-- Get all discovered items for user
+getDiscovered:
+SELECT base_item_id FROM "Dex" WHERE user_id = ?;
+
+-- Insert discovered item
+insertDiscovered:
+INSERT INTO "Dex" (user_id, base_item_id) VALUES (?, ?)
+ON CONFLICT (user_id, base_item_id) DO NOTHING;

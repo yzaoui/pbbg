@@ -3,17 +3,18 @@
 kotlin = "1.9.22"
 
 # Ktor
-ktor = "2.3.0"
+ktor = "2.3.12"
 
 # Database
-exposed = "0.47.0"
 postgresql = "42.4.0"
-h2 = "2.1.214"
+h2 = "2.3.232"
+sqldelight = "2.1.0"
 
 # Testing
 junit-jupiter = "5.8.1"
 kotest = "5.5.4"
 mockk = "1.13.9"
+testcontainers = "1.21.3"
 
 # Logging
 logback = "1.4.5"
@@ -32,9 +33,10 @@ dokka = "1.7.20"
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
 
-# Exposed
-exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+# SQLDelight
+sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+sqldelight-jdbc-driver = { module = "app.cash.sqldelight:jdbc-driver", version.ref = "sqldelight" }
 
 # Ktor
 ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt-jvm", version.ref = "ktor" }
@@ -62,6 +64,11 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
 
+# Testcontainers
+testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
@@ -69,3 +76,4 @@ idea-ext = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "idea-ex
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

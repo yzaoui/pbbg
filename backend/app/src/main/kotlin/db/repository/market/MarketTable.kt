@@ -1,23 +1,15 @@
 package com.bitwiserain.pbbg.app.db.repository.market
 
-import com.bitwiserain.pbbg.app.db.repository.UserTableImpl
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.insertAndGetId
+import com.bitwiserain.pbbg.app.db.generated.Database
 
 interface MarketTable {
 
     fun createMarketAndGetId(userId: Int): Int
 }
 
-class MarketTableImpl : MarketTable {
+class MarketTableImpl(private val database: Database) : MarketTable {
 
-    object Exposed: IntIdTable(name = "Market") {
-
-        val userId = reference("user_id", UserTableImpl.Exposed).uniqueIndex()
-    }
-
-    override fun createMarketAndGetId(userId: Int): Int = Exposed.insertAndGetId {
-        it[Exposed.userId] = EntityID(userId, UserTableImpl.Exposed)
-    }.value
+    override fun createMarketAndGetId(userId: Int): Int =
+        database.marketQueries.createMarketAndGetId(userId)
+            .executeAsOne()
 }

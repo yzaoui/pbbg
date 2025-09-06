@@ -1,0 +1,38 @@
+CREATE TABLE IF NOT EXISTS "Friends" (
+    initiator_user_id INTEGER NOT NULL REFERENCES "User"(id),
+    receiver_user_id INTEGER NOT NULL REFERENCES "User"(id),
+    confirmed BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (initiator_user_id, receiver_user_id)
+);
+
+-- Get friendship status between two users
+getFriendship:
+SELECT initiator_user_id, receiver_user_id, confirmed FROM "Friends"
+WHERE (initiator_user_id = ? AND receiver_user_id = ?)
+   OR (initiator_user_id = ? AND receiver_user_id = ?);
+
+-- Get all friendships for a user
+getFriends:
+SELECT initiator_user_id, receiver_user_id, confirmed FROM "Friends"
+WHERE initiator_user_id = ? OR receiver_user_id = ?;
+
+-- Insert friend request
+insertRequest:
+INSERT INTO "Friends" (initiator_user_id, receiver_user_id) VALUES (?, ?);
+
+-- Delete friendship
+deleteFriendship:
+DELETE FROM "Friends"
+WHERE (initiator_user_id = ? AND receiver_user_id = ?)
+   OR (initiator_user_id = ? AND receiver_user_id = ?);
+
+-- Confirm friend request
+confirmRequest:
+UPDATE "Friends"
+SET confirmed = TRUE
+WHERE initiator_user_id = ? AND receiver_user_id = ?;
+
+-- Cancel friend request
+cancelRequest:
+DELETE FROM "Friends"
+WHERE initiator_user_id = ? AND receiver_user_id = ?;

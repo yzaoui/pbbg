@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS "PlotList" (
+    user_id INTEGER PRIMARY KEY REFERENCES "User"(id),
+    plot_id_list JSONB NOT NULL
+);
+
+-- Insert new user plot list
+insertUser:
+INSERT INTO "PlotList" (user_id, plot_id_list)
+VALUES (?, ?);
+
+-- Get plot ID list for user
+get:
+SELECT plot_id_list FROM "PlotList" WHERE user_id = ?;
+
+-- Update plot ID list for user
+updatePlotIdList:
+UPDATE "PlotList" SET plot_id_list = ? WHERE user_id = ?;

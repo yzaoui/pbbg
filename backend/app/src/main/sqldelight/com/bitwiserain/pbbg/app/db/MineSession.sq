@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS "MineSession" (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INTEGER NOT NULL UNIQUE REFERENCES "User"(id),
+    width INTEGER NOT NULL,
+    height INTEGER NOT NULL,
+    mine_type_id INTEGER NOT NULL
+);
+
+-- Insert new mine session and return the generated ID
+insertSessionAndGetId:
+INSERT INTO "MineSession" (user_id, width, height, mine_type_id)
+VALUES (?, ?, ?, ?)
+RETURNING id;
+
+-- Get mine session for user
+getSession:
+SELECT * FROM "MineSession" WHERE user_id = ?;
+
+-- Delete mine session for user
+deleteSession:
+DELETE FROM "MineSession" WHERE user_id = ?;

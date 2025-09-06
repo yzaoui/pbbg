@@ -101,7 +101,9 @@ class SubmitMineActionImpl(
         }
 
         // Remove mined cells from database
-        mineCellTable.deleteCells(reachableCellsWithContent.map { it.id })
+        if (reachableCellsWithContent.isNotEmpty()) {
+            mineCellTable.deleteCells(reachableCellsWithContent.map { it.id })
+        }
 
         val userCurrentMiningExp = userStatsTable.getUserStats(userId).miningExp
 

@@ -1,0 +1,30 @@
+CREATE TABLE IF NOT EXISTS "Plot" (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_id INTEGER NOT NULL REFERENCES "User"(id),
+    plant_id BIGINT REFERENCES "MaterializedPlant"(id)
+);
+
+-- Create new empty plot and get ID
+createAndGetEmptyPlotId:
+INSERT INTO "Plot" (user_id)
+VALUES (?)
+RETURNING id;
+
+-- Update plot with plant ID
+updatePlot:
+UPDATE "Plot" SET plant_id = ?
+WHERE user_id = ? AND id = ?;
+
+-- Get all plots for user with plant details
+getPlots:
+SELECT p.id, p.plant_id, mp.plant_enum_id, mp.cycle_start, mp.harvests
+FROM "Plot" p
+LEFT JOIN "MaterializedPlant" mp ON p.plant_id = mp.id
+WHERE p.user_id = ?;
+
+-- Get specific plot for user with plant details
+getPlot:
+SELECT p.id, p.plant_id, mp.plant_enum_id, mp.cycle_start, mp.harvests
+FROM "Plot" p
+LEFT JOIN "MaterializedPlant" mp ON p.plant_id = mp.id
+WHERE p.user_id = ? AND p.id = ?;

@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS "Market" (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INTEGER REFERENCES "User"(id)
+);
+
+createMarketAndGetId:
+INSERT INTO "Market" (user_id)
+VALUES (?)
+RETURNING id;
+
+-- Get market ID for a user
+getMarketIdByUserId:
+SELECT id FROM "Market" WHERE user_id = ?;

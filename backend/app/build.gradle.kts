@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.idea.ext)
     alias(libs.plugins.ktor)
+    alias(libs.plugins.sqldelight)
 }
 
 application {
@@ -38,9 +39,10 @@ dependencies {
     implementation(libs.h2)
     implementation(libs.postgresql)
 
-    // Exposed
-    implementation(libs.exposed.core)
-    implementation(libs.exposed.jdbc)
+    // SQLDelight
+    implementation(libs.sqldelight.runtime)
+    implementation(libs.sqldelight.coroutines)
+    implementation(libs.sqldelight.jdbc.driver)
 
     // Ktor
     implementation(libs.ktor.server.auth.jwt)
@@ -74,6 +76,11 @@ dependencies {
     testIntegrationImplementation(libs.kotest.assertions.core)
     testIntegrationImplementation(libs.junit.jupiter.api)
     testIntegrationRuntimeOnly(libs.junit.jupiter.engine)
+    
+    // Testcontainers for PostgreSQL testing
+    testIntegrationImplementation(libs.testcontainers.core)
+    testIntegrationImplementation(libs.testcontainers.postgresql)
+    testIntegrationImplementation(libs.testcontainers.junit.jupiter)
 }
 
 val testIntegration = task<Test>("testIntegration") {
@@ -87,6 +94,15 @@ val testIntegration = task<Test>("testIntegration") {
 
 tasks.check {
     dependsOn(testIntegration)
+}
+
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("com.bitwiserain.pbbg.app.db.generated")
+            dialect("app.cash.sqldelight:postgresql-dialect:2.0.2")
+        }
+    }
 }
 
 idea.module {

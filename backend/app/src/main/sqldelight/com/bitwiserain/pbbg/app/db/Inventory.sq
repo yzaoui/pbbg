@@ -1,0 +1,48 @@
+CREATE TABLE IF NOT EXISTS "Inventory" (
+    user_id INTEGER NOT NULL REFERENCES "User"(id),
+    materialized_item_id BIGINT NOT NULL REFERENCES "MaterializedItem"(id),
+    equipped BOOLEAN,
+    PRIMARY KEY (user_id, materialized_item_id)
+);
+
+-- Insert item into inventory
+insertItem:
+INSERT INTO "Inventory" (user_id, materialized_item_id, equipped)
+VALUES (?, ?, ?);
+
+-- Remove item from inventory
+removeItem:
+DELETE FROM "Inventory"
+WHERE user_id = ? AND materialized_item_id = ?;
+
+-- Remove multiple items from inventory
+removeItems:
+DELETE FROM "Inventory"
+WHERE user_id = ? AND materialized_item_id IN ?;
+
+-- Get held items of specific base kind
+getHeldItemsOfBaseKind:
+SELECT mi.id, mi.item_enum_id, mi.quantity
+FROM "Inventory" i
+INNER JOIN "MaterializedItem" mi ON i.materialized_item_id = mi.id
+WHERE i.user_id = ? AND mi.item_enum_id = ?;
+
+-- Get single inventory item
+getInventoryItem:
+SELECT mi.id, mi.item_enum_id, mi.quantity, i.equipped
+FROM "Inventory" i
+INNER JOIN "MaterializedItem" mi ON i.materialized_item_id = mi.id
+WHERE i.user_id = ? AND i.materialized_item_id = ?;
+
+-- Get all inventory items for user
+getInventoryItems:
+SELECT mi.id, mi.item_enum_id, mi.quantity, i.equipped
+FROM "Inventory" i
+INNER JOIN "MaterializedItem" mi ON i.materialized_item_id = mi.id
+WHERE i.user_id = ?;
+
+-- Set item equipped status
+setItemEquipped:
+UPDATE "Inventory"
+SET equipped = ?
+WHERE user_id = ? AND materialized_item_id = ?;
