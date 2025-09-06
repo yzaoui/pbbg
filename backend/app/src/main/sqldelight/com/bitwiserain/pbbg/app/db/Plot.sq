@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS "Plot" (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     user_id INTEGER NOT NULL REFERENCES "User"(id),
-    plant_id BIGINT REFERENCES "MaterializedPlant"(id)
+    plant_id BIGINT REFERENCES "MaterializedPlant"(id) ON DELETE SET NULL
 );
 
 -- Create new empty plot and get ID
