@@ -13,7 +13,7 @@ const squadService = {
         )
     ),
     healSquad: () => RxJS.from(
-        fetch("/api/squad/heal`", {
+        fetch("/api/squad/heal", {
             method: "POST",
             headers: authHeader()
         }).then(
