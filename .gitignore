@@ -19,3 +19,6 @@
 .idea/libraries/
 .idea/modules/
 .idea/modules.xml
+.idea/compiler.xml
+.idea/gradle.xml
+.idea/kotlinc.xml
