@@ -6,7 +6,11 @@
       <script value="start" />
     </scripts>
     <node-interpreter value="project" />
+    <package-manager value="bun" />
     <envs />
+    <EXTENSION ID="com.intellij.javascript.debugger.execution.StartBrowserRunConfigurationExtension">
+      <browser with-js-debugger="true" />
+    </EXTENSION>
     <EXTENSION ID="com.intellij.lang.javascript.buildTools.npm.rc.StartBrowserRunConfigurationExtension">
       <browser name="563801c6-a6c9-47d9-99cf-2613156e9569" start="true" with-js-debugger="true" url="http://localhost:5173" />
     </EXTENSION>
