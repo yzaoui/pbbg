@@ -15,7 +15,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: postgres:15-alpine
+    image: docker.io/postgres:15-alpine
     volumes:
       - postgresdata:/var/lib/postgresql/data
     environment:

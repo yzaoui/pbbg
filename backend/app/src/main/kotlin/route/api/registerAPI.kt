@@ -4,10 +4,9 @@ import com.bitwiserain.pbbg.app.domain.usecase.RegisterUserUC
 import com.bitwiserain.pbbg.app.makeToken
 import com.bitwiserain.pbbg.app.respondFail
 import com.bitwiserain.pbbg.app.respondSuccess
-import io.ktor.server.application.application
-import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.application
 import io.ktor.server.routing.post
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive

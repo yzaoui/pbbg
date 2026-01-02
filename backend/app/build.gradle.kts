@@ -12,6 +12,10 @@ plugins {
     alias(libs.plugins.sqldelight)
 }
 
+kotlin {
+    jvmToolchain(24)
+}
+
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
 }
@@ -76,7 +80,7 @@ dependencies {
     testIntegrationImplementation(libs.kotest.assertions.core)
     testIntegrationImplementation(libs.junit.jupiter.api)
     testIntegrationRuntimeOnly(libs.junit.jupiter.engine)
-    
+
     // Testcontainers for PostgreSQL testing
     testIntegrationImplementation(libs.testcontainers.core)
     testIntegrationImplementation(libs.testcontainers.postgresql)
@@ -106,7 +110,7 @@ sqldelight {
 }
 
 idea.module {
-    testSourceDirs.addAll(project.sourceSets["testIntegration"].allSource.srcDirs)
+    testSources.from(project.sourceSets["testIntegration"].allSource.srcDirs)
     settings {
         packagePrefix["src/main/kotlin"] = "com.bitwiserain.pbbg.app"
         packagePrefix["src/test/kotlin"] = "com.bitwiserain.pbbg.app.test"
