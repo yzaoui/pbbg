@@ -1,5 +1,6 @@
 import React, { RefObject } from "react";
-import "./PBBGLevelProgress.scss";
+import styles from "./PBBGLevelProgress.module.scss";
+import classNames from "classnames";
 
 interface Props {
     className?: string;
@@ -33,9 +34,9 @@ class PBBGLevelProgress extends React.Component<Props>{
     render() {
         const { className } = this.props;
 
-        return <div className={`PBBGLevelProgress${className ? ` ${className}` : ""}`}>
-            <div className="outer">
-                <div ref={this.innerRef} className="inner" style={{ width: `${this.currentProgress.percentage * 100}%` }} />
+        return <div className={classNames(styles.PBBGLevelProgress, className)}>
+            <div className={styles.outer}>
+                <div ref={this.innerRef} className={styles.inner} style={{ width: `${this.currentProgress.percentage * 100}%` }} />
             </div>
         </div>;
     }

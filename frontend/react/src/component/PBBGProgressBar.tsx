@@ -1,5 +1,6 @@
 import React from "react";
-import "./PBBGProgressBar.scss";
+import styles from "./PBBGProgressBar.module.scss";
+import classNames from "classnames";
 
 interface Props {
     className?: string;
@@ -7,9 +8,9 @@ interface Props {
     max: number;
 }
 
-const PBBGProgressBar: React.FC<Props> = ({ className, value, max }) => <div className={`PBBGProgressBar${className ? ` ${className}` : ""}`}>
-    <div className="outer">
-        <div className="inner" style={{ width: `${(value / max) * 100}%` }} />
+const PBBGProgressBar: React.FC<Props> = ({ className, value, max }) => <div className={classNames(styles.PBBGProgressBar, className)}>
+    <div className={styles.outer}>
+        <div className={styles.inner} style={{ width: `${(value / max) * 100}%` }} />
     </div>
 </div>;
 

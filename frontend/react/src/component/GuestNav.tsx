@@ -1,5 +1,5 @@
 import React, { ChangeEventHandler, FormEventHandler } from "react";
-import "./GuestNav.scss";
+import styles from "./GuestNav.module.scss";
 import { Link } from "react-router-dom";
 import authenticationService from "./../authentication.service";
 import history from "./../helper/history";
@@ -37,7 +37,7 @@ class GuestNav extends React.Component<{}, State> {
         return <nav className="sidebar sidebar-guest">
             <Link to="/">Index</Link>
             {!this.state.hideLogin &&
-                <form className="sidebar-login-form" onSubmit={this.handleSubmit}>
+                <form className={styles["sidebar-login-form"]} onSubmit={this.handleSubmit}>
                     <input
                         type="text"
                         name="username"

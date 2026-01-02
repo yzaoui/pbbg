@@ -1,18 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { InventoryEntry, isEquippable, isStackable } from "../../backend/inventory";
-import "./InventoryItemTooltip.scss";
+import styles from "./InventoryItemTooltip.module.scss";
 import GridPreview from "../GridPreview";
 import { isGridPreviewable } from "../../backend/dex";
+import classNames from "classnames";
 
 interface Props {
     inventoryEntry: InventoryEntry;
     equip?: () => void;
     unequip?: () => void;
     equipDisabled?: boolean;
+    className?: string;
 }
 
-const InventoryItemTooltip: React.FC<Props> = ({ inventoryEntry, equip, unequip, equipDisabled }) => <div className="InventoryItemTooltip">
+const InventoryItemTooltip: React.FC<Props> = ({ inventoryEntry, equip, unequip, equipDisabled, className }) => <div
+    className={classNames(styles.InventoryItemTooltip, className)}
+>
     <div><Link to={`/item/${inventoryEntry.item.id}`}>{inventoryEntry.item.baseItem.friendlyName}</Link></div>
     {isStackable(inventoryEntry.item) && <>
         <hr />

@@ -2,7 +2,7 @@ import React from "react";
 import { Battle as BattleData, BattleReward, MappedUnitEffects } from "../../backend/battle";
 import BattleQueue from "./BattleQueue";
 import PBBGUnit from "../PBBGUnit";
-import "./Battle.scss";
+import styles from "./Battle.module.scss";
 import BattleActions from "./BattleActions";
 import BattleLog from "./BattleLog";
 import { MyUnit } from "../../backend/squad";
@@ -34,17 +34,18 @@ class Battle extends React.Component<Props, State> {
         const nextUnitId = this.props.battle.turns[0].unitId;
         const currentSide = this.props.battle.allies.some(ally => nextUnitId === ally.id) ? "ally" : "enemy";
 
-        return <div className="Battle" data-overlay-active={this.state.selectingTarget ? "" : undefined} data-battle-over={battleIsOver ? "" : undefined}>
+        return <div className={styles.Battle} data-overlay-active={this.state.selectingTarget ? "" : undefined} data-battle-over={battleIsOver ? "" : undefined}>
             {this.state.selectingTarget &&
                 this.createOverlay()
             }
             {!battleIsOver &&
-                <BattleQueue battle={this.props.battle} onUnitEnter={this.handleUnitEnter} onUnitLeave={this.handleUnitLeave} hoveredUnit={this.state.hoveredUnitId} />
+                <BattleQueue battle={this.props.battle} onUnitEnter={this.handleUnitEnter} onUnitLeave={this.handleUnitLeave} hoveredUnit={this.state.hoveredUnitId} className={styles.BattleQueue} />
             }
-            <div className="allies-container unit-list-section">
+            <div className={`${styles["allies-container"]} ${styles["unit-list-section"]}`}>
                 <h1>Allies</h1>
                 <ul>
                     {this.props.battle.allies.map(ally => <li key={ally.id}><PBBGUnit
+                        className={styles.PBBGUnit}
                         unit={ally}
                         facing="right"
                         data-side="ally"
@@ -58,10 +59,11 @@ class Battle extends React.Component<Props, State> {
                     /></li>)}
                 </ul>
             </div>
-            <div className="enemies-container unit-list-section">
+            <div className={`${styles["enemies-container"]} ${styles["unit-list-section"]}`}>
                 <h1>Enemies</h1>
                 <ul>
                     {this.props.battle.enemies.map(enemy => <li key={enemy.id}><PBBGUnit
+                        className={styles.PBBGUnit}
                         unit={enemy}
                         facing="left"
                         data-side="enemy"
@@ -76,7 +78,7 @@ class Battle extends React.Component<Props, State> {
                 </ul>
             </div>
             {!battleIsOver &&
-                <BattleActions performingAction={this.props.performingAction} {...(currentSide === "ally" ? {
+                <BattleActions performingAction={this.props.performingAction} className={styles.BattleActions} {...(currentSide === "ally" ? {
                     enemyTurn: false,
                     onProcessAllyTurn: this.handleAllyTurn
                 } : {
@@ -84,7 +86,7 @@ class Battle extends React.Component<Props, State> {
                     onProcessEnemyTurn: this.props.onEnemyTurn
                 })} />
             }
-            <BattleLog effects={this.props.effects} reward={this.props.reward} onUnitNameEnter={this.handleUnitEnter} onUnitNameLeave={this.handleUnitLeave} units={new Map(
+            <BattleLog effects={this.props.effects} reward={this.props.reward} onUnitNameEnter={this.handleUnitEnter} onUnitNameLeave={this.handleUnitLeave} className={styles.BattleLog} units={new Map(
                 this.props.battle.allies.map(ally => ({ ...ally, side: "ally" }) as SidedUnit)
                     .concat(this.props.battle.enemies.map(enemy => ({ ...enemy, side: "enemy" }) as SidedUnit))
                     .map(unit => [unit.id, unit])
@@ -92,7 +94,7 @@ class Battle extends React.Component<Props, State> {
         </div>;
     }
 
-    createOverlay = () => <div className="overlay">
+    createOverlay = () => <div className={styles.overlay}>
         <div>
             <button className="fancy danger" onClick={this.handleCancelTargeting}>Cancel</button>
             <span>Select target</span>

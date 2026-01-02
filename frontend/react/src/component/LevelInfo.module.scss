@@ -6,7 +6,7 @@
     padding: 4px;
     box-sizing: border-box;
 
-    > .PBBGLevelProgress {
+    .level-progress { // TODO: Refactor
         position: absolute;
         width: 100%;
         height: 100%;

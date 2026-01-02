@@ -1,8 +1,9 @@
 import React, { RefObject } from "react";
-import "./BattleLog.scss";
+import styles from "./BattleLog.module.scss";
 import { BattleReward, MappedUnitEffects } from "../../backend/battle";
 import { SidedUnit } from "./Battle";
 import HealthEffectResult from "./HealthEffectResult";
+import classNames from "classnames";
 
 interface Props {
     effects: MappedUnitEffects[];
@@ -10,6 +11,7 @@ interface Props {
     units: Map<number, SidedUnit>;
     onUnitNameEnter: (unitId: number) => void;
     onUnitNameLeave: (unitId: number) => void;
+    className?: string;
 }
 
 class BattleLog extends React.Component<Props> {
@@ -28,9 +30,9 @@ class BattleLog extends React.Component<Props> {
     }
 
     render() {
-        const { effects, reward, units, onUnitNameEnter, onUnitNameLeave } = this.props;
+        const { effects, reward, units, onUnitNameEnter, onUnitNameLeave, className } = this.props;
 
-        return <div className="BattleLog">
+        return <div className={classNames(styles.BattleLog, className)}>
             <h1>Log</h1>
             <div ref={this.scrollRef}>
                 <ol>

@@ -5,7 +5,7 @@ import lvlMiningSrc from "../img/lvl-mining.png";
 import LevelInfo from "./LevelInfo";
 import lvlFarmingSrc from "../img/lvl-farming.png";
 import { UserStats } from "../backend/user-stats";
-import "./HomeUserStats.scss";
+import styles from "./HomeUserStats.module.scss";
 
 interface LoadingProps {
     status: "loading";
@@ -18,7 +18,7 @@ interface LoadedProps {
 
 type Props = LoadingProps | LoadedProps;
 
-const HomeUserStats: React.FC<Props> = props => <div className="HomeUserStats">
+const HomeUserStats: React.FC<Props> = props => <div className={styles.HomeUserStats}>
     <table>
         <tbody>
             <tr>
