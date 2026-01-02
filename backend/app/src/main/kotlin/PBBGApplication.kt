@@ -73,6 +73,8 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.install
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.authentication
@@ -104,12 +106,17 @@ enum class ApplicationEnvironment {
 }
 lateinit var APP_ENVIRONMENT: ApplicationEnvironment
 
-fun Application.main() {
-    mainWithDependencies(Clock.systemUTC())
+fun main() {
+    embeddedServer(
+        Netty,
+        port = System.getenv("PORT")?.toInt() ?: 8080,
+        watchPaths = listOf("classes", "resources"),
+        module = { mainWithDependencies(Clock.systemUTC()) }
+    ).start(wait = true)
 }
 
-fun Application.mainWithDependencies(clock: Clock) {
-    APP_ENVIRONMENT = when (environment.config.propertyOrNull("ktor.environment")?.getString()) {
+suspend fun Application.mainWithDependencies(clock: Clock) {
+    APP_ENVIRONMENT = when (System.getenv("KTOR_ENV")) {
         "dev" -> ApplicationEnvironment.DEV
         "prod" -> ApplicationEnvironment.PROD
         else -> throw ApplicationConfigurationException("Environment (KTOR_ENV) must be either dev or prod.")
@@ -118,7 +125,7 @@ fun Application.mainWithDependencies(clock: Clock) {
     /*************
      * Set up db *
      *************/
-    val jdbcAddress = environment.config.property("jdbc.address").getString()
+    val jdbcAddress = System.getenv("JDBC_ADDRESS") ?: throw ApplicationConfigurationException("JDBC_ADDRESS environment variable must be set")
 
     // Create DataSource and driver
     val dataSource = object : DataSource {
@@ -194,16 +201,14 @@ fun Application.mainWithDependencies(clock: Clock) {
         })
     }
 
-    val jwtRealm = environment.config.property("jwt.realm").getString()
-    val jwtSecret = environment.config.property("jwt.secret").getString()
-    val jwtIssuer = environment.config.property("jwt.issuer").getString()
+    val jwtSecret = System.getenv("JWT_SECRET") ?: throw ApplicationConfigurationException("JWT_SECRET environment variable must be set")
     install(Authentication) {
         jwt {
-            realm = jwtRealm
+            realm = "PBBG API Server"
             verifier(
                 JWT
                     .require(Algorithm.HMAC256(jwtSecret))
-                    .withIssuer(jwtIssuer)
+                    .withIssuer("PBBG")
                     .build()
             )
             validate {
