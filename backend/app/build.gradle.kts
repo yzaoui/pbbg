@@ -74,6 +74,7 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
 
     // Integration test dependencies
     testIntegrationImplementation(kotlin("test"))
@@ -81,6 +82,7 @@ dependencies {
     testIntegrationImplementation(libs.kotest.assertions.core)
     testIntegrationImplementation(libs.junit.jupiter.api)
     testIntegrationRuntimeOnly(libs.junit.jupiter.engine)
+    testIntegrationRuntimeOnly(libs.junit.platform.launcher)
 
     // Testcontainers for PostgreSQL testing
     testIntegrationImplementation(libs.testcontainers.core)
@@ -88,7 +90,7 @@ dependencies {
     testIntegrationImplementation(libs.testcontainers.junit.jupiter)
 }
 
-val testIntegration = task<Test>("testIntegration") {
+val testIntegration = tasks.register<Test>("testIntegration") {
     description = "Runs integration tests."
     group = "verification"
 

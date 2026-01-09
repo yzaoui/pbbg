@@ -105,27 +105,49 @@ enum class ApplicationEnvironment {
     PROD
 }
 lateinit var APP_ENVIRONMENT: ApplicationEnvironment
+lateinit var JWT_SECRET: String
+
+data class AppConfig(
+    val ktorEnv: String,
+    val jdbcAddress: String,
+    val jwtSecret: String
+) {
+    companion object {
+        fun fromEnvironment(): AppConfig {
+            return AppConfig(
+                ktorEnv = System.getenv("KTOR_ENV") ?: throw ApplicationConfigurationException("KTOR_ENV must be either dev or prod."),
+                jdbcAddress = System.getenv("JDBC_ADDRESS") ?: throw ApplicationConfigurationException("JDBC_ADDRESS environment variable must be set"),
+                jwtSecret = System.getenv("JWT_SECRET") ?: throw ApplicationConfigurationException("JWT_SECRET environment variable must be set")
+            )
+        }
+    }
+}
 
 fun main() {
     embeddedServer(
         Netty,
         port = System.getenv("PORT")?.toInt() ?: 8080,
         watchPaths = listOf("classes", "resources"),
-        module = { mainWithDependencies(Clock.systemUTC()) }
+        module = { mainWithDependencies(Clock.systemUTC(), AppConfig.fromEnvironment()) }
     ).start(wait = true)
 }
 
-suspend fun Application.mainWithDependencies(clock: Clock) {
-    APP_ENVIRONMENT = when (System.getenv("KTOR_ENV")) {
+suspend fun Application.mainWithDependencies(
+    clock: Clock,
+    config: AppConfig = AppConfig.fromEnvironment()
+) {
+    APP_ENVIRONMENT = when (config.ktorEnv) {
         "dev" -> ApplicationEnvironment.DEV
         "prod" -> ApplicationEnvironment.PROD
         else -> throw ApplicationConfigurationException("Environment (KTOR_ENV) must be either dev or prod.")
     }
 
+    JWT_SECRET = config.jwtSecret
+
     /*************
      * Set up db *
      *************/
-    val jdbcAddress = System.getenv("JDBC_ADDRESS") ?: throw ApplicationConfigurationException("JDBC_ADDRESS environment variable must be set")
+    val jdbcAddress = config.jdbcAddress
 
     // Create DataSource and driver
     val dataSource = object : DataSource {
@@ -201,13 +223,12 @@ suspend fun Application.mainWithDependencies(clock: Clock) {
         })
     }
 
-    val jwtSecret = System.getenv("JWT_SECRET") ?: throw ApplicationConfigurationException("JWT_SECRET environment variable must be set")
     install(Authentication) {
         jwt {
             realm = "PBBG API Server"
             verifier(
                 JWT
-                    .require(Algorithm.HMAC256(jwtSecret))
+                    .require(Algorithm.HMAC256(JWT_SECRET))
                     .withIssuer("PBBG")
                     .build()
             )
@@ -331,7 +352,7 @@ val ApplicationCall.userOptional
 fun Application.makeToken(userId: Int): String = JWT.create()
     .withIssuer(environment.config.property("jwt.issuer").getString())
     .withClaim("user.id", userId)
-    .sign(Algorithm.HMAC256(environment.config.property("jwt.secret").getString()))
+    .sign(Algorithm.HMAC256(JWT_SECRET))
 
 /**********
  * BCrypt *
