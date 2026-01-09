@@ -1,5 +1,6 @@
 package com.bitwiserain.pbbg.app.testintegration
 
+import com.bitwiserain.pbbg.app.AppConfig
 import com.bitwiserain.pbbg.app.mainWithDependencies
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -7,7 +8,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.server.config.MapApplicationConfig
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import kotlinx.serialization.json.Json
@@ -104,17 +104,15 @@ fun testApp(clock: Clock, block: suspend ApplicationTestBuilder.() -> Unit) = te
         container.start()
     }
 
-    environment {
-        config = MapApplicationConfig().apply {
-            put("ktor.environment", "prod")
-            put("jdbc.address", "postgresql://${container.host}:${container.getMappedPort(5432)}/${container.databaseName}?user=${container.username}&password=${container.password}")
-            put("jwt.issuer", "PBBG")
-            put("jwt.realm", "PBBG API Server")
-            put("jwt.secret", "eShVmYp3s6v9y\$B&E)H@McQfTjWnZr4t")
-        }
-    }
     application {
-        mainWithDependencies(clock)
+        mainWithDependencies(
+            clock = clock,
+            config = AppConfig(
+                ktorEnv = "dev",
+                jdbcAddress = "postgresql://${container.host}:${container.getMappedPort(5432)}/${container.databaseName}?user=${container.username}&password=${container.password}",
+                jwtSecret = "test-jwt-secret-for-integration-tests"
+            )
+        )
     }
     block()
 }
