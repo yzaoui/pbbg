@@ -119,7 +119,9 @@ class MarketUCImpl(
         /* Insert items into user's inventory */
         inventoryTable.insertItems(userId, userItemsToInsert)
         /* Insert items into user's dex */
-        dexTable.insertDiscovered(userId, dexItemsToInsert)
+        if (dexItemsToInsert.isNotEmpty()) {
+            dexTable.insertDiscovered(userId, dexItemsToInsert)
+        }
         /* Update quantity of user's items */
         userItemsToUpdateQuantity.forEach { materializedItemTable.updateQuantity(it.key, it.value) }
         /* Remove game's items */
