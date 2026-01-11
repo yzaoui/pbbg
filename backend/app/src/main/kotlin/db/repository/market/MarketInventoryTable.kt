@@ -45,6 +45,7 @@ class MarketInventoryTableImpl(
     }
 
     override fun removeItems(itemIds: Set<Long>) {
+        require(itemIds.isNotEmpty())
         database.marketInventoryQueries.removeItems(itemIds)
     }
 }

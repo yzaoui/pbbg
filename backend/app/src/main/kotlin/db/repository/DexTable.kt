@@ -12,7 +12,7 @@ interface DexTable {
 
     fun insertDiscovered(userId: Int, item: ItemEnum)
 
-    fun insertDiscovered(userId: Int, items: Iterable<ItemEnum>)
+    fun insertDiscovered(userId: Int, items: Collection<ItemEnum>)
 }
 
 class DexTableImpl(private val database: Database, private val transaction: Transaction) : DexTable {
@@ -31,7 +31,8 @@ class DexTableImpl(private val database: Database, private val transaction: Tran
         database.dexQueries.insertDiscovered(userId, item.id)
     }
 
-    override fun insertDiscovered(userId: Int, items: Iterable<ItemEnum>) = transaction {
+    override fun insertDiscovered(userId: Int, items: Collection<ItemEnum>) = transaction {
+        require(items.isNotEmpty())
         items.forEach { item ->
             database.dexQueries.insertDiscovered(userId, item.id)
         }
