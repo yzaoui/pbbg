@@ -123,7 +123,9 @@ class MarketUCImpl(
         /* Update quantity of user's items */
         userItemsToUpdateQuantity.forEach { materializedItemTable.updateQuantity(it.key, it.value) }
         /* Remove game's items */
-        marketInventoryTable.removeItems(gameItemsToRemove)
+        if (gameItemsToRemove.isNotEmpty()) {
+            marketInventoryTable.removeItems(gameItemsToRemove)
+        }
         /* Update quantity of game's items */
         gameItemsToUpdateQuantity.forEach { materializedItemTable.updateQuantity(it.key, it.value) }
 
