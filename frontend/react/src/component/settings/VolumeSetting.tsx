@@ -1,14 +1,14 @@
 import React, { ChangeEventHandler } from "react";
 import audioService from "../../audio.service";
-import "./VolumeSetting.scss"
+import "./VolumeSetting.scss";
 
 interface State {
-    volume: string;
+    volume: number;
 }
 
-class VolumeSetting extends React.Component {
+class VolumeSetting extends React.Component<{}, State> {
     readonly state: Readonly<State> = {
-        volume: audioService.getVolume().toString()
+        volume: audioService.getVolume()
     };
 
     render() {
@@ -22,7 +22,7 @@ class VolumeSetting extends React.Component {
     }
 
     handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-        const volume = event.target.value;
+        const volume = parseFloat(event.target.value);
 
         audioService.setVolume(volume);
         this.setState({ volume: volume })
