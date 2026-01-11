@@ -215,6 +215,8 @@ class IndexPage extends React.Component<RouteComponentProps<{}, StaticContext, {
     };
 
     performMineAction = (x: number, y: number) => {
+        if (this.state.status !== "loaded") return;
+        
         this.setState({ ...this.state, submittingAction: { x, y } });
 
         this.mineRequest = mineService.performMineAction({ x, y })

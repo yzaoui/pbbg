@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Start Dev Server",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bun run start",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Start Storybook",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bun run storybook",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Build Production",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bun run build",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Type Check (watch)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bun run typecheck:watch",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Type Check (once)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "bun run typecheck",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

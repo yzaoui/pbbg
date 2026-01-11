@@ -106,6 +106,8 @@ class MarketPage extends React.Component<{}, State> {
         marketService.buy({ orders: ordersArray })
             .subscribe({
                 next: value => {
+                    if (this.state.status !== "loaded") return
+
                     this.transactionSound.play();
                     this.setState({ ...this.state, buying: false, markets: value.data });
                 },
@@ -123,6 +125,8 @@ class MarketPage extends React.Component<{}, State> {
         marketService.sell({ orders: ordersArray })
             .subscribe({
                 next: value => {
+                    if (this.state.status !== "loaded") return
+
                     this.transactionSound.play();
                     this.setState({ ...this.state, selling: false, markets: value.data });
                 },

@@ -1,0 +1,18 @@
+{
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.preferences.quoteStyle": "double",
+    "typescript.suggest.autoImports": true,
+    "typescript.suggest.completeFunctionCalls": true,
+    "typescript.suggest.includeCompletionsForImportStatements": true,
+    "typescript.suggest.includeCompletionsWithSnippetText": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    "editor.suggest.showWords": false,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    }
+}

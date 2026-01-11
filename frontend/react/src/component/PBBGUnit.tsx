@@ -1,13 +1,23 @@
-import React, { HTMLAttributes } from "react";
-import { MyUnit } from "../backend/squad";
+import React, {HTMLAttributes} from "react";
 import styles from "./PBBGUnit.module.scss";
 import PBBGLevelProgress from "./PBBGLevelProgress";
 import PBBGProgressBar from "./PBBGProgressBar";
 import classNames from "classnames";
+import { LevelProgress } from "../backend/user-stats";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-    unit: MyUnit;
+    unit: Unit;
     facing?: "left" | "right";
+}
+
+export interface Unit {
+    name: string;
+    hp: number;
+    maxHP: number;
+    atk: number;
+    def: number;
+    levelProgress: LevelProgress;
+    idleAnimationURL: string;
 }
 
 const PBBGUnit: React.FC<Props> = ({ unit, facing = "right", className, ...rest }) =>
