@@ -229,7 +229,7 @@ suspend fun Application.mainWithDependencies(
             verifier(
                 JWT
                     .require(Algorithm.HMAC256(JWT_SECRET))
-                    .withIssuer("PBBG")
+                    .withIssuer(JWT_ISSUER)
                     .build()
             )
             validate {
@@ -350,7 +350,7 @@ val ApplicationCall.userOptional
     get() = authentication.principal<User>()
 
 fun Application.makeToken(userId: Int): String = JWT.create()
-    .withIssuer(environment.config.property("jwt.issuer").getString())
+    .withIssuer(JWT_ISSUER)
     .withClaim("user.id", userId)
     .sign(Algorithm.HMAC256(JWT_SECRET))
 
