@@ -3,7 +3,7 @@ import styles from "./PBBGUnit.module.scss";
 import PBBGLevelProgress from "./PBBGLevelProgress";
 import PBBGProgressBar from "./PBBGProgressBar";
 import classNames from "classnames";
-import {LevelProgress} from "../backend/user-stats";
+import { LevelProgress } from "../backend/user-stats";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     unit: Unit;
