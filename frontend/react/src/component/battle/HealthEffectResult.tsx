@@ -1,6 +1,7 @@
 import React from "react";
 import { SidedUnit } from "./Battle";
 import { HealthEffect } from "../../backend/battle";
+import styles from "./BattleLog.module.scss";
 
 interface Props {
     unit: SidedUnit;
@@ -9,10 +10,10 @@ interface Props {
     onUnitNameLeave: () => void;
 }
 
-const HealthEffectResult: React.FC<Props> = ({ unit, effect, onUnitNameEnter, onUnitNameLeave }) => <li className="HealthEffectResult">
-    <span className={unit.side} onMouseEnter={onUnitNameEnter} onMouseLeave={onUnitNameLeave}>
+const HealthEffectResult: React.FC<Props> = ({ unit, effect, onUnitNameEnter, onUnitNameLeave }) => <li className={styles.HealthEffectResult}>
+    <span className={styles[unit.side]} onMouseEnter={onUnitNameEnter} onMouseLeave={onUnitNameLeave}>
         {unit.name}
-    </span> took <span className="damage">{-effect.delta}</span> damage
+    </span> took <span className={styles.damage}>{-effect.delta}</span> damage
 </li>;
 
 export default HealthEffectResult;

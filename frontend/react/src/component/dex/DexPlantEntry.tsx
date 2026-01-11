@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./DexEntry.scss"
+import styles from "./DexEntry.module.scss";
 import { BasePlant } from "../../model/farm";
 
 type Props = {
@@ -8,8 +8,8 @@ type Props = {
     plant: BasePlant;
 };
 
-const DexPlantEntry: React.FC<Props> = ({ id, plant }) => <li className="entry-li">
-    <Link to={"/dex/plants/" + id} className="entry-container">
+const DexPlantEntry: React.FC<Props> = ({ id, plant }) => <li className={styles["entry-li"]}>
+    <Link to={"/dex/plants/" + id} className={styles["entry-container"]}>
         <span>#{id}</span>
         <img src={plant.icon} alt={plant.name + " icon"} />
         <span>{plant.name}</span>

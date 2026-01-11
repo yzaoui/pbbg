@@ -1,9 +1,11 @@
 import React from "react";
 import LoadingButton from "../LoadingButton";
-import "./BattleActions.scss";
+import styles from "./BattleActions.module.scss";
+import classNames from "classnames";
 
 type Props = {
     performingAction: boolean;
+    className?: string;
 } & ({
     enemyTurn: true;
     onProcessEnemyTurn: () => void;
@@ -12,7 +14,7 @@ type Props = {
     onProcessAllyTurn: () => void;
 });
 
-const BattleActions: React.FC<Props> = (props) => <div className="BattleActions">
+const BattleActions: React.FC<Props> = (props) => <div className={classNames(styles.BattleActions, props.className)}>
     <h1>Actions</h1>
     <div>
         {props.enemyTurn ?

@@ -1,5 +1,5 @@
 import React from "react";
-import "./PlantImage.scss";
+import styles from "./PlantImage.module.scss";
 
 type Props = {
     src: string;
@@ -8,7 +8,7 @@ type Props = {
 };
 
 const PlantImage: React.FC<Props> = ({ src, spriteIndex, alt }) => <img
-    className="PlantImage"
+    className={styles.PlantImage}
     src={src}
     style={{ ["--sprite-index" as any]: spriteIndex }}
     alt={alt}

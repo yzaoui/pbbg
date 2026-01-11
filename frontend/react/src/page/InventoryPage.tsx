@@ -1,6 +1,6 @@
 import React from "react";
 import player from "../img/player.png";
-import "./InventoryPage.scss";
+import styles from "./InventoryPage.module.scss";
 import { Inventory, isEquippable } from "../backend/inventory";
 import LoadingSpinner from "../component/LoadingSpinner";
 import InventoryItem from "../component/inventory/InventoryItem";
@@ -54,14 +54,14 @@ class InventoryPage extends React.Component<{}, State> {
     render() {
         if (this.state.status === "error") return "ERROR";
 
-        return <div className="InventoryPage">
-            <div className="player-equipment">
-                <img className="player-portrait" src={player} alt="Player portrait" />
+        return <div className={styles.InventoryPage}>
+            <div className={styles["player-equipment"]}>
+                <img className={styles["player-portrait"]} src={player} alt="Player portrait" />
                 <EquipmentSlot item={this.state.status === "loaded" ? this.state.inventory.equipment.pickaxe : "loading"} style={{ top: "100px", left: "90px" }}>
                     <img src={noPickaxe} alt={"No pickaxe equipped"} />
                 </EquipmentSlot>
             </div>
-            <ul className="inventory-container">
+            <ul className={styles["inventory-container"]}>
                 {this.state.status === "loaded" ?
                     this.inventoryContents(this.state)
                 : this.state.status === "loading" ?
@@ -72,9 +72,13 @@ class InventoryPage extends React.Component<{}, State> {
     }
 
     inventoryContents = ({ inventory, equipmentChanging }: { inventory: Inventory, equipmentChanging: boolean }) =>
-        inventory.items.sort((a, b) => a.item.id - b.item.id).map(entry => <li key={entry.item.id} className="inventory-item">
+        inventory.items.sort((a, b) => a.item.id - b.item.id).map(entry => <li
+            key={entry.item.id}
+            className={styles["inventory-item"]}
+        >
             <InventoryItem inventoryEntry={entry} />
             <InventoryItemTooltip
+                className={styles["inventory-item-tooltip"]}
                 inventoryEntry={entry}
                 equip={isEquippable(entry) && !entry.equipped ? () => this.handleEquipUnequip(entry.item.id, "equip") : undefined}
                 unequip={isEquippable(entry) && entry.equipped ? () => this.handleEquipUnequip(entry.item.id, "unequip") : undefined}

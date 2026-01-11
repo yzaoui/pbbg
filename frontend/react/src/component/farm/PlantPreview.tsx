@@ -1,7 +1,7 @@
 import { BasePlant, isMaturableBasePlant } from "../../model/farm";
 import React, { ChangeEventHandler } from "react";
 import PlantImage from "./PlantImage";
-import "./PlantPreview.scss";
+import styles from "./PlantPreview.module.scss";
 
 type Props = {
     basePlant: BasePlant;
@@ -36,12 +36,12 @@ class PlantPreview extends React.Component<Props, State> {
                 }
             }
 
-            return <div className="PlantPreview">
+            return <div className={styles.PlantPreview}>
                 <PlantImage src={src} spriteIndex={spriteIndex} alt={`${basePlant.name} sprite`} />
                 <input type="range" min={0} max={7} value={index} step={1} onChange={this.handleSliderChange} />
             </div>
         } else {
-            return <div className="PlantPreview">
+            return <div className={styles.PlantPreview}>
                 <PlantImage src={basePlant.growingSprite} spriteIndex={index} alt={`${basePlant.name} sprite`} />
                 <input type="range" min={0} max={3} value={index} step={1} onChange={this.handleSliderChange} />
             </div>

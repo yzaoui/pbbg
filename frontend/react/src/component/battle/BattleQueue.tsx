@@ -1,15 +1,17 @@
 import React from "react";
 import { Battle as BattleData } from "../../backend/battle";
-import "./BattleQueue.scss";
+import styles from "./BattleQueue.module.scss";
+import classNames from "classnames";
 
 interface Props {
     battle: BattleData;
     onUnitEnter: (unitId: number) => void;
     onUnitLeave: (unitId: number) => void;
     hoveredUnit: number | null;
+    className?: string;
 }
 
-const BattleQueue: React.FC<Props> = ({ battle, onUnitEnter, onUnitLeave, hoveredUnit }) => <div className="BattleQueue">
+const BattleQueue: React.FC<Props> = ({ battle, onUnitEnter, onUnitLeave, hoveredUnit, className }) => <div className={classNames(styles.BattleQueue, className)}>
     <span><b>Turn Order ►</b></span>
     <ol>{combineBattleToQueue(battle).map(({ unit, side }) =>
         <li

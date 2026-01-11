@@ -1,5 +1,5 @@
 import React from "react";
-import "./GridPreview.scss";
+import styles from "./GridPreview.module.scss";
 import { Point } from "../backend/inventory";
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
     center: Point;
 }
 
-const GridPreview: React.FC<Props> = ({ grid, center }) => <div className="GridPreview">
+const GridPreview: React.FC<Props> = ({ grid, center }) => <div className={styles.GridPreview}>
     <table>
         <tbody>
         {createRows(grid, center)}
