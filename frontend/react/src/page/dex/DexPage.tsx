@@ -1,29 +1,27 @@
 import React from "react";
-import { Link, Route, RouteComponentProps } from "react-router-dom";
-import "./DexPage.scss";
-import DexUnitsPage from "./DexUnitsPage";
+import { Link, Route, Routes } from "react-router-dom";
 import DexItemsPage from "./DexItemsPage";
+import "./DexPage.scss";
 import DexPlantsPage from "./DexPlantsPage";
+import DexUnitsPage from "./DexUnitsPage";
 
-const DexPage: React.FC<RouteComponentProps> = ({ match }) => <>
-    <Route path={match.url + "/"} exact component={Index} />
-    <Route path={match.url + "/items"} component={DexItemsPage} />
-    <Route path={match.url + "/units"} component={DexUnitsPage} />
-    <Route path={match.url + "/plants"} component={DexPlantsPage} />
-</>;
+const DexPage: React.FC = () => <Routes>
+    <Route path="/" element={<Index />} />
+    <Route path="/items/*" element={<DexItemsPage />} />
+    <Route path="/units/*" element={<DexUnitsPage />} />
+    <Route path="/plants/*" element={<DexPlantsPage />} />
+</Routes>;
 
-class Index extends React.Component<RouteComponentProps> {
+class Index extends React.Component {
     componentDidMount() {
         document.title = "Dex - PBBG";
     }
 
     render() {
-        const { match } = this.props;
-
         return <div className="DexPage">
-            <Link to={match.url + "/items"}>Items</Link>
-            <Link to={match.url + "/units"}>Units</Link>
-            <Link to={match.url + "/plants"}>Plants</Link>
+            <Link to="/dex/items">Items</Link>
+            <Link to="/dex/units">Units</Link>
+            <Link to="/dex/plants">Plants</Link>
         </div>;
     }
 }

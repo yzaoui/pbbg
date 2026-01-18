@@ -1,4 +1,4 @@
-import authenticationService from '../authentication.service';
+import authenticationService from "../authentication.service";
 
 /**
  * Authorization header with JWT token

@@ -1,19 +1,20 @@
+import { Howl } from "howler";
 import React, { CSSProperties } from "react";
-import { Route, RouteComponentProps, StaticContext } from "react-router";
-import MineListPage from "./MineListPage";
+import { Route, Routes } from "react-router";
 import { Subscription } from "rxjs";
-import mineService from "../../backend/mine.service";
+import { InventoryEntry, Point } from "../../backend/inventory";
+import inventoryService from "../../backend/inventory.service";
 import { LevelUp, Mine as MineData, MinedItemResult } from "../../backend/mine";
+import mineService from "../../backend/mine.service";
+import { LevelProgress } from "../../backend/user-stats";
+import userStatsService from "../../backend/user-stats.service";
+import InventoryItem from "../../component/inventory/InventoryItem";
+import LevelInfo from "../../component/LevelInfo";
 import LoadingSpinner from "../../component/LoadingSpinner";
 import Mine from "../../component/mine/Mine";
-import userStatsService from "../../backend/user-stats.service";
-import { LevelProgress } from "../../backend/user-stats";
-import LevelInfo from "../../component/LevelInfo";
 import MineLog from "../../component/mine/MineLog";
-import inventoryService from "../../backend/inventory.service";
-import { InventoryEntry, Point } from "../../backend/inventory";
-import InventoryItem from "../../component/inventory/InventoryItem";
-import { Howl } from "howler";
+import { RouteComponentProps, withRouter } from "../../helper/withRouter";
+import MineListPage from "./MineListPage";
 // @ts-ignore
 import pickaxe1MP3 from "../../audio/pickaxe1.mp3";
 // @ts-ignore
@@ -37,14 +38,14 @@ import levelUpOGG from "../../audio/level-up.ogg";
 // @ts-ignore
 import exitMineMP3 from "../../audio/enter_mine.mp3";
 // @ts-ignore
-import exitMineOGG from "../../audio/enter_mine.ogg";
 import { Link } from "react-router-dom";
+import exitMineOGG from "../../audio/enter_mine.ogg";
 import LoadingButton from "../../component/LoadingButton";
 
-const MinePage: React.FC<RouteComponentProps> = ({ match }) => <>
-    <Route path={match.url + "/"} exact component={IndexPage} />
-    <Route path={match.url + "/list"} exact component={MineListPage} />
-</>;
+const MinePage: React.FC = () => <Routes>
+    <Route path="/" element={<IndexPageWithRouter />} />
+    <Route path="/list" element={<MineListPage />} />
+</Routes>;
 
 type State = {
     status: "initial loading";
@@ -64,7 +65,7 @@ type State = {
     results: (MinedItemResult | LevelUp)[];
 };
 
-class IndexPage extends React.Component<RouteComponentProps<{}, StaticContext, { mine?: MineData }>, State> {
+class IndexPage extends React.Component<RouteComponentProps<{}, { mine?: MineData }>, State> {
     readonly state: Readonly<State> = {
         status: "initial loading"
     };
@@ -192,10 +193,12 @@ class IndexPage extends React.Component<RouteComponentProps<{}, StaticContext, {
         this.userStatsRequest = userStatsService.get()
             .subscribe({
                 next: value => {
-                    if (this.state.status !== "loaded") throw Error();
                     const miningLvl = value.data.mining;
 
-                    this.setState({ ...this.state, miningLvl });
+                    this.setState(prevState => {
+                        if (prevState.status !== "loaded") return prevState;
+                        return { ...prevState, miningLvl };
+                    });
                 },
                 error: err => this.setState({ status: "error" })
             });
@@ -205,10 +208,12 @@ class IndexPage extends React.Component<RouteComponentProps<{}, StaticContext, {
         this.inventoryRequest = inventoryService.getInventory()
             .subscribe({
                 next: value => {
-                    if (this.state.status !== "loaded") throw Error();
                     const pickaxe = value.data.equipment.pickaxe;
 
-                    this.setState({ ...this.state, pickaxe });
+                    this.setState(prevState => {
+                        if (prevState.status !== "loaded") return prevState;
+                        return { ...prevState, pickaxe };
+                    });
                 },
                 error: err => this.setState({ status: "error" })
             });
@@ -216,8 +221,11 @@ class IndexPage extends React.Component<RouteComponentProps<{}, StaticContext, {
 
     performMineAction = (x: number, y: number) => {
         if (this.state.status !== "loaded") return;
-        
-        this.setState({ ...this.state, submittingAction: { x, y } });
+
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, submittingAction: { x, y } };
+        });
 
         this.mineRequest = mineService.performMineAction({ x, y })
             .subscribe({
@@ -272,5 +280,7 @@ const style: CSSProperties = {
     marginBottom: "4px",
     alignSelf: "center"
 };
+
+const IndexPageWithRouter = withRouter(IndexPage);
 
 export default MinePage;

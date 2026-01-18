@@ -1,12 +1,11 @@
 import React from "react";
-import { StaticContext } from "react-router";
-import { Link, RouteComponentProps } from "react-router-dom";
-import * as H from "history";
+import { Link } from "react-router-dom";
 import "./LoginRegisterPage.scss";
 import authenticationService from "./../authentication.service";
 import LoginForm, { IncorrectCredentialsError } from "../component/LoginForm";
+import { RouteComponentProps, withRouter } from "../helper/withRouter";
 
-interface Props extends RouteComponentProps<{}, StaticContext, { error?: IncorrectCredentialsError, destination?: H.Location }> {}
+interface Props extends RouteComponentProps<{}, { error?: IncorrectCredentialsError, destination?: any }> {}
 
 interface State {
     submitting: boolean;
@@ -42,4 +41,4 @@ class LoginPage extends React.Component<Props, State> {
     };
 }
 
-export default LoginPage;
+export default withRouter(LoginPage);

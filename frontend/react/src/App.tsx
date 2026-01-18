@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import "normalize.css"
 import "./common.scss"
-import { Redirect, Route, Router, Switch } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AppHeader from "./component/AppHeader";
 import GuestNav from "./component/GuestNav";
 import MemberNav from "./component/MemberNav";
@@ -19,7 +19,6 @@ import ItemPage from "./page/ItemPage";
 import DexPage from "./page/dex/DexPage";
 import SettingsPage from "./page/SettingsPage";
 import authenticationService from "./authentication.service";
-import history from "./helper/history";
 import BattlePage from "./page/BattlePage";
 import MarketPage from "./page/MarketPage";
 import UserPage from "./page/UserPage";
@@ -44,34 +43,34 @@ class App extends React.Component<{}, State> {
     render() {
         const isLoggedIn = this.state.currentUserToken !== null;
 
-        return <Router history={history}>
+        return <BrowserRouter>
             <div className="App">
                 <AppHeader onClickMenu={this.handleToggleMenu} />
                 <div className="AppBody">
                     {isLoggedIn ? <MemberNav menuOpen={this.state.menuOpen} onClickItem={this.handleClickNavItem} /> : <GuestNav />}
                     <main className="pbbg-main">
-                        <Switch>
-                            <Route path="/" exact component={isLoggedIn ? IndexMemberPage : IndexGuestPage} />
-                            <GuestRoute path="/register" component={RegisterPage} />
-                            <GuestRoute path="/login" component={LoginPage} />
-                            <MemberRoute path="/squad" component={SquadPage} />
-                            <MemberRoute path="/inventory" component={InventoryPage} />
-                            <Route path="/item/:id" exact component={ItemPage} />
-                            <MemberRoute path="/market" component={MarketPage} />
-                            <MemberRoute path="/battle" component={BattlePage} />
-                            <MemberRoute path="/mine" component={MinePage} />
-                            <MemberRoute path="/farm" component={FarmPage} />
-                            <MemberRoute path="/dex" component={DexPage} />
-                            <MemberRoute path="/friends" component={FriendsPage} />
-                            <MemberRoute path="/about" component={AboutPage} />
-                            <MemberRoute path="/settings" component={SettingsPage} />
-                            <Route path="/user/:id" exact component={UserPage} />
-                            <Redirect to="/" />
-                        </Switch>
+                        <Routes>
+                            <Route path="/" element={isLoggedIn ? <IndexMemberPage /> : <IndexGuestPage />} />
+                            <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
+                            <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+                            <Route path="/squad" element={<MemberRoute><SquadPage /></MemberRoute>} />
+                            <Route path="/inventory" element={<MemberRoute><InventoryPage /></MemberRoute>} />
+                            <Route path="/item/:id" element={<ItemPage />} />
+                            <Route path="/market" element={<MemberRoute><MarketPage /></MemberRoute>} />
+                            <Route path="/battle" element={<MemberRoute><BattlePage /></MemberRoute>} />
+                            <Route path="/mine/*" element={<MemberRoute><MinePage /></MemberRoute>} />
+                            <Route path="/farm" element={<MemberRoute><FarmPage /></MemberRoute>} />
+                            <Route path="/dex/*" element={<MemberRoute><DexPage /></MemberRoute>} />
+                            <Route path="/friends/*" element={<MemberRoute><FriendsPage /></MemberRoute>} />
+                            <Route path="/about" element={<MemberRoute><AboutPage /></MemberRoute>} />
+                            <Route path="/settings" element={<MemberRoute><SettingsPage /></MemberRoute>} />
+                            <Route path="/user/:id" element={<UserPage />} />
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
                     </main>
                 </div>
             </div>
-        </Router>;
+        </BrowserRouter>;
     }
 
     private handleToggleMenu = () => {

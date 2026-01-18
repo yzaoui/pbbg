@@ -1,9 +1,8 @@
 import React from "react";
-import { RouteComponentProps } from "react-router";
 import { Subscription } from "rxjs";
 import friendsService from "../backend/friends.service";
 import { FriendInfo, Friends } from "../backend/friends";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import FriendsContainer from "../component/friends/FriendsContainer";
 import "./FriendsPage.scss";
 import userService from "../backend/user.service";
@@ -25,7 +24,7 @@ interface ErrorState {
 
 type State = LoadingState | LoadedState | ErrorState;
 
-class FriendsPage extends React.Component<RouteComponentProps, State> {
+class FriendsPage extends React.Component<{}, State> {
     readonly state: Readonly<State> = {
         status: "loading"
     };
@@ -49,10 +48,8 @@ class FriendsPage extends React.Component<RouteComponentProps, State> {
         switch (this.state.status) {
             case "loading": return<FriendsContainer
                 loading
-                match={this.props.match}
             />;
             case "loaded": return <FriendsContainer
-                match={this.props.match}
                 friends={this.state.friends}
                 searchResults={this.state.searchResults}
                 searching={this.state.searching}
@@ -65,14 +62,18 @@ class FriendsPage extends React.Component<RouteComponentProps, State> {
     handleSearchUser = (text: string) => {
         if (this.state.status !== "loaded") return;
 
-        this.setState({ ...this.state, searching: true });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, searching: true };
+        });
 
         this.request = userService.searchUser(text)
             .subscribe(
                 res => {
-                    if (this.state.status !== "loaded") return;
-
-                    this.setState({ ...this.state, searching: false, searchResults: res.data })
+                    this.setState(prevState => {
+                        if (prevState.status !== "loaded") return prevState;
+                        return { ...prevState, searching: false, searchResults: res.data };
+                    });
                 }
             );
     };

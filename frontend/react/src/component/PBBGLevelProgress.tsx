@@ -10,7 +10,7 @@ interface Props {
 }
 
 class PBBGLevelProgress extends React.Component<Props>{
-    innerRef: RefObject<HTMLDivElement>;
+    innerRef: RefObject<HTMLDivElement | null>;
 
     timer?: number;
     currentProgress: {
@@ -91,7 +91,7 @@ class PBBGLevelProgress extends React.Component<Props>{
 
         this.currentProgress = nextProgress;
 
-        this.innerRef.current!!.style.width = `${this.currentProgress.percentage * 100}%`;
+        this.innerRef.current!.style.width = `${this.currentProgress.percentage * 100}%`;
     };
 
     toProgress = (arg: { level: number, value: number, max: number }) => ({

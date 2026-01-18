@@ -15,7 +15,7 @@ interface Props {
 }
 
 class BattleLog extends React.Component<Props> {
-    scrollRef: RefObject<HTMLDivElement>;
+    scrollRef: RefObject<HTMLDivElement | null>;
 
     constructor(props: Props) {
         super(props);
@@ -25,7 +25,7 @@ class BattleLog extends React.Component<Props> {
 
     componentDidUpdate(prevProps: Readonly<Props>) {
         if (prevProps.effects.length !== this.props.effects.length || (prevProps.reward === null && this.props.reward !== null)) {
-            this.scrollRef.current!!.scrollTop = this.scrollRef.current!!.scrollHeight;
+            this.scrollRef.current!.scrollTop = this.scrollRef.current!.scrollHeight;
         }
     }
 

@@ -6,7 +6,8 @@ import LoadingSpinner from "../LoadingSpinner";
 
 interface Props {
     item: InventoryEntry | "loading" | null;
-    style?: CSSProperties
+    style?: CSSProperties;
+    children?: React.ReactNode;
 }
 
 const EquipmentSlot: React.FC<Props> = ({ item, style, children }) => <div className={classNames(styles.EquipmentSlot, { [styles.equipped]: item !== "loading" && item !== null }, { [styles.loading]: item === "loading" })} style={style}>

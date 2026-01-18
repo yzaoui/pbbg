@@ -10,7 +10,7 @@ interface Props {
 }
 
 class MineLog extends React.Component<Props> {
-    ulRef: RefObject<HTMLUListElement>;
+    ulRef: RefObject<HTMLUListElement | null>;
 
     constructor(props: Props) {
         super(props);
@@ -26,7 +26,7 @@ class MineLog extends React.Component<Props> {
 
     componentDidUpdate(prevProps: Readonly<Props>) {
         if (prevProps.results.length !== this.props.results.length) {
-            this.ulRef.current!!.scrollTop = this.ulRef.current!!.scrollHeight;
+            this.ulRef.current!.scrollTop = this.ulRef.current!.scrollHeight;
         }
     }
 

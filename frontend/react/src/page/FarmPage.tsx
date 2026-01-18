@@ -99,7 +99,10 @@ class FarmPage extends React.Component<{}, State> {
             }
         }
 
-        this.setState({ ...this.state, plots: updatedPlots, fetchingNextStage: toFetch });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, plots: updatedPlots, fetchingNextStage: toFetch };
+        });
     };
 
     private fetchPlots = () => {
@@ -111,31 +114,39 @@ class FarmPage extends React.Component<{}, State> {
     };
 
     private setPlots = (updatedPlotsJSON: PlotJSON[]) => {
-        if (this.state.status !== "loaded") return;
-
-        this.setState({ ...this.state, plots: updatedPlotsJSON.map(plotJSON => plotFromJSON(plotJSON)) });
-        this.refreshPlantProgress();
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, plots: updatedPlotsJSON.map(plotJSON => plotFromJSON(plotJSON)) };
+        }, () => {
+            this.refreshPlantProgress();
+        });
     };
 
     private updatePlot = (updatedPlot: PlotJSON) => {
-        if (this.state.status !== "loaded") return;
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
 
-        const updatedPlots = Array.from(this.state.plots);
-        const updatedPlotIndex = updatedPlots.findIndex(plot => plot.id === updatedPlot.id);
+            const updatedPlots = Array.from(prevState.plots);
+            const updatedPlotIndex = updatedPlots.findIndex(plot => plot.id === updatedPlot.id);
 
-        updatedPlots[updatedPlotIndex] = plotFromJSON(updatedPlot);
+            updatedPlots[updatedPlotIndex] = plotFromJSON(updatedPlot);
 
-        const updatedLoadingPlots = new Set(this.state.loadingPlots);
-        updatedLoadingPlots.delete(updatedPlot.id);
+            const updatedLoadingPlots = new Set(prevState.loadingPlots);
+            updatedLoadingPlots.delete(updatedPlot.id);
 
-        this.setState({ ...this.state, plots: updatedPlots, loadingPlots: updatedLoadingPlots });
-        this.refreshPlantProgress();
+            return { ...prevState, plots: updatedPlots, loadingPlots: updatedLoadingPlots };
+        }, () => {
+            this.refreshPlantProgress();
+        });
     };
 
     private handlePlant = (plotId: number) => {
         if (this.state.status !== "loaded") return;
 
-        this.setState({ ...this.state, plantingPlotId: plotId });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, plantingPlotId: plotId };
+        });
     };
 
     private handleHarvest = (plotId: number) => {
@@ -147,7 +158,10 @@ class FarmPage extends React.Component<{}, State> {
             this.harvestRequests.delete(plotId);
         }
 
-        this.setState({ ...this.state, loadingPlots: (new Set(this.state.loadingPlots)).add(plotId) });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, loadingPlots: (new Set(prevState.loadingPlots)).add(plotId) };
+        });
 
         const newRequest = farmService.harvest({ plotId: plotId })
             .subscribe(res => {
@@ -180,7 +194,10 @@ class FarmPage extends React.Component<{}, State> {
 
         if (this.expandingRequest !== null) this.expandingRequest.unsubscribe();
 
-        this.setState({ ...this.state, expanding: true });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, expanding: true };
+        });
 
         this.expandingRequest = farmService.expand()
             .subscribe(res => {
@@ -222,7 +239,10 @@ class FarmPage extends React.Component<{}, State> {
     private handlePlantModalClose = () => {
         if (this.state.status !== "loaded") return;
 
-        this.setState({ ...this.state, plantingPlotId: null });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, plantingPlotId: null };
+        });
     };
 }
 

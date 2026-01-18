@@ -1,6 +1,6 @@
 import React from "react";
-import { Route, RouteComponentProps } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Routes, Route } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Subscription } from "rxjs";
 import "./DexSubpage.scss";
 import LoadingSpinner from "../../component/LoadingSpinner";
@@ -12,9 +12,11 @@ import { DexPlants } from "../../backend/dex";
 import { BasePlant } from "../../model/farm";
 import DexUnknownEntry from "../../component/dex/DexUnknownEntry";
 
-const DexPlantsPage: React.FC<RouteComponentProps> = ({ match }) => <>
-    <Route path={match.url + "/"} exact component={IndexPage} />
-    <Route path={match.url + "/:id"} component={DexPlantDetailedPage} />
+const DexPlantsPage: React.FC = () => <>
+    <Routes>
+        <Route path="/" element={<IndexPage />} />
+        <Route path="/:id" element={<DexPlantDetailedPage />} />
+    </Routes>
 </>;
 
 type State = {
@@ -26,7 +28,7 @@ type State = {
     dexPlants: DexPlants;
 };
 
-class IndexPage extends React.Component<RouteComponentProps, State> {
+class IndexPage extends React.Component<{}, State> {
     readonly state: Readonly<State> = {
         status: "loading"
     };

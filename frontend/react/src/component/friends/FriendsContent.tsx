@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, match } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { FriendInfo, Friends } from "../../backend/friends";
 import FriendsListContent from "./FriendsListContent";
 import AddFriendsContent from "./AddFriendsContent";
@@ -17,32 +17,29 @@ interface LoadedProps {
     onSearchUser: (text: string) => void;
 }
 
-type Props = (LoadingProps | LoadedProps) & {
-    match: match;
-};
+type Props = LoadingProps | LoadedProps;
 
-const FriendsContent: React.FC<Props> = ({ match, ...rest }) => <div className="FriendsContent">
-    <Route path={`${match.path}/`} exact>
-        {rest.loading ?
-            <FriendsListContent loading />
-        :
-            <FriendsListContent friends={rest.friends} />
-        }
-    </Route>
-    <Route path={`${match.path}/add`} exact>
-        {rest.loading ?
-            <AddFriendsContent loading />
-        :
-            <AddFriendsContent searchResults={rest.searchResults} searching={rest.searching} onSearchUser={rest.onSearchUser} />
-        }
-    </Route>
-    <Route path={`${match.path}/pending`} exact>
-        {rest.loading ?
-            <PendingFriendsContent loading />
-        :
-            <PendingFriendsContent friends={rest.friends} />
-        }
-    </Route>
+const FriendsContent: React.FC<Props> = (props) => <div className="FriendsContent">
+    <Routes>
+        <Route path="/" element={
+            props.loading ?
+                <FriendsListContent loading />
+            :
+                <FriendsListContent friends={props.friends} />
+        } />
+        <Route path="/add" element={
+            props.loading ?
+                <AddFriendsContent loading />
+            :
+                <AddFriendsContent searchResults={props.searchResults} searching={props.searching} onSearchUser={props.onSearchUser} />
+        } />
+        <Route path="/pending" element={
+            props.loading ?
+                <PendingFriendsContent loading />
+            :
+                <PendingFriendsContent friends={props.friends} />
+        } />
+    </Routes>
 </div>;
 
 export default FriendsContent;
