@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import "normalize.css"
 import "./common.scss"
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";

@@ -1,8 +1,8 @@
 import React, { HTMLAttributes, MouseEventHandler, RefObject } from "react";
-import "./Mine.scss";
-import { Mine as MineData } from "../../backend/mine";
-import { InventoryEntry, Point } from "../../backend/inventory";
 import { isGridPreviewable } from "../../backend/dex";
+import { InventoryEntry, Point } from "../../backend/inventory";
+import { Mine as MineData } from "../../backend/mine";
+import "./Mine.scss";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     mine: MineData;
@@ -40,7 +40,7 @@ class Mine extends React.Component<Props> {
     }
 
     render() {
-        const { mine, pickaxe, submittingAction, onMineAction, ...rest } = this.props;
+        const { mine, pickaxe, submittingAction, ...rest } = this.props;
         const pickaxeLoaded = pickaxe !== null;
         const isSubmittingAction = submittingAction !== null;
 
@@ -72,10 +72,10 @@ class Mine extends React.Component<Props> {
     }
 
     handleCellMouseEnter: MouseEventHandler<HTMLTableDataCellElement> = ({ currentTarget: td }) => {
-        const x = parseInt(td.getAttribute("data-x")!!);
-        const y = parseInt(td.getAttribute("data-y")!!);
+        const x = parseInt(td.getAttribute("data-x")!);
+        const y = parseInt(td.getAttribute("data-y")!);
 
-        const basePickaxe = this.props.pickaxe!!.item.baseItem;
+        const basePickaxe = this.props.pickaxe!.item.baseItem;
         if (!isGridPreviewable(basePickaxe)) throw Error();
 
         /* Remove all data-in-range attributes */
@@ -90,10 +90,10 @@ class Mine extends React.Component<Props> {
     };
 
     handleCellClick: MouseEventHandler<HTMLTableDataCellElement> = ({ currentTarget: td }) => {
-        const x = parseInt(td.getAttribute("data-x")!!);
-        const y = parseInt(td.getAttribute("data-y")!!);
+        const x = parseInt(td.getAttribute("data-x")!);
+        const y = parseInt(td.getAttribute("data-y")!);
 
-        const basePickaxe = this.props.pickaxe!!.item.baseItem;
+        const basePickaxe = this.props.pickaxe!.item.baseItem;
         if (!isGridPreviewable(basePickaxe)) throw Error();
 
         this.setAttributeToInRangeCells("data-submitting", basePickaxe.grid, { x, y });
@@ -102,14 +102,14 @@ class Mine extends React.Component<Props> {
     };
 
     clearAttributeFromAllCells = (attribute: "data-in-range" | "data-submitting") =>
-        this.tdRefs.forEach(row => row.forEach(cell => cell.current!!.removeAttribute(attribute)));
+        this.tdRefs.forEach(row => row.forEach(cell => cell.current!.removeAttribute(attribute)));
 
     setAttributeToInRangeCells = (attribute: "data-in-range" | "data-submitting", grid: Point[], target: Point) => grid
         .map(point => ({ x: point.x + target.x, y: point.y + target.y })) // Project pickaxe cells onto mine grid
         .forEach(point => {
             // If this point is within bounds, set its data-in-range attribute
             if (point.x >= 0 && point.x < this.props.mine.width && point.y >= 0 && point.y < this.props.mine.height) {
-                this.tdRefs[point.y][point.x]!!.current!!.setAttribute(attribute, "");
+                this.tdRefs[point.y][point.x]!.current!.setAttribute(attribute, "");
             }
         });
 }

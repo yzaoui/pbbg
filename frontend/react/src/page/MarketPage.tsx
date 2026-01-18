@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { Subscription } from "rxjs";
 import "./MarketPage.scss";
 import marketService from "../backend/market.service";

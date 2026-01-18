@@ -1,5 +1,5 @@
-import React from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import React from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 // Compatibility types for React Router v5-style props
 export interface RouteComponentProps<Params = {}, State = any> {
@@ -54,14 +54,14 @@ export function withRouter<P extends RouteComponentProps<any, any>>(
 
         const history = {
             push: (path: string | { pathname: string; state?: any }) => {
-                if (typeof path === 'string') {
+                if (typeof path === "string") {
                     navigate(path);
                 } else {
                     navigate(path.pathname, { state: path.state });
                 }
             },
             replace: (path: string | { pathname: string; state?: any }) => {
-                if (typeof path === 'string') {
+                if (typeof path === "string") {
                     navigate(path, { replace: true });
                 } else {
                     navigate(path.pathname, { replace: true, state: path.state });

@@ -51,7 +51,7 @@ class LoginForm extends React.Component<Props, State> {
     }
 
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
-        if (prevProps.error !== this.props.error) this.setState({ username: this.props.error!!.username, password: "" });
+        if (prevProps.error !== this.props.error) this.setState({ username: this.props.error!.username, password: "" });
     }
 
     handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
