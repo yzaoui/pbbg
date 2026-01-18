@@ -1,12 +1,12 @@
 import React from "react";
 import { DexItem } from "../../backend/dex";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "../../helper/withRouter";
 import "./DexDetailedPage.scss";
 import LoadingSpinner from "../../component/LoadingSpinner";
 import { Subscription } from "rxjs";
 import dexService from "../../backend/dex.service";
 import DexReturnLink from "../../component/dex/DexReturnLink";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 interface Props extends RouteComponentProps<{ id: string }> {}
 
@@ -83,4 +83,4 @@ class DexItemDetailedPage extends React.Component<Props, State> {
     };
 }
 
-export default DexItemDetailedPage;
+export default withRouter(DexItemDetailedPage);

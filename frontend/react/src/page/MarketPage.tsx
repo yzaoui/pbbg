@@ -99,17 +99,21 @@ class MarketPage extends React.Component<{}, State> {
     handleBuy = (orders: Map<number, number | undefined>) => {
         if (this.state.status !== "loaded") return;
 
-        this.setState({ ...this.state, buying: true });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, buying: true };
+        });
 
         const ordersArray = Array.from(orders, ([id, quantity]) => ({ id, quantity }));
 
         marketService.buy({ orders: ordersArray })
             .subscribe({
                 next: value => {
-                    if (this.state.status !== "loaded") return
-
                     this.transactionSound.play();
-                    this.setState({ ...this.state, buying: false, markets: value.data });
+                    this.setState(prevState => {
+                        if (prevState.status !== "loaded") return prevState;
+                        return { ...prevState, buying: false, markets: value.data };
+                    });
                 },
                 error: err => this.setState({ status: "error" })
             });
@@ -118,17 +122,21 @@ class MarketPage extends React.Component<{}, State> {
     handleSell = (orders: Map<number, number | undefined>) => {
         if (this.state.status !== "loaded") return;
 
-        this.setState({ ...this.state, selling: true });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, selling: true };
+        });
 
         const ordersArray = Array.from(orders, ([id, quantity]) => ({ id, quantity }));
 
         marketService.sell({ orders: ordersArray })
             .subscribe({
                 next: value => {
-                    if (this.state.status !== "loaded") return
-
                     this.transactionSound.play();
-                    this.setState({ ...this.state, selling: false, markets: value.data });
+                    this.setState(prevState => {
+                        if (prevState.status !== "loaded") return prevState;
+                        return { ...prevState, selling: false, markets: value.data };
+                    });
                 },
                 error: err => {}
             });

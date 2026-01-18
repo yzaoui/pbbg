@@ -66,7 +66,7 @@ class InventoryPage extends React.Component<{}, State> {
                     this.inventoryContents(this.state)
                 : this.state.status === "loading" ?
                     <LoadingSpinner />
-                : {}}
+                : null}
             </ul>
         </div>;
     }
@@ -88,15 +88,19 @@ class InventoryPage extends React.Component<{}, State> {
 
     handleEquipUnequip = (inventoryItemId: number, action: "equip" | "unequip") => {
         if (this.state.status !== "loaded") throw Error();
-        this.setState({ ...this.state, equipmentChanging: true });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, equipmentChanging: true };
+        });
 
         this.request = inventoryService.equipUnequip(action, { inventoryItemId })
             .subscribe({
                 next: res => {
-                    if (this.state.status !== "loaded") throw Error();
-
                     this.equipSound.play();
-                    this.setState({ ...this.state, inventory: res.data, equipmentChanging: false });
+                    this.setState(prevState => {
+                        if (prevState.status !== "loaded") return prevState;
+                        return { ...prevState, inventory: res.data, equipmentChanging: false };
+                    });
                 },
                 error: err => this.setState({ status: "error" })
             });

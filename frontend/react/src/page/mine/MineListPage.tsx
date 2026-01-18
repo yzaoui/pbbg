@@ -1,5 +1,5 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "../../helper/withRouter";
 import MineList from "../../component/mine/MineList";
 import { MineTypeList } from "../../backend/mine";
 import { Subscription } from "rxjs";
@@ -9,7 +9,7 @@ import enterMineMP3 from "../../audio/enter_mine.mp3";
 // @ts-ignore
 import enterMineOGG from "../../audio/enter_mine.ogg";
 import { Howl } from "howler";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 type State = {
     status: "loading";
@@ -77,4 +77,4 @@ class MineListPage extends React.Component<RouteComponentProps, State> {
     };
 }
 
-export default MineListPage;
+export default withRouter(MineListPage);

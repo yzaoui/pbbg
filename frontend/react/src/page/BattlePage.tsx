@@ -98,18 +98,22 @@ class BattlePage extends React.Component<{}, State> {
     handleAllyTurn = (targetUnitId: number) => {
         if (this.state.status !== "in battle") throw Error();
 
-        this.setState({ ...this.state, performingAction: true });
+        this.setState(prevState => {
+            if (prevState.status !== "in battle") return prevState;
+            return { ...prevState, performingAction: true };
+        });
 
         this.request = battleService.allyTurn({ targetUnitId })
             .subscribe({
                 next: value => {
-                    if (this.state.status !== "in battle") throw Error();
-
-                    this.setState({ ...this.state,
-                        battle: value.data.battle,
-                        performingAction: false,
-                        effectsList: this.state.effectsList.concat(value.data.unitEffects),
-                        reward: value.data.reward
+                    this.setState(prevState => {
+                        if (prevState.status !== "in battle") return prevState;
+                        return { ...prevState,
+                            battle: value.data.battle,
+                            performingAction: false,
+                            effectsList: prevState.effectsList.concat(value.data.unitEffects),
+                            reward: value.data.reward
+                        };
                     });
                 },
                 error: err => this.setState({ status: "error" })
@@ -119,18 +123,22 @@ class BattlePage extends React.Component<{}, State> {
     handleEnemyTurn = () => {
         if (this.state.status !== "in battle") throw Error();
 
-        this.setState({ ...this.state, performingAction: true });
+        this.setState(prevState => {
+            if (prevState.status !== "in battle") return prevState;
+            return { ...prevState, performingAction: true };
+        });
 
         this.request = battleService.enemyTurn()
             .subscribe({
                 next: value => {
-                    if (this.state.status !== "in battle") throw Error();
-
-                    this.setState({ ...this.state,
-                        battle: value.data.battle,
-                        performingAction: false,
-                        effectsList: this.state.effectsList.concat(value.data.unitEffects),
-                        reward: value.data.reward
+                    this.setState(prevState => {
+                        if (prevState.status !== "in battle") return prevState;
+                        return { ...prevState,
+                            battle: value.data.battle,
+                            performingAction: false,
+                            effectsList: prevState.effectsList.concat(value.data.unitEffects),
+                            reward: value.data.reward
+                        };
                     });
                 },
                 error: err => this.setState({ status: "error" })

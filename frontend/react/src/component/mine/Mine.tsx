@@ -15,7 +15,7 @@ const MINE_TILES_PER_BG = 8;
 const MINE_TILE_SIZE = 18;
 
 class Mine extends React.Component<Props> {
-    tdRefs: RefObject<HTMLTableDataCellElement>[][];
+    tdRefs: RefObject<HTMLTableDataCellElement | null>[][];
     backgroundImgIndices: number[][];
     backgroundStyle: string;
 

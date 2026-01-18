@@ -1,20 +1,20 @@
 import React from "react";
-import { Route, RouteComponentProps } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
+import { Route, Routes } from "react-router-dom";
 import { Subscription } from "rxjs";
-import "./DexSubpage.scss";
-import LoadingSpinner from "../../component/LoadingSpinner";
 import { BaseItem, DexItems } from "../../backend/dex";
-import DexItemEntry from "../../component/dex/DexItemEntry";
 import dexService from "../../backend/dex.service";
-import DexUnknownEntry from "../../component/dex/DexUnknownEntry";
+import DexItemEntry from "../../component/dex/DexItemEntry";
 import DexReturnLink from "../../component/dex/DexReturnLink";
+import DexUnknownEntry from "../../component/dex/DexUnknownEntry";
+import LoadingSpinner from "../../component/LoadingSpinner";
 import DexItemDetailedPage from "./DexItemDetailedPage";
+import "./DexSubpage.scss";
 
-const DexItemsPage: React.FC<RouteComponentProps> = ({ match }) => <>
-    <Route path={match.url + "/"} exact component={IndexPage} />
-    <Route path={match.url + "/:id"} component={DexItemDetailedPage} />
-</>;
+const DexItemsPage: React.FC = () => <Routes>
+    <Route path="/" element={<IndexPage />} />
+    <Route path="/:id" element={<DexItemDetailedPage />} />
+</Routes>;
 
 type State = {
     status: "loading";
@@ -25,7 +25,7 @@ type State = {
     dexItems: DexItems;
 }
 
-class IndexPage extends React.Component<RouteComponentProps, State> {
+class IndexPage extends React.Component<{}, State> {
     readonly state: Readonly<State> = {
         status: "loading"
     };

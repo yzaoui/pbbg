@@ -1,18 +1,17 @@
 import * as React from "react";
-import { Redirect, Route, RouteProps } from "react-router-dom"
-import authenticationService from "./authentication.service"
+import { Navigate, useLocation } from "react-router-dom";
+import authenticationService from "./authentication.service";
+
+interface MemberRouteProps {
+    children: React.ReactNode;
+}
 
 /**
- * Wrapper around React.Route which redirects a guest user to "/login", passing in the target destination.
+ * Wrapper around route elements which redirects a guest user to "/login", passing in the target destination.
  */
-const MemberRoute: React.FC<RouteProps> = ({ component: Component, ...rest }) => {
-    if (!Component) return null;
-    return <Route
-        {...rest}
-        render={props =>
-            authenticationService.currentUserValue !== null ? <Component {...props} /> : <Redirect to={{ pathname: "/login", state: { destination: props.location } }} />
-        }
-    />;
+const MemberRoute: React.FC<MemberRouteProps> = ({ children }) => {
+    const location = useLocation();
+    return authenticationService.currentUserValue !== null ? <>{children}</> : <Navigate to="/login" state={{ destination: location }} replace />;
 };
 
 export default MemberRoute;

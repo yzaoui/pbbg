@@ -1,23 +1,23 @@
+import classNames from "classnames";
 import React from "react";
 import { NavLink } from "react-router-dom";
-import authenticationService from "./../authentication.service";
 import { Subscription } from "rxjs";
 import userStatsService from "../backend/user-stats.service";
+import authenticationService from "./../authentication.service";
 import LoadingSpinner from "./LoadingSpinner";
-import classNames from "classnames";
 
 const navItems = [
-    { to: "/", emoji: "🏠", label: "Home", exact: true },
-    { to: "/squad", emoji: "👥", label: "Squad", exact: true },
-    { to: "/inventory", emoji: "🎒", label: "Inventory", exact: true },
-    { to: "/market", emoji: "💰", label: "Market", exact: true },
-    { to: "/battle", emoji: "⚔️", label: "Battle", exact: true },
-    { to: "/mine", emoji: "⛏️", label: "Mine", exact: false },
-    { to: "/farm", emoji: "🌱", label: "Farm", exact: true },
-    { to: "/dex", emoji: "📚", label: "Dex", exact: false },
-    { to: "/friends", emoji: "🎉", label: "Friends", exact: false },
-    { to: "/about", emoji: "❓", label: "About", exact: true },
-    { to: "/settings", emoji: "⚙️", label: "Settings", exact: true }
+    { to: "/", emoji: "🏠", label: "Home", end: true },
+    { to: "/squad", emoji: "👥", label: "Squad", end: true },
+    { to: "/inventory", emoji: "🎒", label: "Inventory", end: true },
+    { to: "/market", emoji: "💰", label: "Market", end: true },
+    { to: "/battle", emoji: "⚔️", label: "Battle", end: true },
+    { to: "/mine", emoji: "⛏️", label: "Mine", end: false },
+    { to: "/farm", emoji: "🌱", label: "Farm", end: true },
+    { to: "/dex", emoji: "📚", label: "Dex", end: false },
+    { to: "/friends", emoji: "🎉", label: "Friends", end: false },
+    { to: "/about", emoji: "❓", label: "About", end: true },
+    { to: "/settings", emoji: "⚙️", label: "Settings", end: true }
 ];
 
 interface Props {
@@ -63,8 +63,8 @@ class MemberNav extends React.Component<Props, State> {
         return <nav className={classNames("sidebar", { "open" : this.props.menuOpen })}>
             <div className="username">{this.renderUsername()}</div>
             <div className="navigation">
-                {navItems.map(({ to, emoji, label, exact }) =>
-                    <NavLink key={to} to={to} exact={exact} className="sidebar-item" activeClassName="current-site-section" onClick={this.props.onClickItem}>
+                {navItems.map(({ to, emoji, label, end }) =>
+                    <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? "sidebar-item current-site-section" : "sidebar-item"} onClick={this.props.onClickItem}>
                         <span className="sidebar-item-icon" role="img" aria-label="Home">{emoji}</span>
                         <span>{label}</span>
                     </NavLink>

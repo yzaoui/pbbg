@@ -15,7 +15,7 @@ interface Props {
 }
 
 class BattleLog extends React.Component<Props> {
-    scrollRef: RefObject<HTMLDivElement>;
+    scrollRef: RefObject<HTMLDivElement | null>;
 
     constructor(props: Props) {
         super(props);

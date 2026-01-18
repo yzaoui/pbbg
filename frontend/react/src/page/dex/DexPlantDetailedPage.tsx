@@ -1,6 +1,6 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { RouteComponentProps, withRouter } from "../../helper/withRouter";
+import { Helmet } from "react-helmet-async";
 import "./DexDetailedPage.scss";
 import LoadingSpinner from "../../component/LoadingSpinner";
 import { Subscription } from "rxjs";
@@ -81,4 +81,4 @@ class DexPlantDetailedPage extends React.Component<Props, State> {
     };
 }
 
-export default DexPlantDetailedPage;
+export default withRouter(DexPlantDetailedPage);

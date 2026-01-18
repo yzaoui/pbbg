@@ -65,13 +65,17 @@ class SquadPage extends React.Component<{}, State> {
 
     handleHealClick = () => {
         if (this.state.status !== "loaded") throw Error();
-        this.setState({ ...this.state, healing: true });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, healing: true };
+        });
 
         this.request = squadService.healSquad().subscribe({
             next: value => {
-                if (this.state.status !== "loaded") throw Error();
-
-                this.setState({ ...this.state, healing: false, squad: value.data });
+                this.setState(prevState => {
+                    if (prevState.status !== "loaded") return prevState;
+                    return { ...prevState, healing: false, squad: value.data };
+                });
                 this.healingSound.play();
             },
             error: err => this.setState({ status: "error" })

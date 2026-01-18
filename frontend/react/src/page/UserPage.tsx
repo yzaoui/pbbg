@@ -1,9 +1,9 @@
 import React from "react";
-import { RouteComponentProps } from "react-router";
+import { RouteComponentProps, withRouter } from "../helper/withRouter";
 import { Subscription } from "rxjs";
 import userService from "../backend/user.service";
 import { UserProfile } from "../backend/user";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import LoadingSpinner from "../component/LoadingSpinner";
 import UserProfileComponent from "../component/UserProfileComponent";
 import "./UserPage.scss";
@@ -64,7 +64,10 @@ class UserPage extends React.Component<Props, State> {
     private handleChangeFriendship = (currentFriendship: Friendship) => {
         if (this.state.status !== "loaded") return;
 
-        this.setState({ ...this.state, changingFriendship: true });
+        this.setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, changingFriendship: true };
+        });
 
         this.request = friendsService.changeFriendship(friendshipToAction(currentFriendship), { userId: this.state.userProfile.id } )
             .subscribe(res => this.setState(prevState => {
@@ -87,4 +90,4 @@ const friendshipToAction = (friendship: Friendship) => {
     }
 };
 
-export default UserPage;
+export default withRouter(UserPage);

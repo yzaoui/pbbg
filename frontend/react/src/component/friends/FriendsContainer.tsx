@@ -2,7 +2,6 @@ import React from "react";
 import FriendsNav from "./FriendsNav";
 import FriendsContent from "./FriendsContent";
 import { FriendInfo, Friends } from "../../backend/friends";
-import { match } from "react-router-dom";
 
 interface LoadingProps {
     loading: true;
@@ -16,21 +15,17 @@ interface LoadedProps {
     onSearchUser: (text: string) => void;
 }
 
-type Props = (LoadingProps | LoadedProps) & {
-    match: match;
-};
+type Props = LoadingProps | LoadedProps;
 
 const FriendsContainer: React.FC<Props> = (props) => {
     return <div className="FriendsContainer">
-        <FriendsNav match={props.match} />
+        <FriendsNav />
         {props.loading ?
             <FriendsContent
                 loading
-                match={props.match}
             />
         :
             <FriendsContent
-                match={props.match}
                 friends={props.friends}
                 searchResults={props.searchResults}
                 searching={props.searching}

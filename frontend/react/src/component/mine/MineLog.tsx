@@ -10,7 +10,7 @@ interface Props {
 }
 
 class MineLog extends React.Component<Props> {
-    ulRef: RefObject<HTMLUListElement>;
+    ulRef: RefObject<HTMLUListElement | null>;
 
     constructor(props: Props) {
         super(props);

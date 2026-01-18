@@ -1,11 +1,11 @@
 import React from "react";
-import { RouteComponentProps } from "react-router";
+import { RouteComponentProps, withRouter } from "../helper/withRouter";
 import LoadingSpinner from "../component/LoadingSpinner";
 import { Subscription } from "rxjs";
 import itemService from "../backend/item.service";
 import { ItemDetails, ItemHistoryInfo } from "../backend/item";
 import "./ItemPage.scss";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 interface Props extends RouteComponentProps<{ id: string }> {}
 
@@ -95,4 +95,4 @@ const ItemHistoryEntryDescription: React.FC<{ info: ItemHistoryInfo, userDetails
 
 const ItemHistoryEntryDate: React.FC<{ date: number }> = ({ date }) => <span className="ItemHistoryEntryDate">—{(new Date(date * 1000)).toString()}</span>;
 
-export default ItemPage;
+export default withRouter(ItemPage);
