@@ -260,6 +260,9 @@ suspend fun Application.mainWithDependencies(
                 loginAPI(login)
                 item(itemUC)
                 unit(unitUC)
+                authenticate(optional = true) {
+                    user(userProfileUC)
+                }
             }
             rateLimit(AUTHENTICATED_RATE_LIMIT_NAME) {
                 authenticate(optional = false) {
@@ -274,9 +277,6 @@ suspend fun Application.mainWithDependencies(
                     friends(friendsUC)
                     settings(changePassword)
                     about(aboutUC)
-                }
-                authenticate(optional = true) {
-                    user(userProfileUC)
                 }
             }
         }
