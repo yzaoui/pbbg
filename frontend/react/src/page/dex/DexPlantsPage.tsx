@@ -1,16 +1,15 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
+import { Route, Routes } from "react-router-dom";
 import { Subscription } from "rxjs";
-import "./DexSubpage.scss";
-import LoadingSpinner from "../../component/LoadingSpinner";
+import { DexPlants } from "../../backend/dex";
 import dexService from "../../backend/dex.service";
 import DexPlantEntry from "../../component/dex/DexPlantEntry";
-import DexPlantDetailedPage from "./DexPlantDetailedPage";
 import DexReturnLink from "../../component/dex/DexReturnLink";
-import { DexPlants } from "../../backend/dex";
-import { BasePlant } from "../../model/farm";
 import DexUnknownEntry from "../../component/dex/DexUnknownEntry";
+import LoadingSpinner from "../../component/LoadingSpinner";
+import { BasePlant } from "../../model/farm";
+import DexPlantDetailedPage from "./DexPlantDetailedPage";
+import "./DexSubpage.scss";
 
 const DexPlantsPage: React.FC = () => <>
     <Routes>
@@ -67,7 +66,7 @@ class IndexPage extends React.Component<{}, State> {
         }
 
         return <>
-            <Helmet title="Plant Dex - PBBG" />
+            <title>Plant Dex - PBBG</title>
             <ol className="dex">
                 {Object.entries(allEntries)
                     .map(([id, plant]) => (plant !== null) ?

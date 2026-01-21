@@ -2,7 +2,6 @@ import React from "react";
 import { Subscription } from "rxjs";
 import friendsService from "../backend/friends.service";
 import { FriendInfo, Friends } from "../backend/friends";
-import { Helmet } from "react-helmet-async";
 import FriendsContainer from "../component/friends/FriendsContainer";
 import "./FriendsPage.scss";
 import userService from "../backend/user.service";
@@ -40,7 +39,7 @@ class FriendsPage extends React.Component<{}, State> {
     }
 
     render = () => <div className="FriendsPage">
-        <Helmet title="Friends - PBBG" />
+        <title>Friends - PBBG</title>
         {this.renderContent()}
     </div>;
 

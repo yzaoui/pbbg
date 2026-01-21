@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import authenticationService from "./authentication.service";
+import { LocationState } from "./page/LoginPage";
 
 interface MemberRouteProps {
     children: React.ReactNode;
@@ -11,7 +12,10 @@ interface MemberRouteProps {
  */
 const MemberRoute: React.FC<MemberRouteProps> = ({ children }) => {
     const location = useLocation();
-    return authenticationService.currentUserValue !== null ? <>{children}</> : <Navigate to="/login" state={{ destination: location }} replace />;
+    return authenticationService.currentUserValue !== null ? 
+        <>{children}</> 
+    : 
+        <Navigate to="/login" state={{ pathnameOnLogin: location.pathname } satisfies LocationState} replace />;
 };
 
 export default MemberRoute;

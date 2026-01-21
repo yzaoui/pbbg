@@ -1,5 +1,4 @@
 import React from "react";
-import { Helmet } from "react-helmet-async";
 import { Route, Routes } from "react-router-dom";
 import { Subscription } from "rxjs";
 import { BaseItem, DexItems } from "../../backend/dex";
@@ -66,7 +65,7 @@ class IndexPage extends React.Component<{}, State> {
         }
 
         return <>
-            <Helmet title="Item Dex - PBBG" />
+            <title>Item Dex - PBBG</title>
             <ol className="dex">
                 {Object.entries(allEntries)
                     .map(([id, item]) => (item !== null) ? <DexItemEntry key={id} id={id} item={item} /> : <DexUnknownEntry key={id} id={id} />)

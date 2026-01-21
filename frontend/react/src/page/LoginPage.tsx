@@ -1,44 +1,49 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "./LoginRegisterPage.scss";
-import authenticationService from "./../authentication.service";
+import React, { useEffect, useState } from "react";
+import { Link, Location, useLocation, useNavigate } from "react-router-dom";
 import LoginForm, { IncorrectCredentialsError } from "../component/LoginForm";
-import { RouteComponentProps, withRouter } from "../helper/withRouter";
+import authenticationService from "./../authentication.service";
+import "./LoginRegisterPage.scss";
 
-interface Props extends RouteComponentProps<{}, { error?: IncorrectCredentialsError, destination?: any }> {}
+export interface LocationState {
+    error?: IncorrectCredentialsError;
+    pathnameOnLogin?: string;
+}
 
 interface State {
     submitting: boolean;
     error?: IncorrectCredentialsError;
 }
 
-class LoginPage extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        submitting: false
-    };
+const LoginPage: React.FC = () => {
+    const navigate = useNavigate();
+    const location: Location<LocationState | null> = useLocation();
+    const [state, setState] = useState<State>({ submitting: false });
 
-    componentDidMount() {
-        document.title = "Log in - PBBG";
-    }
+    // If already logged in, redirect to home page
+    useEffect(() => {
+        if (authenticationService.currentUserValue !== null) {
+            navigate("/", { replace: true });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    render() {
-        const error = this.state.error || this.props.location.state?.error;
-
-        return <>
-            <LoginForm onSubmit={this.handleSubmit} submitting={this.state.submitting} error={error} />
-            <Link to="/register" className="LoginRegisterPage-login-link">New user? Register</Link>
-        </>;
-    }
-
-    handleSubmit = (username: string, password: string) => {
-        this.setState({ submitting: true });
+    const handleSubmit = (username: string, password: string) => {
+        setState({ submitting: true });
 
         authenticationService.login(username, password)
             .then(
-                token => this.props.history.push({ pathname: this.props.location.state?.destination?.pathname ?? "/" }),
-                error => this.setState({ submitting: false, error: new IncorrectCredentialsError(username) })
+                _token => navigate(location.state?.pathnameOnLogin ?? "/", { replace: true }),
+                _error => setState({ submitting: false, error: new IncorrectCredentialsError(username) })
             );
     };
-}
 
-export default withRouter(LoginPage);
+    const error = state.error || location.state?.error;
+
+    return <>
+        <title>Log in - PBBG</title>
+        <LoginForm onSubmit={handleSubmit} submitting={state.submitting} error={error} />
+        <Link to="/register" className="LoginRegisterPage-login-link">New user? Register</Link>
+    </>;
+};
+
+export default LoginPage;

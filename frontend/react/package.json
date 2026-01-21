@@ -16,7 +16,6 @@
     "normalize.css": "^8.0.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-helmet-async": "^2.0.5",
     "react-micro-modal": "^2.0.2",
     "react-router-dom": "^7.12.0",
     "rxjs": "^7.4.0",

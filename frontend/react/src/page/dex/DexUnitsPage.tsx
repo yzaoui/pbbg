@@ -1,5 +1,4 @@
 import React from "react";
-import { Helmet } from "react-helmet-async";
 import { Route, Routes } from "react-router-dom";
 import { Subscription } from "rxjs";
 import { DexUnits, MyUnitEnum } from "../../backend/dex";
@@ -64,7 +63,7 @@ class IndexPage extends React.Component<{}, State> {
         }
 
         return <>
-            <Helmet title="Unit Dex - PBBG" />
+            <title>Unit Dex - PBBG</title>
             <ol className="dex">
                 {Object.entries(allEntries)
                     .map(([id, unit]) => (unit !== null) ?

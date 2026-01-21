@@ -5,7 +5,6 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AppHeader from "./component/AppHeader";
 import GuestNav from "./component/GuestNav";
 import MemberNav from "./component/MemberNav";
-import GuestRoute from "./GuestRoute";
 import MemberRoute from "./MemberRoute";
 import IndexGuestPage from "./page/IndexGuestPage";
 import IndexMemberPage from "./page/IndexMemberPage";
@@ -51,8 +50,8 @@ class App extends React.Component<{}, State> {
                     <main className="pbbg-main">
                         <Routes>
                             <Route path="/" element={isLoggedIn ? <IndexMemberPage /> : <IndexGuestPage />} />
-                            <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
-                            <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+                            <Route path="/register" element={<RegisterPage />} />
+                            <Route path="/login" element={<LoginPage />} />
                             <Route path="/squad" element={<MemberRoute><SquadPage /></MemberRoute>} />
                             <Route path="/inventory" element={<MemberRoute><InventoryPage /></MemberRoute>} />
                             <Route path="/item/:id" element={<ItemPage />} />

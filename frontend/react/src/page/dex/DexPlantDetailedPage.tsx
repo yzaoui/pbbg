@@ -1,15 +1,11 @@
-import React from "react";
-import { RouteComponentProps, withRouter } from "../../helper/withRouter";
-import { Helmet } from "react-helmet-async";
-import "./DexDetailedPage.scss";
-import LoadingSpinner from "../../component/LoadingSpinner";
-import { Subscription } from "rxjs";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import dexService from "../../backend/dex.service";
 import DexReturnLink from "../../component/dex/DexReturnLink";
-import { BasePlant, basePlantFromJSON, isMaturableBasePlant, secondsToDurationString } from "../../model/farm";
 import PlantPreview from "../../component/farm/PlantPreview";
-
-interface Props extends RouteComponentProps<{ id: string }> {}
+import LoadingSpinner from "../../component/LoadingSpinner";
+import { BasePlant, basePlantFromJSON, isMaturableBasePlant, secondsToDurationString } from "../../model/farm";
+import "./DexDetailedPage.scss";
 
 type State = {
     status: "loading";
@@ -20,45 +16,38 @@ type State = {
     basePlant: BasePlant;
 };
 
-class DexPlantDetailedPage extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
+const DexPlantDetailedPage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const [state, setState] = useState<State>({ status: "loading" });
+
+    if (!id) throw new Error();
+
+    useEffect(() => {
+        const subscription = dexService.getPlant(id).subscribe({
+            next: value => setState({ status: "loaded", basePlant: basePlantFromJSON(value.data) }),
+            error: _err => setState({ status: "error" })
+        });
+
+        return () => subscription.unsubscribe();
+    }, [id]);
+
+    const getTitle = () => {
+        switch (state.status) {
+            case "loading": return "Loading… - Plant Dex - PBBG";
+            case "error": return "Error - Plant Dex - PBBG";
+            case "loaded": return `#${state.basePlant.id}: ${state.basePlant.name} - Plant Dex - PBBG`;
+        }
     };
 
-    request?: Subscription;
-
-    componentDidMount() {
-        this.request = dexService.getPlant(this.props.match.params.id)
-            .subscribe({
-                next: value => this.setState({ status: "loaded", basePlant: basePlantFromJSON(value.data) }),
-                error: err => this.setState({ status: "error" })
-            });
-    }
-
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
-
-    render() {
-        return <>
-            <DexReturnLink to="/dex/plants" label="Return to Plant Dex" />
-            <div className="detailed-dex">{this.renderContainer()}</div>
-        </>;
-    }
-
-    renderContainer = () => {
-        switch (this.state.status) {
-            case "loading": return <>
-                <Helmet title="Loading… - Plant Dex - PBBG" />
-                <div><LoadingSpinner /></div>
-            </>;
+    const renderContainer = () => {
+        switch (state.status) {
+            case "loading": return <div><LoadingSpinner /></div>;
             case "error": return <div>ERROR</div>;
         }
 
-        const basePlant = this.state.basePlant;
+        const basePlant = state.basePlant;
 
         return <>
-            <Helmet title={`#${basePlant.id}: ${basePlant.name} - Plant Dex - PBBG`} />
             <h1>#{basePlant.id}: {basePlant.name}</h1>
             <h2>Sprites</h2>
             <div className="body">
@@ -79,6 +68,12 @@ class DexPlantDetailedPage extends React.Component<Props, State> {
             </div>
         </>;
     };
-}
 
-export default withRouter(DexPlantDetailedPage);
+    return <>
+        <title>{getTitle()}</title>
+        <DexReturnLink to="/dex/plants" label="Return to Plant Dex" />
+        <div className="detailed-dex">{renderContainer()}</div>
+    </>;
+};
+
+export default DexPlantDetailedPage;
