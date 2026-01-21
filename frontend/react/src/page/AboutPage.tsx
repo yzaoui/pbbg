@@ -27,7 +27,7 @@ class AboutPage extends React.Component<{}, State> {
     private request: Subscription | null = null;
 
     componentDidMount() {
-        document.title = "Farm - PBBG";
+        document.title = "About - PBBG";
 
         this.request = aboutService.getBackendVersion().subscribe(res =>
             this.setState({

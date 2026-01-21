@@ -40,7 +40,7 @@ class Mine extends React.Component<Props> {
     }
 
     render() {
-        const { mine, pickaxe, submittingAction, ...rest } = this.props;
+        const { mine, pickaxe, submittingAction, onMineAction, ...rest } = this.props;
         const pickaxeLoaded = pickaxe !== null;
         const isSubmittingAction = submittingAction !== null;
 
