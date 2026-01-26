@@ -1,7 +1,6 @@
 import classNames from "classnames";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { Subscription } from "rxjs";
 import userStatsService from "../backend/user-stats.service";
 import authenticationService from "./../authentication.service";
 import LoadingSpinner from "./LoadingSpinner";
@@ -40,47 +39,39 @@ interface LoadedState {
 
 type State = LoadingState | ErrorState | LoadedState;
 
-class MemberNav extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
-    };
+const MemberNav: React.FC<Props> = ({ menuOpen, onClickItem }) => {
+    const [state, setState] = useState<State>({ status: "loading" });
 
-    request?: Subscription;
-
-    componentDidMount(): void {
-        this.request = userStatsService.get()
+    useEffect(() => {
+        const subscription = userStatsService.get()
             .subscribe({
-                next: value => this.setState({ status: "loaded", username: value.data.username }),
-                error: err => this.setState({ status: "error" })
+                next: value => setState({ status: "loaded", username: value.data.username }),
+                error: _err => setState({ status: "error" })
             });
-    }
 
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
+        return () => subscription.unsubscribe();
+    }, []);
 
-    render() {
-        return <nav className={classNames("sidebar", { "open" : this.props.menuOpen })}>
-            <div className="username">{this.renderUsername()}</div>
-            <div className="navigation">
-                {navItems.map(({ to, emoji, label, end }) =>
-                    <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? "sidebar-item current-site-section" : "sidebar-item"} onClick={this.props.onClickItem}>
-                        <span className="sidebar-item-icon" role="img" aria-label="Home">{emoji}</span>
-                        <span>{label}</span>
-                    </NavLink>
-                )}
-                <button className="fancy" onClick={handleLogoutClick}>Log out</button>
-            </div>
-        </nav>;
-    }
+    const renderUsername = () => {
+        if (state.status === "loading") return <LoadingSpinner />;
+        else if (state.status === "error") return <i>ERROR</i>;
 
-    renderUsername = () => {
-        if (this.state.status === "loading") return <LoadingSpinner />;
-        else if (this.state.status === "error") return <i>ERROR</i>;
-
-        return this.state.username;
+        return state.username;
     };
-}
+
+    return <nav className={classNames("sidebar", { "open" : menuOpen })}>
+        <div className="username">{renderUsername()}</div>
+        <div className="navigation">
+            {navItems.map(({ to, emoji, label, end }) =>
+                <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? "sidebar-item current-site-section" : "sidebar-item"} onClick={onClickItem}>
+                    <span className="sidebar-item-icon" role="img" aria-label="Home">{emoji}</span>
+                    <span>{label}</span>
+                </NavLink>
+            )}
+            <button className="fancy" onClick={handleLogoutClick}>Log out</button>
+        </div>
+    </nav>;
+};
 
 const handleLogoutClick = () => authenticationService.logout();
 

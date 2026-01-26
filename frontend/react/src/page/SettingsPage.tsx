@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef, useState } from "react";
+import { Subscription } from "rxjs";
 import ChangePasswordForm from "../component/settings/ChangePasswordForm";
 import VolumeSetting from "../component/settings/VolumeSetting";
 import settingsService from "../backend/settings.service";
@@ -7,31 +8,26 @@ interface State {
     submittingChangePassword: boolean;
 }
 
-class SettingsPage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        submittingChangePassword: false
-    };
+const SettingsPage: React.FC = () => {
+    const [state, setState] = useState<State>({ submittingChangePassword: false });
+    const changePasswordRequestRef = useRef<Subscription | null>(null);
 
-    componentDidMount() {
-        document.title = "Settings - PBBG";
-    }
+    const handleChangePasswordSubmit = (currentPassword: string, newPassword: string, confirmNewPassword: string) => {
+        changePasswordRequestRef.current?.unsubscribe();
+        setState({ submittingChangePassword: true });
 
-    render() {
-        return <>
-            <ChangePasswordForm onSubmit={this.handleChangePasswordSubmit} submitting={this.state.submittingChangePassword} />
-            <VolumeSetting />
-        </>;
-    }
-
-    handleChangePasswordSubmit = (currentPassword: string, newPassword: string, confirmNewPassword: string) => {
-        this.setState({ submittingChangePassword: true });
-
-        settingsService.changePassword( { currentPassword, newPassword, confirmNewPassword })
+        changePasswordRequestRef.current = settingsService.changePassword({ currentPassword, newPassword, confirmNewPassword })
             .subscribe({
-                next: value => this.setState({ submittingChangePassword: false }),
-                error: err => this.setState({ submittingChangePassword: false })
+                next: _value => setState({ submittingChangePassword: false }),
+                error: _err => setState({ submittingChangePassword: false })
             });
     };
-}
+
+    return <>
+        <title>Settings - PBBG</title>
+        <ChangePasswordForm onSubmit={handleChangePasswordSubmit} submitting={state.submittingChangePassword} />
+        <VolumeSetting />
+    </>;
+};
 
 export default SettingsPage;

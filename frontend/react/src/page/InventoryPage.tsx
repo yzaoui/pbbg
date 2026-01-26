@@ -1,15 +1,15 @@
-import React from "react";
+import { Howl } from "howler";
+import React, { useEffect, useRef, useState } from "react";
+import { Subscription } from "rxjs";
+import { Inventory, isEquippable } from "../backend/inventory";
+import inventoryService from "../backend/inventory.service";
+import LoadingSpinner from "../component/LoadingSpinner";
+import EquipmentSlot from "../component/inventory/EquipmentSlot";
+import InventoryItem from "../component/inventory/InventoryItem";
+import InventoryItemTooltip from "../component/inventory/InventoryItemTooltip";
+import noPickaxe from "../img/no-pickaxe.png";
 import player from "../img/player.png";
 import styles from "./InventoryPage.module.scss";
-import { Inventory, isEquippable } from "../backend/inventory";
-import LoadingSpinner from "../component/LoadingSpinner";
-import InventoryItem from "../component/inventory/InventoryItem";
-import { Subscription } from "rxjs";
-import inventoryService from "../backend/inventory.service";
-import InventoryItemTooltip from "../component/inventory/InventoryItemTooltip";
-import EquipmentSlot from "../component/inventory/EquipmentSlot";
-import noPickaxe from "../img/no-pickaxe.png";
-import { Howl } from "howler";
 // @ts-ignore
 import equipMP3 from "../audio/equip_effect.mp3";
 // @ts-ignore
@@ -25,53 +25,51 @@ type State = {
     equipmentChanging: boolean;
 };
 
-class InventoryPage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
-    };
-
-    request?: Subscription;
-
-    equipSound = new Howl({
+const InventoryPage: React.FC = () => {
+    const [state, setState] = useState<State>({ status: "loading" });
+    const equipRequestRef = useRef<Subscription>(null);
+    const equipSound = useRef(new Howl({
         src: [equipMP3, equipOGG],
         preload: true
-    });
+    }));
 
-    componentDidMount() {
-        document.title = "Inventory - PBBG";
-
-        this.request = inventoryService.getInventory()
+    useEffect(() => {
+        const subscription = inventoryService.getInventory()
             .subscribe({
-                next: value => this.setState({ status: "loaded", inventory: value.data, equipmentChanging: false }),
-                error: err => this.setState({ status: "error" })
+                next: value => setState({ status: "loaded", inventory: value.data, equipmentChanging: false }),
+                error: _err => setState({ status: "error" })
             });
-    }
 
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
+        return () => {
+            subscription.unsubscribe();
+            equipRequestRef.current?.unsubscribe();
+        };
+    }, []);
 
-    render() {
-        if (this.state.status === "error") return "ERROR";
+    const handleEquipUnequip = (inventoryItemId: number, action: "equip" | "unequip") => {
+        if (state.status !== "loaded") return;
 
-        return <div className={styles.InventoryPage}>
-            <div className={styles["player-equipment"]}>
-                <img className={styles["player-portrait"]} src={player} alt="Player portrait" />
-                <EquipmentSlot item={this.state.status === "loaded" ? this.state.inventory.equipment.pickaxe : "loading"} style={{ top: "100px", left: "90px" }}>
-                    <img src={noPickaxe} alt={"No pickaxe equipped"} />
-                </EquipmentSlot>
-            </div>
-            <ul className={styles["inventory-container"]}>
-                {this.state.status === "loaded" ?
-                    this.inventoryContents(this.state)
-                : this.state.status === "loading" ?
-                    <LoadingSpinner />
-                : null}
-            </ul>
-        </div>;
-    }
+        equipRequestRef.current?.unsubscribe();
 
-    inventoryContents = ({ inventory, equipmentChanging }: { inventory: Inventory, equipmentChanging: boolean }) =>
+        setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, equipmentChanging: true };
+        });
+
+        equipRequestRef.current = inventoryService.equipUnequip(action, { inventoryItemId })
+            .subscribe({
+                next: res => {
+                    equipSound.current.play();
+                    setState(prevState => {
+                        if (prevState.status !== "loaded") return prevState;
+                        return { ...prevState, inventory: res.data, equipmentChanging: false };
+                    });
+                },
+                error: _err => setState({ status: "error" })
+            });
+    };
+
+    const inventoryContents = ({ inventory, equipmentChanging }: { inventory: Inventory, equipmentChanging: boolean }) =>
         inventory.items.sort((a, b) => a.item.id - b.item.id).map(entry => <li
             key={entry.item.id}
             className={styles["inventory-item"]}
@@ -80,31 +78,32 @@ class InventoryPage extends React.Component<{}, State> {
             <InventoryItemTooltip
                 className={styles["inventory-item-tooltip"]}
                 inventoryEntry={entry}
-                equip={isEquippable(entry) && !entry.equipped ? () => this.handleEquipUnequip(entry.item.id, "equip") : undefined}
-                unequip={isEquippable(entry) && entry.equipped ? () => this.handleEquipUnequip(entry.item.id, "unequip") : undefined}
+                equip={isEquippable(entry) && !entry.equipped ? () => handleEquipUnequip(entry.item.id, "equip") : undefined}
+                unequip={isEquippable(entry) && entry.equipped ? () => handleEquipUnequip(entry.item.id, "unequip") : undefined}
                 equipDisabled={equipmentChanging}
             />
         </li>);
 
-    handleEquipUnequip = (inventoryItemId: number, action: "equip" | "unequip") => {
-        if (this.state.status !== "loaded") throw Error();
-        this.setState(prevState => {
-            if (prevState.status !== "loaded") return prevState;
-            return { ...prevState, equipmentChanging: true };
-        });
+    if (state.status === "error") return <>ERROR</>;
 
-        this.request = inventoryService.equipUnequip(action, { inventoryItemId })
-            .subscribe({
-                next: res => {
-                    this.equipSound.play();
-                    this.setState(prevState => {
-                        if (prevState.status !== "loaded") return prevState;
-                        return { ...prevState, inventory: res.data, equipmentChanging: false };
-                    });
-                },
-                error: err => this.setState({ status: "error" })
-            });
-    }
-}
+    return <>
+        <title>Inventory - PBBG</title>
+        <div className={styles.InventoryPage}>
+            <div className={styles["player-equipment"]}>
+                <img className={styles["player-portrait"]} src={player} alt="Player portrait" />
+                <EquipmentSlot item={state.status === "loaded" ? state.inventory.equipment.pickaxe : "loading"} style={{ top: "100px", left: "90px" }}>
+                    <img src={noPickaxe} alt={"No pickaxe equipped"} />
+                </EquipmentSlot>
+            </div>
+            <ul className={styles["inventory-container"]}>
+                {state.status === "loaded" ?
+                    inventoryContents(state)
+                : state.status === "loading" ?
+                    <LoadingSpinner />
+                : null}
+            </ul>
+        </div>
+    </>;
+};
 
 export default InventoryPage;

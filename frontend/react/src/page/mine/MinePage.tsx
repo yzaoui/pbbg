@@ -1,7 +1,6 @@
 import { Howl } from "howler";
-import React, { CSSProperties } from "react";
-import { Route, Routes } from "react-router";
-import { Subscription } from "rxjs";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
+import { Link, Location, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { InventoryEntry, Point } from "../../backend/inventory";
 import inventoryService from "../../backend/inventory.service";
 import { LevelUp, Mine as MineData, MinedItemResult } from "../../backend/mine";
@@ -13,7 +12,6 @@ import LevelInfo from "../../component/LevelInfo";
 import LoadingSpinner from "../../component/LoadingSpinner";
 import Mine from "../../component/mine/Mine";
 import MineLog from "../../component/mine/MineLog";
-import { RouteComponentProps, withRouter } from "../../helper/withRouter";
 import MineListPage from "./MineListPage";
 // @ts-ignore
 import pickaxe1MP3 from "../../audio/pickaxe1.mp3";
@@ -38,12 +36,12 @@ import levelUpOGG from "../../audio/level-up.ogg";
 // @ts-ignore
 import exitMineMP3 from "../../audio/enter_mine.mp3";
 // @ts-ignore
-import { Link } from "react-router-dom";
+import { Subscription } from "rxjs";
 import exitMineOGG from "../../audio/enter_mine.ogg";
 import LoadingButton from "../../component/LoadingButton";
 
 const MinePage: React.FC = () => <Routes>
-    <Route path="/" element={<IndexPageWithRouter />} />
+    <Route path="/" element={<IndexPage />} />
     <Route path="/list" element={<MineListPage />} />
 </Routes>;
 
@@ -60,227 +58,208 @@ type State = {
     results: (MinedItemResult | LevelUp)[];
 } | {
     status: "exited";
+    mine: MineData;
     miningLvl: "loading" | LevelProgress;
     pickaxe: "loading" | InventoryEntry | null;
     results: (MinedItemResult | LevelUp)[];
 };
 
-class IndexPage extends React.Component<RouteComponentProps<{}, { mine?: MineData }>, State> {
-    readonly state: Readonly<State> = {
-        status: "initial loading"
+export interface LocationState {
+    mine: MineData;
+}
+
+const IndexPage: React.FC = () => {
+    const navigate = useNavigate();
+    const location: Location<LocationState | null> = useLocation();
+    const [state, setState] = useState<State>({ status: "initial loading" });
+
+    const pickaxeSounds = useRef([
+        new Howl({ src: [pickaxe1MP3, pickaxe1OGG], preload: true }),
+        new Howl({ src: [pickaxe2MP3, pickaxe2OGG], preload: true }),
+        new Howl({ src: [pickaxe3MP3, pickaxe3OGG], preload: true }),
+        new Howl({ src: [pickaxe4MP3, pickaxe4OGG], preload: true })
+    ]);
+    const lastPickaxeSoundIndex = useRef(-1);
+    const levelUpSound = useRef(new Howl({ src: [levelUpMP3, levelUpOGG], preload: true }));
+    const exitSound = useRef(new Howl({ src: [exitMineMP3, exitMineOGG], preload: true }));
+    const mineActionRequestRef = useRef<Subscription | null>(null);
+
+    const setMineStateAndStartLoadingOtherState = (mineData: MineData) => {
+        setState({ status: "loaded", mine: mineData, miningLvl: "loading", pickaxe: "loading", submittingAction: null, results: [] });
+        loadMiningLevel();
+        loadPickaxe();
     };
 
-    mineRequest?: Subscription;
-    userStatsRequest?: Subscription;
-    inventoryRequest?: Subscription;
+    const loadMine = () => {
+        const subscription = mineService.getMine().subscribe({
+            next: value => {
+                if (value.data === null) {
+                    navigate("/mine/list");
+                    return;
+                }
+                setMineStateAndStartLoadingOtherState(value.data);
+            },
+            error: _err => setState({ status: "error" })
+        });
+        return () => subscription.unsubscribe();
+    };
 
-    pickaxeSounds = [
-        new Howl({
-            src: [pickaxe1MP3, pickaxe1OGG],
-            preload: true
-        }),
-        new Howl({
-            src: [pickaxe2MP3, pickaxe2OGG],
-            preload: true
-        }),
-        new Howl({
-            src: [pickaxe3MP3, pickaxe3OGG],
-            preload: true
-        }),
-        new Howl({
-            src: [pickaxe4MP3, pickaxe4OGG],
-            preload: true
-        })
-    ];
-    // Keep track of last played pickaxe sound to avoid repetition
-    lastPickaxeSoundIndex = -1;
+    const loadMiningLevel = () => {
+        const subscription = userStatsService.get().subscribe({
+            next: value => {
+                const miningLvl = value.data.mining;
+                setState(prevState => {
+                    if (prevState.status !== "loaded" && prevState.status !== "exiting") return prevState;
+                    return { ...prevState, miningLvl };
+                });
+            },
+            error: _err => setState({ status: "error" })
+        });
+        return () => subscription.unsubscribe();
+    };
 
-    levelUpSound = new Howl({
-        src: [levelUpMP3, levelUpOGG],
-        preload: true
-    });
+    const loadPickaxe = () => {
+        const subscription = inventoryService.getInventory().subscribe({
+            next: value => {
+                const pickaxe = value.data.equipment.pickaxe;
+                setState(prevState => {
+                    if (prevState.status !== "loaded" && prevState.status !== "exiting") return prevState;
+                    return { ...prevState, pickaxe };
+                });
+            },
+            error: _err => setState({ status: "error" })
+        });
+        return () => subscription.unsubscribe();
+    };
 
-    exitSound = new Howl({
-        src: [exitMineMP3, exitMineOGG],
-        preload: true
-    });
-
-    componentDidMount() {
-        // User may have come from mine list, so check if location contains mine to avoid having to fetch it again
-        const locationState = this.props.location.state;
-
-        if (locationState?.mine !== undefined) {
-            this.props.history.replace({ pathname: this.props.location.pathname });
-            this.setMineStateAndStartLoadingOtherState(locationState.mine);
-
+    // User may have come from mine list, so check if location contains mine to avoid having to fetch it again
+    useEffect(() => {
+        if (location.state !== null) {
+            navigate(location.pathname, { replace: true });
+             
+            setMineStateAndStartLoadingOtherState(location.state.mine);
             return;
         }
 
-        this.loadMine();
-    }
+        loadMine();
 
-    componentWillUnmount() {
-        this.mineRequest && this.mineRequest.unsubscribe();
-        this.userStatsRequest && this.userStatsRequest.unsubscribe();
-        this.inventoryRequest && this.inventoryRequest.unsubscribe();
-    }
+        return () => mineActionRequestRef.current?.unsubscribe();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    render() {
-        if (this.state.status === "initial loading") return <LoadingSpinner />;
-        else if (this.state.status === "error") return <>ERROR</>;
+    const performMineAction = (x: number, y: number) => {
+        if (state.status !== "loaded") return;
 
-        return <>
-            {this.state.status === "loaded" || this.state.status === "exiting" ? <>
-                <LoadingButton loading={this.state.status === "exiting"} style={style} onClick={this.handleExitMineClick}>Exit mine</LoadingButton>
-                <Mine
-                    mine={this.state.mine}
-                    style={style}
-                    pickaxe={this.state.pickaxe !== "loading" ? this.state.pickaxe : null}
-                    submittingAction={this.state.submittingAction}
-                    onMineAction={this.handleMineAction}
-                />
-            </> : this.state.status === "exited" ?
-                <Link to={"/mine/list"} className="fancy" style={style}>Return to mine list</Link>
-            : {}}
+        mineActionRequestRef.current?.unsubscribe();
 
-            {/* Mining level */}
-            {this.state.miningLvl === "loading" ?
-                <LoadingSpinner style={style} />
-            :
-                <LevelInfo levelProgress={this.state.miningLvl} style={style} />
-            }
-
-            {/* Equipped pickaxe slot */}
-            {this.state.pickaxe === "loading" ?
-                <LoadingSpinner style={style} />
-            : this.state.pickaxe === null ?
-                <>No pickaxe equipped</>
-            :
-                <InventoryItem inventoryEntry={this.state.pickaxe} style={style} />
-            }
-            <MineLog results={this.state.results} expanded={this.state.status === "exited"} />
-        </>;
-    }
-
-    handleExitMineClick = () => {
-        this.exitMine();
-    };
-
-    handleMineAction = (x: number, y: number) => {
-        this.performMineAction(x, y);
-    };
-
-    setMineStateAndStartLoadingOtherState = (mineData: MineData) => {
-        document.title = `${mineData.type.name} - PBBG`;
-        this.setState({ status: "loaded", mine: mineData, miningLvl: "loading", pickaxe: "loading", submittingAction: null, results: [] });
-        this.loadMiningLevel();
-        this.loadPickaxe()
-    };
-
-    loadMine = () => {
-        this.mineRequest = mineService.getMine()
-            .subscribe({
-                next: value => {
-                    if (value.data === null) return this.props.history.push("/mine/list");
-
-                    this.setMineStateAndStartLoadingOtherState(value.data)
-                },
-                error: err => this.setState({ status: "error" })
-            });
-    };
-
-    loadMiningLevel = () => {
-        this.userStatsRequest = userStatsService.get()
-            .subscribe({
-                next: value => {
-                    const miningLvl = value.data.mining;
-
-                    this.setState(prevState => {
-                        if (prevState.status !== "loaded") return prevState;
-                        return { ...prevState, miningLvl };
-                    });
-                },
-                error: err => this.setState({ status: "error" })
-            });
-    };
-
-    loadPickaxe = () => {
-        this.inventoryRequest = inventoryService.getInventory()
-            .subscribe({
-                next: value => {
-                    const pickaxe = value.data.equipment.pickaxe;
-
-                    this.setState(prevState => {
-                        if (prevState.status !== "loaded") return prevState;
-                        return { ...prevState, pickaxe };
-                    });
-                },
-                error: err => this.setState({ status: "error" })
-            });
-    };
-
-    performMineAction = (x: number, y: number) => {
-        if (this.state.status !== "loaded") return;
-
-        this.setState(prevState => {
+        setState(prevState => {
             if (prevState.status !== "loaded") return prevState;
             return { ...prevState, submittingAction: { x, y } };
         });
 
-        this.mineRequest = mineService.performMineAction({ x, y })
-            .subscribe({
-                next: value => {
-                    if (this.state.status !== "loaded") throw Error();
+        mineActionRequestRef.current = mineService.performMineAction({ x, y }).subscribe({
+            next: value => {
+                playPickaxeSound();
 
-                    this.playPickaxeSound();
+                if (value.data.levelUps.length > 0) {
+                    levelUpSound.current.play();
+                }
 
-                    if (value.data.levelUps.length > 0) {
-                        this.levelUpSound.play();
-                    }
-
-                    this.setState({
-                        ...this.state,
+                setState(prevState => {
+                    if (prevState.status !== "loaded") return prevState;
+                    return {
+                        ...prevState,
                         mine: value.data.mine,
                         miningLvl: value.data.miningLvl,
                         submittingAction: null,
-                        results: this.state.results.concat(value.data.minedItemResults).concat(value.data.levelUps)
-                    });
-                },
-                error: err => this.setState({ status: "error" })
-            });
+                        results: prevState.results.concat(value.data.minedItemResults).concat(value.data.levelUps)
+                    };
+                });
+            },
+            error: _err => setState({ status: "error" })
+        });
     };
 
-    exitMine = () => {
-        this.setState({ status: "exiting" });
+    const exitMine = () => {
+        mineActionRequestRef.current?.unsubscribe();
 
-        this.mineRequest = mineService.exitMine()
-            .subscribe({
-                next: value => {
-                    this.exitSound.play();
-                    this.setState({ status: "exited" });
-                },
-                error: err => this.setState({ status: "error" })
-            });
+        setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, status: "exiting" };
+        });
+
+        mineActionRequestRef.current = mineService.exitMine().subscribe({
+            next: _value => {
+                exitSound.current.play();
+                setState(prevState => {
+                    if (prevState.status !== "exiting") return prevState;
+                    return { ...prevState, status: "exited" };
+                });
+            },
+            error: _err => setState({ status: "error" })
+        });
     };
 
-    playPickaxeSound = () => {
+    const playPickaxeSound = () => {
         let soundIndex;
-
-        // Keep rolling for a sound that isn't the one that was last played
         do {
-            soundIndex = Math.floor(Math.random() * this.pickaxeSounds.length);
-        } while (soundIndex === this.lastPickaxeSoundIndex);
+            soundIndex = Math.floor(Math.random() * pickaxeSounds.current.length);
+        } while (soundIndex === lastPickaxeSoundIndex.current);
 
-        this.lastPickaxeSoundIndex = soundIndex;
-        this.pickaxeSounds[soundIndex].play();
+        lastPickaxeSoundIndex.current = soundIndex;
+        pickaxeSounds.current[soundIndex].play();
     };
-}
+
+    const title = (() => {
+        switch (state.status) {
+            case "initial loading": return "Mine"
+            case "error": return "Mine"
+            case "loaded":
+            case "exiting":
+            case "exited": return state.mine.type.name
+        }
+    })() + " - PBBG"
+
+    if (state.status === "initial loading") return <LoadingSpinner />;
+    else if (state.status === "error") return <>ERROR</>;
+
+    return <>
+        <title>{title}</title>
+        {state.status === "loaded" || state.status === "exiting" ? <>
+            <LoadingButton loading={state.status === "exiting"} style={style} onClick={exitMine}>Exit mine</LoadingButton>
+            <Mine
+                mine={state.mine}
+                style={style}
+                pickaxe={state.pickaxe !== "loading" ? state.pickaxe : null}
+                submittingAction={state.submittingAction}
+                onMineAction={performMineAction}
+            />
+        </> : state.status === "exited" ?
+            <Link to={"/mine/list"} className="fancy" style={style}>Return to mine list</Link>
+        : {}}
+
+        {/* Mining level */}
+        {state.miningLvl === "loading" ?
+            <LoadingSpinner style={style} />
+        :
+            <LevelInfo levelProgress={state.miningLvl} style={style} />
+        }
+
+        {/* Equipped pickaxe slot */}
+        {state.pickaxe === "loading" ?
+            <LoadingSpinner style={style} />
+        : state.pickaxe === null ?
+            <>No pickaxe equipped</>
+        :
+            <InventoryItem inventoryEntry={state.pickaxe} style={style} />
+        }
+        <MineLog results={state.results} expanded={state.status === "exited"} />
+    </>;
+};
 
 const style: CSSProperties = {
     marginBottom: "4px",
     alignSelf: "center"
 };
-
-const IndexPageWithRouter = withRouter(IndexPage);
 
 export default MinePage;

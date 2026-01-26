@@ -1,7 +1,5 @@
-import React from "react";
-import { Helmet } from "react-helmet-async";
+import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import { Subscription } from "rxjs";
 import { DexUnits, MyUnitEnum } from "../../backend/dex";
 import dexService from "../../backend/dex.service";
 import DexReturnLink from "../../component/dex/DexReturnLink";
@@ -25,38 +23,24 @@ type State = {
     dexUnits: DexUnits;
 };
 
-class IndexPage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
-    };
+const IndexPage: React.FC = () => {
+    const [state, setState] = useState<State>({ status: "loading" });
 
-    request?: Subscription;
-
-    componentDidMount() {
-        this.request = dexService.getUnits()
+    useEffect(() => {
+        const subscription = dexService.getUnits()
             .subscribe({
-                next: value => this.setState({ status: "loaded", dexUnits: value.data }),
-                error: err => this.setState({ status: "error" })
+                next: value => setState({ status: "loaded", dexUnits: value.data }),
+                error: _err => setState({ status: "error" })
             });
-    }
 
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
+        return () => subscription.unsubscribe();
+    }, []);
 
-    render() {
-        return <>
-            <DexReturnLink to="/dex" label="Return to Dex" />
-            <div className="dex-header"><h1>Unit Dex</h1></div>
-            <div className="dex-container">{this.renderContainer()}</div>
-        </>;
-    }
+    const renderContainer = () => {
+        if (state.status === "loading") return <LoadingSpinner />;
+        else if (state.status === "error") return "ERROR";
 
-    renderContainer = () => {
-        if (this.state.status === "loading") return <LoadingSpinner />;
-        else if (this.state.status === "error") return "ERROR";
-
-        const { discoveredUnits, lastUnitId } = this.state.dexUnits;
+        const { discoveredUnits, lastUnitId } = state.dexUnits;
 
         const allEntries: Record<number, MyUnitEnum | null> = {};
         for (let i = 1; i <= lastUnitId; i++) {
@@ -64,7 +48,7 @@ class IndexPage extends React.Component<{}, State> {
         }
 
         return <>
-            <Helmet title="Unit Dex - PBBG" />
+            <title>Unit Dex - PBBG</title>
             <ol className="dex">
                 {Object.entries(allEntries)
                     .map(([id, unit]) => (unit !== null) ?
@@ -75,6 +59,12 @@ class IndexPage extends React.Component<{}, State> {
             </ol>
         </>;
     };
-}
+
+    return <>
+        <DexReturnLink to="/dex" label="Return to Dex" />
+        <div className="dex-header"><h1>Unit Dex</h1></div>
+        <div className="dex-container">{renderContainer()}</div>
+    </>;
+};
 
 export default DexUnitsPage;

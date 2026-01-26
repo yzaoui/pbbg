@@ -1,41 +1,26 @@
 import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import { defineConfig, globalIgnores } from 'eslint/config';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
-    {
-        ignores: ['dist', 'build', 'node_modules', 'storybook-static']
-    },
-    js.configs.recommended,
-    ...tseslint.configs.recommended,
+export default defineConfig([
+    globalIgnores(['dist', 'build', 'node_modules', 'storybook-static']),
     {
         files: ['**/*.{ts,tsx}'],
+        extends: [
+            js.configs.recommended,
+            tseslint.configs.recommended,
+            reactHooks.configs.flat.recommended,
+            reactRefresh.configs.vite,
+        ],
         languageOptions: {
-            parser: tseslint.parser,
-            parserOptions: {
-                ecmaVersion: 'latest',
-                sourceType: 'module',
-                ecmaFeatures: {
-                    jsx: true
-                }
-            }
-        },
-        plugins: {
-            react,
-            'react-hooks': reactHooks,
-            'react-refresh': reactRefresh
+            ecmaVersion: 2025,
+            globals: globals.browser,
         },
         rules: {
-            ...react.configs.recommended.rules,
-            ...react.configs['jsx-runtime'].rules,
-            ...reactHooks.configs.recommended.rules,
-            // React Refresh rule (for Vite HMR)
-            'react-refresh/only-export-components': [
-                'warn',
-                { allowConstantExport: true }
-            ],
+            // Custom TypeScript rules
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/no-unused-vars': [
                 'warn',
@@ -44,15 +29,9 @@ export default tseslint.config(
                     varsIgnorePattern: '^_'
                 }
             ],
-            // Disable React prop-types (using TypeScript instead)
-            'react/prop-types': 'off',
             '@typescript-eslint/ban-ts-comment': 'off',
+            // Enforce double quotes
             'quotes': ['error', 'double', { avoidEscape: true }]
-        },
-        settings: {
-            react: {
-                version: 'detect'
-            }
         }
-    }
-);
+    },
+]);

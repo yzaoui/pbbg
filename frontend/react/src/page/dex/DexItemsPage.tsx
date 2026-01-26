@@ -1,7 +1,5 @@
-import React from "react";
-import { Helmet } from "react-helmet-async";
+import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import { Subscription } from "rxjs";
 import { BaseItem, DexItems } from "../../backend/dex";
 import dexService from "../../backend/dex.service";
 import DexItemEntry from "../../component/dex/DexItemEntry";
@@ -23,40 +21,26 @@ type State = {
 } | {
     status: "loaded";
     dexItems: DexItems;
-}
+};
 
-class IndexPage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
-    };
+const IndexPage: React.FC = () => {
+    const [state, setState] = useState<State>({ status: "loading" });
 
-    request?: Subscription;
-
-    componentDidMount() {
-        this.request = dexService.getItems()
+    useEffect(() => {
+        const subscription = dexService.getItems()
             .subscribe({
-                next: value => this.setState({ status: "loaded", dexItems: value.data }),
-                error: err => this.setState({ status: "error" })
+                next: value => setState({ status: "loaded", dexItems: value.data }),
+                error: _err => setState({ status: "error" })
             });
-    }
 
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
+        return () => subscription.unsubscribe();
+    }, []);
 
-    render() {
-        return <>
-            <DexReturnLink to="/dex" label="Return to Dex"/>
-            <div className="dex-header"><h1>Item Dex</h1></div>
-            <div className="dex-container">{this.renderContainer()}</div>
-        </>;
-    }
+    const renderContainer = () => {
+        if (state.status === "loading") return <LoadingSpinner />;
+        else if (state.status === "error") return "ERROR";
 
-    renderContainer = () => {
-        if (this.state.status === "loading") return <LoadingSpinner />;
-        else if (this.state.status === "error") return "ERROR";
-
-        const { discoveredItems, lastItemId } = this.state.dexItems;
+        const { discoveredItems, lastItemId } = state.dexItems;
 
         if (Object.entries(discoveredItems).length === 0) return "No items discovered yet.";
 
@@ -66,7 +50,7 @@ class IndexPage extends React.Component<{}, State> {
         }
 
         return <>
-            <Helmet title="Item Dex - PBBG" />
+            <title>Item Dex - PBBG</title>
             <ol className="dex">
                 {Object.entries(allEntries)
                     .map(([id, item]) => (item !== null) ? <DexItemEntry key={id} id={id} item={item} /> : <DexUnknownEntry key={id} id={id} />)
@@ -74,6 +58,12 @@ class IndexPage extends React.Component<{}, State> {
             </ol>
         </>;
     };
-}
+
+    return <>
+        <DexReturnLink to="/dex" label="Return to Dex"/>
+        <div className="dex-header"><h1>Item Dex</h1></div>
+        <div className="dex-container">{renderContainer()}</div>
+    </>;
+};
 
 export default DexItemsPage;

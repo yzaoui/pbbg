@@ -1,16 +1,13 @@
-import React from "react";
-import { RouteComponentProps, withRouter } from "../helper/withRouter";
+import React, { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router";
 import { Subscription } from "rxjs";
-import userService from "../backend/user.service";
+import { Friendship } from "../backend/friends";
+import friendsService from "../backend/friends.service";
 import { UserProfile } from "../backend/user";
-import { Helmet } from "react-helmet-async";
+import userService from "../backend/user.service";
 import LoadingSpinner from "../component/LoadingSpinner";
 import UserProfileComponent from "../component/UserProfileComponent";
 import "./UserPage.scss";
-import { Friendship } from "../backend/friends";
-import friendsService from "../backend/friends.service";
-
-interface Props extends RouteComponentProps<{ id: string }> {}
 
 interface LoadingState {
     status: "loading";
@@ -28,49 +25,38 @@ interface ErrorState {
 
 type State = LoadingState | LoadedState | ErrorState;
 
-class UserPage extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
-    };
+const UserPage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const [state, setState] = useState<State>({ status: "loading" });
+    const friendshipRequestRef = useRef<Subscription | null>(null);
 
-    request?: Subscription;
+    if (!id) throw new Error();
 
-    componentDidMount() {
-        this.request = userService.getUserProfile(this.props.match.params.id)
-            .subscribe({
-                next: value => this.setState({ status: "loaded", userProfile: value.data, changingFriendship: false }),
-                error: err => this.setState({ status: "error" })
-            });
-    }
+    useEffect(() => {
+        const subscription = userService.getUserProfile(id).subscribe({
+            next: value => setState({ status: "loaded", userProfile: value.data, changingFriendship: false }),
+            error: _err => setState({ status: "error" })
+        });
 
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
+        return () => {
+            subscription.unsubscribe();
+            friendshipRequestRef.current?.unsubscribe();
+        };
+    }, [id]);
 
-    render() {
-        switch (this.state.status) {
-            case "loading": return <>
-                <Helmet title="Loading… - User - PBBG" />
-                <div><LoadingSpinner /></div>
-            </>;
-            case "loaded": return <>
-                <Helmet title={`${this.state.userProfile.username} - User - PBBG`} />
-                <UserProfileComponent userProfile={this.state.userProfile} onChangeFriendship={this.handleChangeFriendship} changingFriendship={this.state.changingFriendship} />
-            </>;
-            case "error": return <div>ERROR</div>;
-        }
-    }
+    const handleChangeFriendship = (currentFriendship: Friendship) => {
+        if (state.status !== "loaded") return;
 
-    private handleChangeFriendship = (currentFriendship: Friendship) => {
-        if (this.state.status !== "loaded") return;
+        // Cancel any in-flight friendship request
+        friendshipRequestRef.current?.unsubscribe();
 
-        this.setState(prevState => {
+        setState(prevState => {
             if (prevState.status !== "loaded") return prevState;
             return { ...prevState, changingFriendship: true };
         });
 
-        this.request = friendsService.changeFriendship(friendshipToAction(currentFriendship), { userId: this.state.userProfile.id } )
-            .subscribe(res => this.setState(prevState => {
+        friendshipRequestRef.current = friendsService.changeFriendship(friendshipToAction(currentFriendship), { userId: state.userProfile.id })
+            .subscribe(res => setState(prevState => {
                 if (prevState.status !== "loaded") return prevState;
 
                 const updatedUserProfile = Object.assign({}, prevState.userProfile);
@@ -79,7 +65,26 @@ class UserPage extends React.Component<Props, State> {
                 return { ...prevState, changingFriendship: false, userProfile: updatedUserProfile };
             }));
     };
-}
+
+    const getTitle = () => {
+        switch (state.status) {
+            case "loading": return "Loading… - User - PBBG";
+            case "loaded": return `${state.userProfile.username} - User - PBBG`;
+            case "error": return "Error - User - PBBG";
+        }
+    };
+
+    return <>
+        <title>{getTitle()}</title>
+        {(() => {
+            switch (state.status) {
+                case "loading": return <div><LoadingSpinner /></div>;
+                case "loaded": return <UserProfileComponent userProfile={state.userProfile} onChangeFriendship={handleChangeFriendship} changingFriendship={state.changingFriendship} />;
+                case "error": return <div>ERROR</div>;
+            }
+        })()}
+    </>;
+};
 
 const friendshipToAction = (friendship: Friendship) => {
     switch (friendship) {
@@ -90,4 +95,4 @@ const friendshipToAction = (friendship: Friendship) => {
     }
 };
 
-export default withRouter(UserPage);
+export default UserPage;

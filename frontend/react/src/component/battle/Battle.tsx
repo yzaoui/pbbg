@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Battle as BattleData, BattleReward, MappedUnitEffects } from "../../backend/battle";
 import BattleQueue from "./BattleQueue";
 import PBBGUnit from "../PBBGUnit";
@@ -18,101 +18,92 @@ type Props = {
     reward: BattleReward | null;
 };
 
-type State = {
-    hoveredUnitId: number | null;
-    selectingTarget: boolean;
-}
+const Battle: React.FC<Props> = ({ battle, onAllyTurn, onEnemyTurn, performingAction, effects, reward }) => {
+    const [hoveredUnitId, setHoveredUnitId] = useState<number | null>(null);
+    const [selectingTarget, setSelectingTarget] = useState(false);
 
-class Battle extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        hoveredUnitId: null,
-        selectingTarget: false
+    const battleIsOver = reward !== null;
+    const nextUnitId = battle.turns[0].unitId;
+    const currentSide = battle.allies.some(ally => nextUnitId === ally.id) ? "ally" : "enemy";
+
+    const handleUnitEnter = (unitId: number) => setHoveredUnitId(unitId);
+
+    const handleUnitLeave = () => setHoveredUnitId(null);
+
+    const handleAllyTurn = () => setSelectingTarget(true);
+
+    const handleSelectTarget = (unitId: number) => {
+        setSelectingTarget(false);
+        onAllyTurn(unitId);
     };
 
-    render() {
-        const battleIsOver = this.props.reward !== null;
-        const nextUnitId = this.props.battle.turns[0].unitId;
-        const currentSide = this.props.battle.allies.some(ally => nextUnitId === ally.id) ? "ally" : "enemy";
+    const handleCancelTargeting = () => setSelectingTarget(false);
 
-        return <div className={styles.Battle} data-overlay-active={this.state.selectingTarget ? "" : undefined} data-battle-over={battleIsOver ? "" : undefined}>
-            {this.state.selectingTarget &&
-                this.createOverlay()
-            }
-            {!battleIsOver &&
-                <BattleQueue battle={this.props.battle} onUnitEnter={this.handleUnitEnter} onUnitLeave={this.handleUnitLeave} hoveredUnit={this.state.hoveredUnitId} className={styles.BattleQueue} />
-            }
-            <div className={`${styles["allies-container"]} ${styles["unit-list-section"]}`}>
-                <h1>Allies</h1>
-                <ul>
-                    {this.props.battle.allies.map(ally => <li key={ally.id}><PBBGUnit
-                        className={styles.PBBGUnit}
-                        unit={ally}
-                        facing="right"
-                        data-side="ally"
-                        data-current-turn={ally.id === nextUnitId ? "" : undefined}
-                        data-hovered={ally.id === this.state.hoveredUnitId ? "" : undefined}
-                        onMouseEnter={() => this.handleUnitEnter(ally.id)}
-                        onMouseLeave={this.handleUnitLeave}
-                        {...(this.state.selectingTarget && ally.id !== nextUnitId && ally.hp > 0 &&
-                            { onClick: () => this.handleSelectTarget(ally.id) }
-                        )}
-                    /></li>)}
-                </ul>
-            </div>
-            <div className={`${styles["enemies-container"]} ${styles["unit-list-section"]}`}>
-                <h1>Enemies</h1>
-                <ul>
-                    {this.props.battle.enemies.map(enemy => <li key={enemy.id}><PBBGUnit
-                        className={styles.PBBGUnit}
-                        unit={enemy}
-                        facing="left"
-                        data-side="enemy"
-                        data-current-turn={enemy.id === nextUnitId ? "" : undefined}
-                        data-hovered={enemy.id === this.state.hoveredUnitId ? "" : undefined}
-                        onMouseEnter={() => this.handleUnitEnter(enemy.id)}
-                        onMouseLeave={this.handleUnitLeave}
-                        {...(this.state.selectingTarget && enemy.id !== nextUnitId && enemy.hp > 0 &&
-                            { onClick: () => this.handleSelectTarget(enemy.id) }
-                        )}
-                    /></li>)}
-                </ul>
-            </div>
-            {!battleIsOver &&
-                <BattleActions performingAction={this.props.performingAction} className={styles.BattleActions} {...(currentSide === "ally" ? {
-                    enemyTurn: false,
-                    onProcessAllyTurn: this.handleAllyTurn
-                } : {
-                    enemyTurn: true,
-                    onProcessEnemyTurn: this.props.onEnemyTurn
-                })} />
-            }
-            <BattleLog effects={this.props.effects} reward={this.props.reward} onUnitNameEnter={this.handleUnitEnter} onUnitNameLeave={this.handleUnitLeave} className={styles.BattleLog} units={new Map(
-                this.props.battle.allies.map(ally => ({ ...ally, side: "ally" }) as SidedUnit)
-                    .concat(this.props.battle.enemies.map(enemy => ({ ...enemy, side: "enemy" }) as SidedUnit))
-                    .map(unit => [unit.id, unit])
-            )} />
-        </div>;
-    }
-
-    createOverlay = () => <div className={styles.overlay}>
+    const createOverlay = () => <div className={styles.overlay}>
         <div>
-            <button className="fancy danger" onClick={this.handleCancelTargeting}>Cancel</button>
+            <button className="fancy danger" onClick={handleCancelTargeting}>Cancel</button>
             <span>Select target</span>
         </div>
     </div>;
 
-    handleUnitEnter = (unitId: number) => this.setState({ hoveredUnitId: unitId });
-
-    handleUnitLeave = () => this.setState({ hoveredUnitId: null });
-
-    handleAllyTurn = () => this.setState({ selectingTarget: true });
-
-    handleSelectTarget = (unitId: number) => {
-        this.setState({ selectingTarget: false });
-        this.props.onAllyTurn(unitId);
-    };
-
-    handleCancelTargeting = () => this.setState({ selectingTarget: false });
-}
+    return <div className={styles.Battle} data-overlay-active={selectingTarget ? "" : undefined} data-battle-over={battleIsOver ? "" : undefined}>
+        {selectingTarget &&
+            createOverlay()
+        }
+        {!battleIsOver &&
+            <BattleQueue battle={battle} onUnitEnter={handleUnitEnter} onUnitLeave={handleUnitLeave} hoveredUnit={hoveredUnitId} className={styles.BattleQueue} />
+        }
+        <div className={`${styles["allies-container"]} ${styles["unit-list-section"]}`}>
+            <h1>Allies</h1>
+            <ul>
+                {battle.allies.map(ally => <li key={ally.id}><PBBGUnit
+                    className={styles.PBBGUnit}
+                    unit={ally}
+                    facing="right"
+                    data-side="ally"
+                    data-current-turn={ally.id === nextUnitId ? "" : undefined}
+                    data-hovered={ally.id === hoveredUnitId ? "" : undefined}
+                    onMouseEnter={() => handleUnitEnter(ally.id)}
+                    onMouseLeave={handleUnitLeave}
+                    {...(selectingTarget && ally.id !== nextUnitId && ally.hp > 0 &&
+                        { onClick: () => handleSelectTarget(ally.id) }
+                    )}
+                /></li>)}
+            </ul>
+        </div>
+        <div className={`${styles["enemies-container"]} ${styles["unit-list-section"]}`}>
+            <h1>Enemies</h1>
+            <ul>
+                {battle.enemies.map(enemy => <li key={enemy.id}><PBBGUnit
+                    className={styles.PBBGUnit}
+                    unit={enemy}
+                    facing="left"
+                    data-side="enemy"
+                    data-current-turn={enemy.id === nextUnitId ? "" : undefined}
+                    data-hovered={enemy.id === hoveredUnitId ? "" : undefined}
+                    onMouseEnter={() => handleUnitEnter(enemy.id)}
+                    onMouseLeave={handleUnitLeave}
+                    {...(selectingTarget && enemy.id !== nextUnitId && enemy.hp > 0 &&
+                        { onClick: () => handleSelectTarget(enemy.id) }
+                    )}
+                /></li>)}
+            </ul>
+        </div>
+        {!battleIsOver &&
+            <BattleActions performingAction={performingAction} className={styles.BattleActions} {...(currentSide === "ally" ? {
+                enemyTurn: false,
+                onProcessAllyTurn: handleAllyTurn
+            } : {
+                enemyTurn: true,
+                onProcessEnemyTurn: onEnemyTurn
+            })} />
+        }
+        <BattleLog effects={effects} reward={reward} onUnitNameEnter={handleUnitEnter} onUnitNameLeave={handleUnitLeave} className={styles.BattleLog} units={new Map(
+            battle.allies.map(ally => ({ ...ally, side: "ally" }) as SidedUnit)
+                .concat(battle.enemies.map(enemy => ({ ...enemy, side: "enemy" }) as SidedUnit))
+                .map(unit => [unit.id, unit])
+        )} />
+    </div>;
+};
 
 export default Battle;

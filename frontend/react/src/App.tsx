@@ -1,11 +1,10 @@
-import React from "react";
-import "normalize.css"
-import "./common.scss"
+import React, { useEffect, useState } from "react";
+import "normalize.css";
+import "./common.scss";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AppHeader from "./component/AppHeader";
 import GuestNav from "./component/GuestNav";
 import MemberNav from "./component/MemberNav";
-import GuestRoute from "./GuestRoute";
 import MemberRoute from "./MemberRoute";
 import IndexGuestPage from "./page/IndexGuestPage";
 import IndexMemberPage from "./page/IndexMemberPage";
@@ -25,61 +24,54 @@ import UserPage from "./page/UserPage";
 import FriendsPage from "./page/FriendsPage";
 import AboutPage from "./page/AboutPage";
 
-interface State {
-    currentUserToken: string | null;
-    menuOpen: boolean;
-}
+const App: React.FC = () => {
+    const [currentUserToken, setCurrentUserToken] = useState<string | null>(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
-class App extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        currentUserToken: null,
-        menuOpen: false
+    useEffect(() => {
+        const subscription = authenticationService.currentUser.subscribe(token => setCurrentUserToken(token));
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const handleToggleMenu = () => {
+        setMenuOpen(prevMenuOpen => !prevMenuOpen);
     };
 
-    componentDidMount() {
-        authenticationService.currentUser.subscribe(token => this.setState({ currentUserToken: token }));
-    }
+    const handleClickNavItem = () => {
+        setMenuOpen(false);
+    };
 
-    render() {
-        const isLoggedIn = this.state.currentUserToken !== null;
+    const isLoggedIn = currentUserToken !== null;
 
-        return <BrowserRouter>
-            <div className="App">
-                <AppHeader onClickMenu={this.handleToggleMenu} />
-                <div className="AppBody">
-                    {isLoggedIn ? <MemberNav menuOpen={this.state.menuOpen} onClickItem={this.handleClickNavItem} /> : <GuestNav />}
-                    <main className="pbbg-main">
-                        <Routes>
-                            <Route path="/" element={isLoggedIn ? <IndexMemberPage /> : <IndexGuestPage />} />
-                            <Route path="/register" element={<GuestRoute><RegisterPage /></GuestRoute>} />
-                            <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
-                            <Route path="/squad" element={<MemberRoute><SquadPage /></MemberRoute>} />
-                            <Route path="/inventory" element={<MemberRoute><InventoryPage /></MemberRoute>} />
-                            <Route path="/item/:id" element={<ItemPage />} />
-                            <Route path="/market" element={<MemberRoute><MarketPage /></MemberRoute>} />
-                            <Route path="/battle" element={<MemberRoute><BattlePage /></MemberRoute>} />
-                            <Route path="/mine/*" element={<MemberRoute><MinePage /></MemberRoute>} />
-                            <Route path="/farm" element={<MemberRoute><FarmPage /></MemberRoute>} />
-                            <Route path="/dex/*" element={<MemberRoute><DexPage /></MemberRoute>} />
-                            <Route path="/friends/*" element={<MemberRoute><FriendsPage /></MemberRoute>} />
-                            <Route path="/about" element={<MemberRoute><AboutPage /></MemberRoute>} />
-                            <Route path="/settings" element={<MemberRoute><SettingsPage /></MemberRoute>} />
-                            <Route path="/user/:id" element={<UserPage />} />
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
-                    </main>
-                </div>
+    return <BrowserRouter>
+        <div className="App">
+            <AppHeader onClickMenu={handleToggleMenu} />
+            <div className="AppBody">
+                {isLoggedIn ? <MemberNav menuOpen={menuOpen} onClickItem={handleClickNavItem} /> : <GuestNav />}
+                <main className="pbbg-main">
+                    <Routes>
+                        <Route path="/" element={isLoggedIn ? <IndexMemberPage /> : <IndexGuestPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/squad" element={<MemberRoute><SquadPage /></MemberRoute>} />
+                        <Route path="/inventory" element={<MemberRoute><InventoryPage /></MemberRoute>} />
+                        <Route path="/item/:id" element={<ItemPage />} />
+                        <Route path="/market" element={<MemberRoute><MarketPage /></MemberRoute>} />
+                        <Route path="/battle" element={<MemberRoute><BattlePage /></MemberRoute>} />
+                        <Route path="/mine/*" element={<MemberRoute><MinePage /></MemberRoute>} />
+                        <Route path="/farm" element={<MemberRoute><FarmPage /></MemberRoute>} />
+                        <Route path="/dex/*" element={<MemberRoute><DexPage /></MemberRoute>} />
+                        <Route path="/friends/*" element={<MemberRoute><FriendsPage /></MemberRoute>} />
+                        <Route path="/about" element={<MemberRoute><AboutPage /></MemberRoute>} />
+                        <Route path="/settings" element={<MemberRoute><SettingsPage /></MemberRoute>} />
+                        <Route path="/user/:id" element={<UserPage />} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                </main>
             </div>
-        </BrowserRouter>;
-    }
-
-    private handleToggleMenu = () => {
-        this.setState((prevState) => ({ ...prevState, menuOpen: !prevState.menuOpen }));
-    }
-
-    private handleClickNavItem = () => {
-        this.setState((prevState) => ({ ...prevState, menuOpen: false }));
-    }
-}
+        </div>
+    </BrowserRouter>;
+};
 
 export default App;

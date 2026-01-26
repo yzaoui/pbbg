@@ -1,12 +1,11 @@
-import React from "react";
-import { Inventory } from "../../backend/inventory";
+import React, { useEffect, useRef, useState } from "react";
+import MicroModal from "react-micro-modal";
 import { Subscription } from "rxjs";
+import { Inventory } from "../../backend/inventory";
 import inventoryService from "../../backend/inventory.service";
 import LoadingSpinner from "../LoadingSpinner";
-import PlantRadioOption from "./PlantRadioOption";
 import styles from "./PlantModal.module.scss";
-import classNames from "classnames";
-import MicroModal from "react-micro-modal";
+import PlantRadioOption from "./PlantRadioOption";
 
 type Props = {
     open: boolean;
@@ -24,78 +23,76 @@ const initialState: State = {
     inventory: "loading"
 };
 
-class PlantModal extends React.Component<Props, State> {
-    readonly state: Readonly<State> = initialState;
+const PlantModal: React.FC<Props> = ({ open, onClose, onSelect }) => {
+    const [state, setState] = useState<State>(initialState);
+    const inventoryRequestRef = useRef<Subscription>(null);
 
-    private inventoryRequest: Subscription | null = null;
-
-    componentWillUnmount() {
-        this.inventoryRequest?.unsubscribe();
-    }
-
-    componentDidUpdate(prevProps: Readonly<Props>) {
-        if (!prevProps.open && this.props.open) {
+    useEffect(() => {
+        if (open) {
             // Modal was opened
-            this.inventoryRequest = inventoryService.getInventory("plantable").subscribe(res =>
-                this.setState({ inventory: res.data })
+            inventoryRequestRef.current = inventoryService.getInventory("plantable").subscribe(res =>
+                setState(prevState => ({ ...prevState, inventory: res.data }))
             );
-        } else if (prevProps.open && !this.props.open) {
+        } else {
             // Modal was closed
-            this.inventoryRequest !== null && this.inventoryRequest.unsubscribe();
-            this.setState(initialState);
+            inventoryRequestRef.current?.unsubscribe();
+            setState(initialState);
         }
-    }
 
-    render() {
-        return <MicroModal
-                open={this.props.open}
-                handleClose={this.props.onClose}
-                children={handleClose =>
-                    <div className={styles.PlantModal}>
-                        <header>
-                            <h1>Choose what to plant</h1>
-                        </header>
-                        <main>
-                            {this.state.inventory === "loading" ?
-                                <LoadingSpinner />
-                            : this.state.inventory.items.length > 0 ?
-                                this.state.inventory.items.map(inventoryEntry =>
-                                    <PlantRadioOption
-                                        key={inventoryEntry.item.id}
-                                        inventoryEntry={inventoryEntry}
-                                        checked={this.state.selectedOption === inventoryEntry.item.id}
-                                        onChange={this.handleRadioChange}
-                                    />
-                                )
-                            :
-                                <div>You have no plantable items.</div>
-                            }
-                        </main>
-                        <footer>
-                            <button className={classNames(styles.select, "fancy")} onClick={this.handleSelect} disabled={this.state.selectedOption === null}>Select</button>
-                            <button className={classNames(styles.cancel, "fancy secondary")} onClick={handleClose}>Cancel</button>
-                        </footer>
-                    </div>
-                }
-                overrides={{
-                    Dialog: {
-                        style: { padding: 0 }
-                    }
-                }}
-            />
-    }
+        return () => {
+            inventoryRequestRef.current?.unsubscribe();
+        };
+    }, [open]);
 
-    private handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({
+    const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setState(prevState => ({
+            ...prevState,
             selectedOption: Number(event.target.value)
-        })
+        }));
     };
 
-    private handleSelect = () => {
-        if (this.state.selectedOption === null) return;
+    const handleSelect = () => {
+        if (state.selectedOption === null) return;
 
-        this.props.onSelect(this.state.selectedOption)
-    }
-}
+        onSelect(state.selectedOption);
+    };
+
+    return <MicroModal
+            open={open}
+            handleClose={onClose}
+            children={handleClose =>
+                <div className={styles.PlantModal}>
+                    <header>
+                        <h1>Choose what to plant</h1>
+                    </header>
+                    <main>
+                        {state.inventory === "loading" ?
+                            <LoadingSpinner />
+                        : state.inventory.items.length > 0 ?
+                            state.inventory.items.map(inventoryEntry =>
+                                <PlantRadioOption
+                                    key={inventoryEntry.item.id}
+                                    inventoryEntry={inventoryEntry}
+                                    checked={state.selectedOption === inventoryEntry.item.id}
+                                    onChange={handleRadioChange}
+                                />
+                            )
+                        :
+                            <div>You have no plantable items.</div>
+                        }
+                    </main>
+                    <footer>
+                        <button className="fancy" onClick={handleSelect} disabled={state.selectedOption === null}>Select</button>
+                        <button className="fancy secondary" onClick={handleClose}>Cancel</button>
+                    </footer>
+                </div>
+            }
+            overrides={{
+                Dialog: {
+                    style: { padding: 0 }
+                }
+            }}
+        />;
+};
 
 export default PlantModal;

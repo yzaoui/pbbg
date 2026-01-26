@@ -1,14 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import { DexItem } from "../../backend/dex";
-import { RouteComponentProps, withRouter } from "../../helper/withRouter";
-import "./DexDetailedPage.scss";
-import LoadingSpinner from "../../component/LoadingSpinner";
-import { Subscription } from "rxjs";
 import dexService from "../../backend/dex.service";
 import DexReturnLink from "../../component/dex/DexReturnLink";
-import { Helmet } from "react-helmet-async";
-
-interface Props extends RouteComponentProps<{ id: string }> {}
+import LoadingSpinner from "../../component/LoadingSpinner";
+import "./DexDetailedPage.scss";
 
 type State = {
     status: "loading";
@@ -19,48 +15,42 @@ type State = {
     dexItem: DexItem;
 };
 
-class DexItemDetailedPage extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
+const DexItemDetailedPage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const [state, setState] = useState<State>({ status: "loading" });
+
+    if (!id) throw new Error();
+
+    useEffect(() => {
+        const subscription = dexService.getItem(id).subscribe({
+            next: value => setState({ status: "loaded", dexItem: value.data }),
+            error: _err => setState({ status: "error" })
+        });
+
+        return () => subscription.unsubscribe();
+    }, [id]);
+
+    const getTitle = () => {
+        switch (state.status) {
+            case "loading": return "Loading… - Item Dex - PBBG";
+            case "error": return "Error - Item Dex - PBBG";
+            case "loaded": {
+                const item = state.dexItem;
+                const title = item.type === "discovered" ? `#${item.baseItem.id}: ${item.baseItem.friendlyName}` : `#${item.id}: ???`;
+                return `${title} - Item Dex - PBBG`;
+            }
+        }
     };
 
-    request?: Subscription;
-
-    componentDidMount() {
-        this.request = dexService.getItem(this.props.match.params.id)
-            .subscribe({
-                next: value => this.setState({ status: "loaded", dexItem: value.data }),
-                error: err => this.setState({ status: "error" })
-            });
-    }
-
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
-
-    render() {
-        return <>
-            <DexReturnLink to="/dex/items" label="Return to Item Dex" />
-            <div className="detailed-dex">{this.renderContainer()}</div>
-        </>;
-    }
-
-    renderContainer = () => {
-        switch (this.state.status) {
-            case "loading": return <>
-                <Helmet title="Loading… - Item Dex - PBBG" />
-                <div><LoadingSpinner /></div>
-            </>;
+    const renderContainer = () => {
+        switch (state.status) {
+            case "loading": return <div><LoadingSpinner /></div>;
             case "error": return <div>ERROR</div>;
         }
 
-        const item = this.state.dexItem;
-
-        const title = item.type === "discovered" ? `#${item.baseItem.id}: ${item.baseItem.friendlyName}` : `#${item.id}: ???`;
+        const item = state.dexItem;
 
         return <>
-            <Helmet title={`${title} - Item Dex - PBBG`} />
-            <h1>{title}</h1>
             <h2>Sprites</h2>
             <div className="body">
                 {item.type === "discovered" ? <>
@@ -81,6 +71,12 @@ class DexItemDetailedPage extends React.Component<Props, State> {
             </div>
         </>;
     };
-}
 
-export default withRouter(DexItemDetailedPage);
+    return <>
+        <title>{getTitle()}</title>
+        <DexReturnLink to="/dex/items" label="Return to Item Dex" />
+        <div className="detailed-dex">{renderContainer()}</div>
+    </>;
+};
+
+export default DexItemDetailedPage;

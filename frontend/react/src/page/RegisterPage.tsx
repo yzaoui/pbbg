@@ -1,37 +1,41 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "./LoginRegisterPage.scss";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import RegisterForm from "../component/RegisterForm";
 import authenticationService from "./../authentication.service";
+import "./LoginRegisterPage.scss";
 
 interface State {
     submitting: boolean;
     error: boolean;
 }
 
-class RegisterPage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        submitting: false,
-        error: false
-    };
+const RegisterPage: React.FC = () => {
+    const navigate = useNavigate();
+    const [state, setState] = useState<State>({ submitting: false, error: false });
 
-    componentDidMount() {
-        document.title = "Register - PBBG";
-    }
+    // If already logged in, redirect to home
+    useEffect(() => {
+        if (authenticationService.currentUserValue !== null) {
+            navigate("/", { replace: true });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    render() {
-        return <>
-            <RegisterForm onSubmit={this.handleSubmit} submitting={this.state.submitting} error={this.state.error} />
-            <Link to="/login" className="LoginRegisterPage-login-link">Existing user? Log in</Link>
-        </>;
-    }
-
-    handleSubmit = (username: string, password: string) => {
-        this.setState({ submitting: true });
+    const handleSubmit = (username: string, password: string) => {
+        setState({ submitting: true, error: false });
 
         authenticationService.register(username, password)
-            .catch(error => this.setState({ submitting: false, error: true }));
+            .then(
+                _token => navigate("/", { replace: true }),
+                _error => setState({ submitting: false, error: true })
+            )
     };
-}
+
+    return <>
+        <title>Register - PBBG</title>
+        <RegisterForm onSubmit={handleSubmit} submitting={state.submitting} error={state.error} />
+        <Link to="/login" className="LoginRegisterPage-login-link">Existing user? Log in</Link>
+    </>;
+};
 
 export default RegisterPage;

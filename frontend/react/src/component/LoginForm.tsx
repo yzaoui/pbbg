@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, FormEventHandler } from "react";
+import React, { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
 import "../page/LoginRegisterPage.scss";
 import LoadingButton from "./LoadingButton";
 
@@ -8,65 +8,59 @@ interface Props {
     error?: IncorrectCredentialsError;
 }
 
-interface State {
-    username: string;
-    password: string;
-}
+const LoginForm: React.FC<Props> = ({ onSubmit, submitting, error }) => {
+    const [username, setUsername] = useState((error && error.username) || "");
+    const [password, setPassword] = useState("");
 
-class LoginForm extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        username: (this.props.error && this.props.error.username) || "",
-        password: ""
-    };
+    useEffect(() => {
+        if (error) {
+            setUsername(error.username);
+            setPassword("");
+        }
+    }, [error]);
 
-    render() {
-        return <form onSubmit={this.handleSubmit} className="LoginRegisterPage-form">
-            <h1>Log in to PBBG</h1>
-            {this.props.error && <div>ERROR</div>}
-            <input
-                type="text"
-                required
-                autoFocus
-                placeholder="Username"
-                autoComplete="username"
-                onChange={this.handleUsernameChange}
-                value={this.state.username}
-                disabled={this.props.submitting}
-            />
-            <input
-                type="password"
-                required
-                placeholder="Password"
-                autoComplete="current-password"
-                onChange={this.handlePasswordChange}
-                value={this.state.password}
-                disabled={this.props.submitting}
-            />
-            <LoadingButton
-                type="submit"
-                loading={this.props.submitting}>
-                Log in
-            </LoadingButton>
-        </form>;
-    }
-
-    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
-        if (prevProps.error !== this.props.error) this.setState({ username: this.props.error!.username, password: "" });
-    }
-
-    handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+    const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
-        this.props.onSubmit(this.state.username, this.state.password);
+        onSubmit(username, password);
     };
 
-    handleUsernameChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-        this.setState({ username: event.target.value });
+    const handleUsernameChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+        setUsername(event.target.value);
     };
 
-    handlePasswordChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-        this.setState({ password: event.target.value });
+    const handlePasswordChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+        setPassword(event.target.value);
     };
-}
+
+    return <form onSubmit={handleSubmit} className="LoginRegisterPage-form">
+        <h1>Log in to PBBG</h1>
+        {error && <div>ERROR</div>}
+        <input
+            type="text"
+            required
+            autoFocus
+            placeholder="Username"
+            autoComplete="username"
+            onChange={handleUsernameChange}
+            value={username}
+            disabled={submitting}
+        />
+        <input
+            type="password"
+            required
+            placeholder="Password"
+            autoComplete="current-password"
+            onChange={handlePasswordChange}
+            value={password}
+            disabled={submitting}
+        />
+        <LoadingButton
+            type="submit"
+            loading={submitting}>
+            Log in
+        </LoadingButton>
+    </form>;
+};
 
 export class IncorrectCredentialsError {
     username: string;

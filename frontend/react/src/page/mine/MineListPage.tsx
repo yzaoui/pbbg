@@ -1,15 +1,15 @@
-import React from "react";
-import { RouteComponentProps, withRouter } from "../../helper/withRouter";
-import MineList from "../../component/mine/MineList";
-import { MineTypeList } from "../../backend/mine";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import { Subscription } from "rxjs";
+import { MineTypeList } from "../../backend/mine";
 import mineService from "../../backend/mine.service";
+import MineList from "../../component/mine/MineList";
 // @ts-ignore
 import enterMineMP3 from "../../audio/enter_mine.mp3";
 // @ts-ignore
-import enterMineOGG from "../../audio/enter_mine.ogg";
 import { Howl } from "howler";
-import { Helmet } from "react-helmet-async";
+import enterMineOGG from "../../audio/enter_mine.ogg";
+import { LocationState } from "./MinePage";
 
 type State = {
     status: "loading";
@@ -24,57 +24,55 @@ type State = {
     enteringMineId: number;
 };
 
-class MineListPage extends React.Component<RouteComponentProps, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
-    };
-
-    request?: Subscription;
-
-    enterMineSound = new Howl({
+const MineListPage: React.FC = () => {
+    const navigate = useNavigate();
+    const [state, setState] = useState<State>({ status: "loading" });
+    const enterMineSound = useRef(new Howl({
         src: [enterMineMP3, enterMineOGG],
         preload: true
-    });
+    }));
+    const enterMineRequestRef = useRef<Subscription | null>(null);
 
-    componentDidMount() {
-        this.request = mineService.getMineTypes()
-            .subscribe({
-                next: value => this.setState({ status: "loaded", mineTypeList: value.data }),
-                error: err => this.setState({ status: "error" })
-            });
-    }
+    useEffect(() => {
+        const subscription = mineService.getMineTypes().subscribe({
+            next: value => setState({ status: "loaded", mineTypeList: value.data }),
+            error: _err => setState({ status: "error" })
+        });
 
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
+        return () => {
+            subscription.unsubscribe();
+            enterMineRequestRef.current?.unsubscribe();
+        };
+    }, []);
 
-    render() {
-        return <>
-            <Helmet title="Mine List - PBBG" />
-            {(() => {
-                switch (this.state.status) {
-                    case "loading": return <MineList status={this.state.status} />;
-                    case "error": return <MineList status={this.state.status} />;
-                    case "loaded": return <MineList status={this.state.status} mineTypeList={this.state.mineTypeList} onEnterMine={this.handleEnterMine} />;
-                    case "entering mine": return <MineList status={this.state.status} mineTypeList={this.state.mineTypeList} enteringMineId={this.state.enteringMineId} />;
-                }
-            })()}
-        </>;
-    }
+    const handleEnterMine = (mineTypeId: number) => {
+        if (state.status !== "loaded") return;
 
-    handleEnterMine = (mineTypeId: number) => {
-        this.setState({ status: "entering mine", enteringMineId: mineTypeId });
+        enterMineRequestRef.current?.unsubscribe();
 
-        this.request = mineService.enterMine({ mineTypeId })
-            .subscribe({
-                next: value => {
-                    this.setState({ status: "loaded" });
-                    this.enterMineSound.play();
-                    this.props.history.push({ pathname: "/mine", state: { mine: value.data } });
-                },
-                error: err => this.setState({ status: "error" })
-            });
+        setState({ status: "entering mine", mineTypeList: state.mineTypeList, enteringMineId: mineTypeId });
+
+        enterMineRequestRef.current = mineService.enterMine({ mineTypeId }).subscribe({
+            next: value => {
+                setState({ status: "loaded", mineTypeList: state.mineTypeList });
+                enterMineSound.current.play();
+                navigate("/mine", { state: { mine: value.data } satisfies LocationState });
+            },
+            error: _err => setState({ status: "error" })
+        });
     };
-}
 
-export default withRouter(MineListPage);
+    return <>
+        <title>Mine List - PBBG</title>
+        {(() => {
+            switch (state.status) {
+                case "loading": return <MineList status={state.status} />;
+                case "error": return <MineList status={state.status} />;
+                case "loaded": return <MineList status={state.status} mineTypeList={state.mineTypeList} onEnterMine={handleEnterMine} />;
+                case "entering mine": return <MineList status={state.status} mineTypeList={state.mineTypeList} enteringMineId={state.enteringMineId} />;
+            }
+        })()}
+    </>;
+};
+
+export default MineListPage;

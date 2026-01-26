@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
 import friendsService from "../backend/friends.service";
 import { FriendInfo, Friends } from "../backend/friends";
-import { Helmet } from "react-helmet-async";
 import FriendsContainer from "../component/friends/FriendsContainer";
 import "./FriendsPage.scss";
 import userService from "../backend/user.service";
@@ -24,59 +23,59 @@ interface ErrorState {
 
 type State = LoadingState | LoadedState | ErrorState;
 
-class FriendsPage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
+const FriendsPage: React.FC = () => {
+    const [state, setState] = useState<State>({ status: "loading" });
+    const searchRequestRef = useRef<Subscription | null>(null);
+
+    useEffect(() => {
+        const subscription = friendsService.getFriends().subscribe({
+            next: value => setState({ status: "loaded", friends: value.data, searching: false, searchResults: null }),
+            error: _err => setState({ status: "error" })
+        });
+
+        return () => {
+            subscription.unsubscribe();
+            searchRequestRef.current?.unsubscribe();
+        };
+    }, []);
+
+    const handleSearchUser = (text: string) => {
+        if (state.status !== "loaded") return;
+
+        searchRequestRef.current?.unsubscribe();
+
+        setState(prevState => {
+            if (prevState.status !== "loaded") return prevState;
+            return { ...prevState, searching: true };
+        });
+
+        searchRequestRef.current = userService.searchUser(text).subscribe(
+            res => {
+                setState(prevState => {
+                    if (prevState.status !== "loaded") return prevState;
+                    return { ...prevState, searching: false, searchResults: res.data };
+                });
+            }
+        );
     };
 
-    request?: Subscription;
-
-    componentDidMount() {
-        this.request = friendsService.getFriends()
-            .subscribe({
-                next: value => this.setState({ status: "loaded", friends: value.data, searchResults: null }),
-                error: err => this.setState({ status: "error" })
-            });
-    }
-
-    render = () => <div className="FriendsPage">
-        <Helmet title="Friends - PBBG" />
-        {this.renderContent()}
-    </div>;
-
-    renderContent = () => {
-        switch (this.state.status) {
-            case "loading": return<FriendsContainer
-                loading
-            />;
+    const renderContent = () => {
+        switch (state.status) {
+            case "loading": return <FriendsContainer loading />;
             case "loaded": return <FriendsContainer
-                friends={this.state.friends}
-                searchResults={this.state.searchResults}
-                searching={this.state.searching}
-                onSearchUser={this.handleSearchUser}
+                friends={state.friends}
+                searchResults={state.searchResults}
+                searching={state.searching}
+                onSearchUser={handleSearchUser}
             />;
             case "error": return <span>ERROR</span>;
         }
     };
 
-    handleSearchUser = (text: string) => {
-        if (this.state.status !== "loaded") return;
-
-        this.setState(prevState => {
-            if (prevState.status !== "loaded") return prevState;
-            return { ...prevState, searching: true };
-        });
-
-        this.request = userService.searchUser(text)
-            .subscribe(
-                res => {
-                    this.setState(prevState => {
-                        if (prevState.status !== "loaded") return prevState;
-                        return { ...prevState, searching: false, searchResults: res.data };
-                    });
-                }
-            );
-    };
-}
+    return <div className="FriendsPage">
+        <title>Friends - PBBG</title>
+        {renderContent()}
+    </div>;
+};
 
 export default FriendsPage;

@@ -1,5 +1,5 @@
+import React, { ChangeEventHandler, useState } from "react";
 import { BasePlant, isMaturableBasePlant } from "../../model/farm";
-import React, { ChangeEventHandler } from "react";
 import PlantImage from "./PlantImage";
 import styles from "./PlantPreview.module.scss";
 
@@ -7,50 +7,45 @@ type Props = {
     basePlant: BasePlant;
 };
 
-type State = {
-    index: number;
-};
+const PlantPreview: React.FC<Props> = ({ basePlant }) => {
+    const [index, setIndex] = useState(0);
 
-class PlantPreview extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        index: 0
+    const handleSliderChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+        setIndex(parseInt(event.target.value));
     };
 
-    render() {
-        const { basePlant } = this.props;
-        const { index } = this.state;
+    if (isMaturableBasePlant(basePlant)) {
+        let src: string;
+        let spriteIndex: number;
 
-        if (isMaturableBasePlant(basePlant)) {
-            let src: string;
-            let spriteIndex: number;
-
-            if (index < 4) {
-                src = basePlant.growingSprite;
-                spriteIndex = index;
-            } else {
-                src = basePlant.matureSprite;
-                if (index === 4) {
-                    spriteIndex = 3;
-                } else {
-                    spriteIndex = index - 4
-                }
-            }
-
-            return <div className={styles.PlantPreview}>
-                <PlantImage src={src} spriteIndex={spriteIndex} alt={`${basePlant.name} sprite`} />
-                <input type="range" min={0} max={7} value={index} step={1} onChange={this.handleSliderChange} />
-            </div>
+        if (index < NUM_MATURABLE_GROWING_STAGES) {
+            src = basePlant.growingSprite;
+            spriteIndex = index;
         } else {
-            return <div className={styles.PlantPreview}>
-                <PlantImage src={basePlant.growingSprite} spriteIndex={index} alt={`${basePlant.name} sprite`} />
-                <input type="range" min={0} max={3} value={index} step={1} onChange={this.handleSliderChange} />
-            </div>
+            src = basePlant.matureSprite;
+            const relativeIndex = index - NUM_MATURABLE_GROWING_STAGES;
+            if (relativeIndex == 0) { // first index in mature stage is special, we want to show the last stage
+                spriteIndex = NUM_MATURABLE_MATURE_STAGES - 1;
+            } else {
+                spriteIndex = relativeIndex - 1; // subtract 1 to make up for the above
+            }
         }
-    }
 
-    handleSliderChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-        this.setState({ index: parseInt(event.target.value) });
+        return <div className={styles.PlantPreview}>
+            <PlantImage src={src} spriteIndex={spriteIndex} alt={`${basePlant.name} sprite`} />
+            <input type="range" min={0} max={NUM_MATURABLE_STAGES - 1} value={index} step={1} onChange={handleSliderChange} />
+        </div>;
+    } else {
+        return <div className={styles.PlantPreview}>
+            <PlantImage src={basePlant.growingSprite} spriteIndex={index} alt={`${basePlant.name} sprite`} />
+            <input type="range" min={0} max={NUM_BASE_STAGES - 1} value={index} step={1} onChange={handleSliderChange} />
+        </div>;
     }
-}
+};
+
+const NUM_BASE_STAGES = 4;
+const NUM_MATURABLE_GROWING_STAGES = 4;
+const NUM_MATURABLE_MATURE_STAGES = 4;
+const NUM_MATURABLE_STAGES = NUM_MATURABLE_GROWING_STAGES + NUM_MATURABLE_MATURE_STAGES + 1; // add 1 since ready-to-harvest sprite should appear twice
 
 export default PlantPreview;

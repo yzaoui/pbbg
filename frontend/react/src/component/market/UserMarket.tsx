@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { isStackable } from "../../backend/inventory";
 import { MarketItem } from "../../backend/market";
+import { goldImg } from "../../helper/const";
 import LoadingButton from "../LoadingButton";
 import MarketItemEntry from "./MarketItemEntry";
-import { goldImg } from "../../helper/const";
-import { isStackable } from "../../backend/inventory";
 
 interface Props {
     marketItems: MarketItem[];
@@ -11,58 +11,33 @@ interface Props {
     onSell: (orders: Map<number, number | undefined>) => void;
 }
 
-interface State {
-    selectedItemsWithQuantity: Map<number, number | undefined>;
-}
+const UserMarket: React.FC<Props> = ({ marketItems, selling, onSell }) => {
+    const [selectedItemsWithQuantity, setSelectedItemsWithQuantity] = useState<Map<number, number | undefined>>(new Map());
 
-class UserMarket extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        selectedItemsWithQuantity: new Map()
-    };
+    useEffect(() => {
+        if (!selling) {
+            setSelectedItemsWithQuantity(new Map());
+        }
+    }, [selling]);
 
-    componentDidUpdate(prevProps: Readonly<Props>) {
-        if (prevProps.selling && !this.props.selling) this.setState({ selectedItemsWithQuantity: new Map() });
-    }
-
-    render() {
-        const { marketItems, selling } = this.props;
-        const { selectedItemsWithQuantity } = this.state;
-
-        return <div className="UserMarket">
-            <ul>
-                {marketItems.map(marketItem => <MarketItemEntry
-                    key={marketItem.item.id}
-                    marketItem={marketItem}
-                    onClick={this.handleClickItem}
-                    selected={selectedItemsWithQuantity.has(marketItem.item.id)}
-                    selectedQuantity={selectedItemsWithQuantity.get(marketItem.item.id)}
-                />)}
-            </ul>
-            <div className="footer">
-                <span>Total: {goldImg}{this.total()}</span>
-                <LoadingButton loading={selling} disabled={selling || selectedItemsWithQuantity.size === 0} onClick={this.handleSell}>Sell</LoadingButton>
-            </div>
-        </div>;
-    }
-
-    total = () => {
-        return this.props.marketItems.filter(marketItem => this.state.selectedItemsWithQuantity.has(marketItem.item.id))
-            .map(marketItem => ({ price: marketItem.price, quantity: this.selectedItemQuantity(marketItem.item.id) }))
-            .reduce((total, { price, quantity }) => total + (quantity !== null ? price * quantity : price ), 0);
-    };
-
-    selectedItemQuantity = (itemId: number) => {
-        const quantity = this.state.selectedItemsWithQuantity.get(itemId);
+    const selectedItemQuantity = (itemId: number) => {
+        const quantity = selectedItemsWithQuantity.get(itemId);
 
         if (quantity === null || quantity === undefined) return null;
 
         return quantity;
     };
 
-    handleClickItem = (id: number) => {
-        const currentlySelectedItems = this.state.selectedItemsWithQuantity;
+    const total = () => {
+        return marketItems.filter(marketItem => selectedItemsWithQuantity.has(marketItem.item.id))
+            .map(marketItem => ({ price: marketItem.price, quantity: selectedItemQuantity(marketItem.item.id) }))
+            .reduce((total, { price, quantity }) => total + (quantity !== null ? price * quantity : price ), 0);
+    };
 
-        const item = this.props.marketItems.find(marketItem => marketItem.item.id === id)!.item;
+    const handleClickItem = (id: number) => {
+        const currentlySelectedItems = selectedItemsWithQuantity;
+
+        const item = marketItems.find(marketItem => marketItem.item.id === id)!.item;
 
         const newMap = new Map(currentlySelectedItems);
 
@@ -92,12 +67,28 @@ class UserMarket extends React.Component<Props, State> {
             }
         }
 
-        this.setState({ selectedItemsWithQuantity: newMap });
+        setSelectedItemsWithQuantity(newMap);
     };
 
-    handleSell = () => {
-        this.props.onSell(this.state.selectedItemsWithQuantity);
+    const handleSell = () => {
+        onSell(selectedItemsWithQuantity);
     };
-}
+
+    return <div className="UserMarket">
+        <ul>
+            {marketItems.map(marketItem => <MarketItemEntry
+                key={marketItem.item.id}
+                marketItem={marketItem}
+                onClick={handleClickItem}
+                selected={selectedItemsWithQuantity.has(marketItem.item.id)}
+                selectedQuantity={selectedItemsWithQuantity.get(marketItem.item.id)}
+            />)}
+        </ul>
+        <div className="footer">
+            <span>Total: {goldImg}{total()}</span>
+            <LoadingButton loading={selling} disabled={selling || selectedItemsWithQuantity.size === 0} onClick={handleSell}>Sell</LoadingButton>
+        </div>
+    </div>;
+};
 
 export default UserMarket;
