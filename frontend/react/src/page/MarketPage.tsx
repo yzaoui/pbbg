@@ -1,13 +1,13 @@
-import React from "react";
+import { Howl } from "howler";
+import React, { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
-import "./MarketPage.scss";
+import { UserAndGameMarkets } from "../backend/market";
 import marketService from "../backend/market.service";
 import LoadingSpinner from "../component/LoadingSpinner";
-import { UserAndGameMarkets } from "../backend/market";
 import GameMarket from "../component/market/GameMarket";
 import UserMarket from "../component/market/UserMarket";
 import goldSrc from "../img/gold.png";
-import { Howl } from "howler";
+import "./MarketPage.scss";
 // @ts-ignore
 import transactionMP3 from "../audio/transaction.mp3";
 // @ts-ignore
@@ -30,125 +30,125 @@ interface ErrorState {
 
 type State = LoadingState | LoadedState | ErrorState;
 
-class MarketPage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
-    };
-
-    request?: Subscription;
-
-    transactionSound = new Howl({
+const MarketPage: React.FC = () => {
+    const [state, setState] = useState<State>({ status: "loading" });
+    const buyRequestRef = useRef<Subscription>(null);
+    const sellRequestRef = useRef<Subscription>(null);
+    const transactionSound = useRef(new Howl({
         src: [transactionMP3, transactionOGG],
         preload: true
-    });
+    }));
 
-    componentDidMount() {
-        document.title = "Market - PBBG";
-
-        this.request = marketService.getMarkets()
+    useEffect(() => {
+        const subscription = marketService.getMarkets()
             .subscribe({
-                next: value => this.setState(this.stateInitialLoaded(value.data)),
-                error: err => this.setState({ status: "error" })
+                next: value => setState({
+                    status: "loaded",
+                    markets: value.data,
+                    buying: false,
+                    selling: false
+                }),
+                error: _err => setState({ status: "error" })
             });
-    }
 
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
+        return () => {
+            subscription.unsubscribe();
+            buyRequestRef.current?.unsubscribe();
+            sellRequestRef.current?.unsubscribe();
+        };
+    }, []);
 
-    render() {
-        if (this.state.status === "error") return "ERROR";
+    const handleBuy = (orders: Map<number, number | undefined>) => {
+        if (state.status !== "loaded") return;
 
-        return <div className="Market">
-            <h1>Market</h1>
-            <div className="gold">
-                You have: {goldImg}{this.state.status === "loading" ?
-                    <LoadingSpinner style={{ width: "18px", height: "18px", borderWidth: "4px" }} />
-                :
-                    this.state.markets.gold
-                }
-            </div>
-            <div className="for-sale">
-                <h2>For sale</h2>
-                {this.state.status === "loading" ?
-                    <LoadingSpinner />
-                :
-                    <GameMarket
-                        marketItems={this.state.markets.gameMarket.items}
-                        userGold={this.state.markets.gold}
-                        buying={this.state.buying}
-                        onBuy={this.handleBuy}
-                    />
-                }
-            </div>
-            <div className="inventory">
-                <h2>Your inventory</h2>
-                {this.state.status === "loading" ?
-                    <LoadingSpinner />
-                    :
-                    <UserMarket
-                        marketItems={this.state.markets.userMarket.items}
-                        selling={this.state.selling}
-                        onSell={this.handleSell}
-                    />
-                }
-            </div>
-        </div>;
-    }
+        buyRequestRef.current?.unsubscribe();
 
-    handleBuy = (orders: Map<number, number | undefined>) => {
-        if (this.state.status !== "loaded") return;
-
-        this.setState(prevState => {
+        setState(prevState => {
             if (prevState.status !== "loaded") return prevState;
             return { ...prevState, buying: true };
         });
 
         const ordersArray = Array.from(orders, ([id, quantity]) => ({ id, quantity }));
 
-        marketService.buy({ orders: ordersArray })
+        buyRequestRef.current = marketService.buy({ orders: ordersArray })
             .subscribe({
                 next: value => {
-                    this.transactionSound.play();
-                    this.setState(prevState => {
+                    transactionSound.current.play();
+                    setState(prevState => {
                         if (prevState.status !== "loaded") return prevState;
                         return { ...prevState, buying: false, markets: value.data };
                     });
                 },
-                error: err => this.setState({ status: "error" })
+                error: _err => setState({ status: "error" })
             });
     };
 
-    handleSell = (orders: Map<number, number | undefined>) => {
-        if (this.state.status !== "loaded") return;
+    const handleSell = (orders: Map<number, number | undefined>) => {
+        if (state.status !== "loaded") return;
 
-        this.setState(prevState => {
+        sellRequestRef.current?.unsubscribe();
+
+        setState(prevState => {
             if (prevState.status !== "loaded") return prevState;
             return { ...prevState, selling: true };
         });
 
         const ordersArray = Array.from(orders, ([id, quantity]) => ({ id, quantity }));
 
-        marketService.sell({ orders: ordersArray })
+        sellRequestRef.current = marketService.sell({ orders: ordersArray })
             .subscribe({
                 next: value => {
-                    this.transactionSound.play();
-                    this.setState(prevState => {
+                    transactionSound.current.play();
+                    setState(prevState => {
                         if (prevState.status !== "loaded") return prevState;
                         return { ...prevState, selling: false, markets: value.data };
                     });
                 },
-                error: err => {}
+                error: _err => {}
             });
     };
 
-    private stateInitialLoaded = (markets: UserAndGameMarkets): LoadedState => ({
-        status: "loaded",
-        markets: markets,
-        buying: false,
-        selling: false
-    });
-}
+    if (state.status === "error") return <>ERROR</>;
+
+    return <>
+        <title>Market - PBBG</title>
+        <div className="Market">
+            <h1>Market</h1>
+            <div className="gold">
+                You have: {goldImg}{state.status === "loading" ?
+                    <LoadingSpinner style={{ width: "18px", height: "18px", borderWidth: "4px" }} />
+                :
+                    state.markets.gold
+                }
+            </div>
+            <div className="for-sale">
+                <h2>For sale</h2>
+                {state.status === "loading" ?
+                    <LoadingSpinner />
+                :
+                    <GameMarket
+                        marketItems={state.markets.gameMarket.items}
+                        userGold={state.markets.gold}
+                        buying={state.buying}
+                        onBuy={handleBuy}
+                    />
+                }
+            </div>
+            <div className="inventory">
+                <h2>Your inventory</h2>
+                {state.status === "loading" ?
+                    <LoadingSpinner />
+                    :
+                    <UserMarket
+                        marketItems={state.markets.userMarket.items}
+                        selling={state.selling}
+                        onSell={handleSell}
+                    />
+                }
+            </div>
+        </div>
+    </>;
+};
 
 const goldImg = <img src={goldSrc} alt="Gold icon" style={{ width: "16px", height: "16px" }} />;
 

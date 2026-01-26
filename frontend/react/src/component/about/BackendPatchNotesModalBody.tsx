@@ -1,9 +1,8 @@
-import React from "react";
-import { Subscription } from "rxjs";
-import aboutService from "../../backend/about.service";
-import LoadingSpinner from "../LoadingSpinner";
+import React, { useEffect, useState } from "react";
 import { PatchNotes } from "../../backend/about";
+import aboutService from "../../backend/about.service";
 import { patchNotesToHTML } from "../../helper/patch-notes";
+import LoadingSpinner from "../LoadingSpinner";
 
 interface LoadingState {
     status: "loading";
@@ -16,29 +15,21 @@ interface LoadedState {
 
 type State = LoadingState | LoadedState;
 
-class BackendPatchNotesModalBody extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
-    };
+const BackendPatchNotesModalBody: React.FC = () => {
+    const [state, setState] = useState<State>({ status: "loading" });
 
-    private request: Subscription | null = null;
-
-    componentDidMount() {
-        this.request = aboutService.getBackendPatchNotes().subscribe(res =>
-            this.setState({ status: "loaded", patchNotes: res.data })
+    useEffect(() => {
+        const subscription = aboutService.getBackendPatchNotes().subscribe(res =>
+            setState({ status: "loaded", patchNotes: res.data })
         );
-    }
 
-    componentWillUnmount() {
-        this.request?.unsubscribe();
-    }
+        return () => subscription.unsubscribe();
+    }, []);
 
-    render() {
-        return this.state.status === "loading" ?
-            <LoadingSpinner />
-        :
-            <div dangerouslySetInnerHTML={patchNotesToHTML(this.state.patchNotes)} />;
-    }
-}
+    return state.status === "loading" ?
+        <LoadingSpinner />
+    :
+        <div dangerouslySetInnerHTML={patchNotesToHTML(state.patchNotes)} />;
+};
 
 export default BackendPatchNotesModalBody;

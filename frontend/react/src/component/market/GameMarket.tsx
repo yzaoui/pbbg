@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MarketItem } from "../../backend/market";
 import LoadingButton from "../LoadingButton";
 import { isStackable } from "../../backend/inventory";
@@ -12,60 +12,33 @@ interface Props {
     onBuy: (orders: Map<number, number | undefined>) => void;
 }
 
-interface State {
-    selectedItemsWithQuantity: Map<number, number | undefined>;
-}
+const GameMarket: React.FC<Props> = ({ marketItems, userGold, buying, onBuy }) => {
+    const [selectedItemsWithQuantity, setSelectedItemsWithQuantity] = useState<Map<number, number | undefined>>(new Map());
 
-class GameMarket extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        selectedItemsWithQuantity: new Map()
-    };
+    useEffect(() => {
+        if (!buying) {
+            setSelectedItemsWithQuantity(new Map());
+        }
+    }, [buying]);
 
-    componentDidUpdate(prevProps: Readonly<Props>) {
-        if (prevProps.buying && !this.props.buying) this.setState({ selectedItemsWithQuantity: new Map() });
-    }
-
-    render() {
-        const { marketItems, userGold, buying } = this.props;
-        const { selectedItemsWithQuantity } = this.state;
-        const total = this.total();
-        const notEnoughGold = userGold < total;
-
-        return <div className="GameMarket">
-            <ul>
-                {marketItems.map(marketItem => <MarketItemEntry
-                    key={marketItem.item.id}
-                    marketItem={marketItem}
-                    onClick={this.handleClickItem}
-                    selected={selectedItemsWithQuantity.has(marketItem.item.id)}
-                    selectedQuantity={selectedItemsWithQuantity.get(marketItem.item.id)}
-                />)}
-            </ul>
-            <div className="footer" data-not-enough-gold={notEnoughGold ? "" : undefined}>
-                <span>Total: {goldImg}{total}</span>
-                <LoadingButton loading={buying} disabled={notEnoughGold || buying || selectedItemsWithQuantity.size === 0} onClick={this.handleBuy}>Buy</LoadingButton>
-            </div>
-        </div>;
-    }
-
-    total = () => {
-        return this.props.marketItems.filter(marketItem => this.state.selectedItemsWithQuantity.has(marketItem.item.id))
-            .map(marketItem => ({ price: marketItem.price, quantity: this.selectedItemQuantity(marketItem.item.id) }))
-            .reduce((total, { price, quantity }) => total + (quantity !== null ? price * quantity : price ), 0);
-    };
-
-    selectedItemQuantity = (itemId: number) => {
-        const quantity = this.state.selectedItemsWithQuantity.get(itemId);
+    const selectedItemQuantity = (itemId: number) => {
+        const quantity = selectedItemsWithQuantity.get(itemId);
 
         if (quantity === null || quantity === undefined) return null;
 
         return quantity;
     };
 
-    handleClickItem = (id: number) => {
-        const currentlySelectedItems = this.state.selectedItemsWithQuantity;
+    const total = () => {
+        return marketItems.filter(marketItem => selectedItemsWithQuantity.has(marketItem.item.id))
+            .map(marketItem => ({ price: marketItem.price, quantity: selectedItemQuantity(marketItem.item.id) }))
+            .reduce((total, { price, quantity }) => total + (quantity !== null ? price * quantity : price ), 0);
+    };
 
-        const item = this.props.marketItems.find(marketItem => marketItem.item.id === id)!.item;
+    const handleClickItem = (id: number) => {
+        const currentlySelectedItems = selectedItemsWithQuantity;
+
+        const item = marketItems.find(marketItem => marketItem.item.id === id)!.item;
 
         const newMap = new Map(currentlySelectedItems);
 
@@ -95,12 +68,31 @@ class GameMarket extends React.Component<Props, State> {
             }
         }
 
-        this.setState({ selectedItemsWithQuantity: newMap });
+        setSelectedItemsWithQuantity(newMap);
     };
 
-    handleBuy = () => {
-        this.props.onBuy(this.state.selectedItemsWithQuantity);
+    const handleBuy = () => {
+        onBuy(selectedItemsWithQuantity);
     };
-}
+
+    const totalValue = total();
+    const notEnoughGold = userGold < totalValue;
+
+    return <div className="GameMarket">
+        <ul>
+            {marketItems.map(marketItem => <MarketItemEntry
+                key={marketItem.item.id}
+                marketItem={marketItem}
+                onClick={handleClickItem}
+                selected={selectedItemsWithQuantity.has(marketItem.item.id)}
+                selectedQuantity={selectedItemsWithQuantity.get(marketItem.item.id)}
+            />)}
+        </ul>
+        <div className="footer" data-not-enough-gold={notEnoughGold ? "" : undefined}>
+            <span>Total: {goldImg}{totalValue}</span>
+            <LoadingButton loading={buying} disabled={notEnoughGold || buying || selectedItemsWithQuantity.size === 0} onClick={handleBuy}>Buy</LoadingButton>
+        </div>
+    </div>;
+};
 
 export default GameMarket;

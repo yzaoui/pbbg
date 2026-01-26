@@ -1,6 +1,6 @@
-import React from "react";
-import Plot from "./Plot";
+import React, { useEffect, useState } from "react";
 import { isOccupiedPlotData, PlotData } from "../../model/farm";
+import Plot from "./Plot";
 
 type Props = {
     plots: PlotData[];
@@ -18,107 +18,93 @@ type State = {
     status: "dragging";
     draggedPlotId: number;
     dropTargetPlotId: number | null;
-}
+};
 
-class PlotList extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        status: "idle"
-    };
+const PlotList: React.FC<Props> = ({ plots, refreshPlantProgress, fetchingNextStage, loadingPlots, onPlant, onHarvest, onReorder }) => {
+    const [state, setState] = useState<State>({ status: "idle" });
 
-    private forceUpdateInterval: (number | null) = null;
+    useEffect(() => {
+        const interval = window.setInterval(refreshPlantProgress, 100);
 
-    componentDidMount() {
-        this.forceUpdateInterval = window.setInterval(this.props.refreshPlantProgress, 100);
-    }
+        return () => clearInterval(interval);
+    }, [refreshPlantProgress]);
 
-    componentWillUnmount() {
-        if (this.forceUpdateInterval !== null) {
-            clearInterval(this.forceUpdateInterval);
-            this.forceUpdateInterval = null;
-        }
-    }
-
-    render() {
-        const { plots, fetchingNextStage, loadingPlots, onPlant, onHarvest } = this.props;
-        const draggedPlotId = this.state.status === "idle" ? null : this.state.draggedPlotId;
-        const isOverDropTargetPlotId = this.state.status === "idle" ? null : this.state.dropTargetPlotId;
-        const isDragging = this.state.status === "dragging"
-
-        return <ul className="PlotList">
-            {plots.map((plot, index) =>
-                <li key={plot.id}>
-                    <Plot
-                        dragged={draggedPlotId === plot.id}
-                        isDropTarget={isDragging}
-                        isOverDropTarget={isOverDropTargetPlotId === plot.id}
-                        onDragStart={(e) => this.handlePlotDragStart(e, plot.id)}
-                        onDragEnter={(e) => this.handlePlotDragEnter(e, plot.id)}
-                        onDragLeave={(e) => this.handlePlotDragLeave(e, plot.id)}
-                        onDragEnd={(e) => this.handlePlotDragEnd(e)}
-                        onDrop={(e) => this.handlePlotDrop(e, plot.id, index)}
-                        loading={loadingPlots.has(plot.id)}
-                        {...(isOccupiedPlotData(plot) ? {
-                            plot: plot,
-                            fetchingNextStage: fetchingNextStage.has(plot.id),
-                            onHarvest: onHarvest
-                        } : {
-                            plot: plot,
-                            onPlant: onPlant
-                        }
-                        )}
-                    />
-                </li>
-            )}
-        </ul>;
-    }
-
-    private handlePlotDragStart = (event: React.DragEvent<HTMLElement>, plotId: number) => {
+    const handlePlotDragStart = (event: React.DragEvent<HTMLElement>, plotId: number) => {
         event.dataTransfer.effectAllowed = "move";
         event.dataTransfer.setData("application/pbbg-plot-id", plotId.toString());
 
-        this.setState({
+        setState({
             status: "dragging",
             draggedPlotId: plotId,
             dropTargetPlotId: plotId
         });
     };
 
-    private handlePlotDragEnter = (event: React.DragEvent<HTMLElement>, plotId: number) => {
+    const handlePlotDragEnter = (event: React.DragEvent<HTMLElement>, plotId: number) => {
         if (event.dataTransfer.getData("application/pbbg-plot-id").length === 0) return;
 
-        if (this.state.status === "dragging") this.setState((prevState) => {
+        if (state.status === "dragging") setState((prevState) => {
             return { ...prevState, dropTargetPlotId: plotId };
-        })
+        });
 
         return false;
     };
 
-    private handlePlotDragLeave = (event: React.DragEvent<HTMLElement>, plotId: number) => {
+    const handlePlotDragLeave = (event: React.DragEvent<HTMLElement>, _plotId: number) => {
         if (event.dataTransfer.getData("application/pbbg-plot-id").length === 0) return;
-
         // TODO: Implement leaving drag area
+        return false;
+    };
+
+    const handlePlotDragEnd = (_event: React.DragEvent<HTMLElement>) => {
+        if (state.status === "dragging") setState({ status: "idle" });
 
         return false;
     };
 
-    private handlePlotDragEnd = (event: React.DragEvent<HTMLElement>) => {
-        if (this.state.status === "dragging") this.setState({ status: "idle" });
-
-        return false;
-    };
-
-    private handlePlotDrop = (event: React.DragEvent<HTMLElement>, plotId: number, targetIndex: number) => {
+    const handlePlotDrop = (event: React.DragEvent<HTMLElement>, plotId: number, targetIndex: number) => {
         const plotIdData = event.dataTransfer.getData("application/pbbg-plot-id");
-        if (plotIdData.length === 0) return
+        if (plotIdData.length === 0) return;
 
         event.stopPropagation();
         event.preventDefault();
         const sourcePlotId = Number(plotIdData);
 
         if (sourcePlotId !== plotId) {
-            this.props.onReorder(sourcePlotId, targetIndex);
+            onReorder(sourcePlotId, targetIndex);
         }
     };
-}
+
+    const draggedPlotId = state.status === "idle" ? null : state.draggedPlotId;
+    const isOverDropTargetPlotId = state.status === "idle" ? null : state.dropTargetPlotId;
+    const isDragging = state.status === "dragging";
+
+    return <ul className="PlotList">
+        {plots.map((plot, index) =>
+            <li key={plot.id}>
+                <Plot
+                    dragged={draggedPlotId === plot.id}
+                    isDropTarget={isDragging}
+                    isOverDropTarget={isOverDropTargetPlotId === plot.id}
+                    onDragStart={(e) => handlePlotDragStart(e, plot.id)}
+                    onDragEnter={(e) => handlePlotDragEnter(e, plot.id)}
+                    onDragLeave={(e) => handlePlotDragLeave(e, plot.id)}
+                    onDragEnd={(e) => handlePlotDragEnd(e)}
+                    onDrop={(e) => handlePlotDrop(e, plot.id, index)}
+                    loading={loadingPlots.has(plot.id)}
+                    {...(isOccupiedPlotData(plot) ? {
+                        plot: plot,
+                        fetchingNextStage: fetchingNextStage.has(plot.id),
+                        onHarvest: onHarvest
+                    } : {
+                        plot: plot,
+                        onPlant: onPlant
+                    }
+                    )}
+                />
+            </li>
+        )}
+    </ul>;
+};
 
 export default PlotList;

@@ -1,32 +1,24 @@
-import React, { ChangeEventHandler } from "react";
+import React, { ChangeEventHandler, useState } from "react";
 import audioService from "../../audio.service";
 import "./VolumeSetting.scss";
 
-interface State {
-    volume: number;
-}
+const VolumeSetting: React.FC = () => {
+    const [volume, setVolume] = useState(audioService.getVolume);
 
-class VolumeSetting extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        volume: audioService.getVolume()
-    };
-
-    render() {
-        return <fieldset className="ChangeSoundVolume">
-            <legend>Volume</legend>
-            <div>
-                <label htmlFor="volume">Adjust sound effect volume</label>
-                <input type="range" id="volume" min="0" max="1" step="0.01" onChange={this.handleChange} value={this.state.volume} />
-            </div>
-        </fieldset>;
-    }
-
-    handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
         const volume = parseFloat(event.target.value);
 
         audioService.setVolume(volume);
-        this.setState({ volume: volume })
+        setVolume(volume);
     };
-}
+
+    return <fieldset className="ChangeSoundVolume">
+        <legend>Volume</legend>
+        <div>
+            <label htmlFor="volume">Adjust sound effect volume</label>
+            <input type="range" id="volume" min="0" max="1" step="0.01" onChange={handleChange} value={volume} />
+        </div>
+    </fieldset>;
+};
 
 export default VolumeSetting;

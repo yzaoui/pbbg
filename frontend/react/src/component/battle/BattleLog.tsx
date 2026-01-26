@@ -1,9 +1,9 @@
-import React, { RefObject } from "react";
-import styles from "./BattleLog.module.scss";
+import classNames from "classnames";
+import React, { useEffect, useRef } from "react";
 import { BattleReward, MappedUnitEffects } from "../../backend/battle";
 import { SidedUnit } from "./Battle";
+import styles from "./BattleLog.module.scss";
 import HealthEffectResult from "./HealthEffectResult";
-import classNames from "classnames";
 
 interface Props {
     effects: MappedUnitEffects[];
@@ -14,47 +14,37 @@ interface Props {
     className?: string;
 }
 
-class BattleLog extends React.Component<Props> {
-    scrollRef: RefObject<HTMLDivElement | null>;
+const BattleLog: React.FC<Props> = ({ effects, reward, units, onUnitNameEnter, onUnitNameLeave, className }) => {
+    const scrollRef = useRef<HTMLDivElement>(null);
 
-    constructor(props: Props) {
-        super(props);
-
-        this.scrollRef = React.createRef();
-    }
-
-    componentDidUpdate(prevProps: Readonly<Props>) {
-        if (prevProps.effects.length !== this.props.effects.length || (prevProps.reward === null && this.props.reward !== null)) {
-            this.scrollRef.current!.scrollTop = this.scrollRef.current!.scrollHeight;
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }
+    }, [effects.length, reward]);
 
-    render() {
-        const { effects, reward, units, onUnitNameEnter, onUnitNameLeave, className } = this.props;
+    return <div className={classNames(styles.BattleLog, className)}>
+        <h1>Log</h1>
+        <div ref={scrollRef}>
+            <ol>
+                {effects.map((mappedEffect, i) => Object.entries(mappedEffect).map(([id, effect]) => {
+                    const unitId = parseInt(id);
 
-        return <div className={classNames(styles.BattleLog, className)}>
-            <h1>Log</h1>
-            <div ref={this.scrollRef}>
-                <ol>
-                    {effects.map((mappedEffect, i) => Object.entries(mappedEffect).map(([id, effect]) => {
-                        const unitId = parseInt(id);
-
-                        return <HealthEffectResult
-                            key={i}
-                            unit={units.get(unitId)!}
-                            effect={effect}
-                            onUnitNameEnter={() => onUnitNameEnter(unitId)}
-                            onUnitNameLeave={() => onUnitNameLeave(unitId)}
-                        />;
-                    }))}
-                    {reward &&
-                        <BattleRewardResult {...reward} />
-                    }
-                </ol>
-            </div>
-        </div>;
-    }
-}
+                    return <HealthEffectResult
+                        key={i}
+                        unit={units.get(unitId)!}
+                        effect={effect}
+                        onUnitNameEnter={() => onUnitNameEnter(unitId)}
+                        onUnitNameLeave={() => onUnitNameLeave(unitId)}
+                    />;
+                }))}
+                {reward &&
+                    <BattleRewardResult {...reward} />
+                }
+            </ol>
+        </div>
+    </div>;
+};
 
 const BattleRewardResult: React.FC<BattleReward> = () => <li>[BATTLE OVER RESULTS]</li>;
 

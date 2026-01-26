@@ -1,11 +1,11 @@
-import React from "react";
-import { Squad } from "../backend/squad";
-import squadService from "../backend/squad.service";
+import React, { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
-import LoadingSpinner from "../component/LoadingSpinner";
-import PBBGUnit from "../component/PBBGUnit";
 import classNames from "classnames";
 import { Howl } from "howler";
+import { Squad } from "../backend/squad";
+import squadService from "../backend/squad.service";
+import LoadingSpinner from "../component/LoadingSpinner";
+import PBBGUnit from "../component/PBBGUnit";
 // @ts-ignore
 import healingEffectMP3 from "../audio/healing_effect.mp3";
 // @ts-ignore
@@ -19,68 +19,65 @@ type State = {
     status: "loaded";
     squad: Squad;
     healing: boolean;
-}
+};
 
-class SquadPage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        status: "loading",
-    };
-
-    request?: Subscription;
-
-    healingSound = new Howl({
+const SquadPage: React.FC = () => {
+    const [state, setState] = useState<State>({ status: "loading" });
+    const healRequestRef = useRef<Subscription | null>(null);
+    const healingSound = useRef(new Howl({
         src: [healingEffectMP3, healingEffectOGG],
         preload: true
-    });
+    }));
 
-    componentDidMount() {
-        document.title = "Squad - PBBG";
-
-        this.request = squadService.getSquad().subscribe({
-            next: value => this.setState({ status: "loaded", squad: value.data, healing: false }),
-            error: err => this.setState({ status: "error" })
+    useEffect(() => {
+        const subscription = squadService.getSquad().subscribe({
+            next: value => setState({ status: "loaded", squad: value.data, healing: false }),
+            error: _err => setState({ status: "error" })
         });
-    }
 
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
+        return () => {
+            subscription.unsubscribe();
+            healRequestRef.current?.unsubscribe();
+        };
+    }, []);
 
-    render() {
-        if (this.state.status === "loading") return <LoadingSpinner />;
-        else if (this.state.status === "error") return "ERROR";
+    const handleHealClick = () => {
+        if (state.status !== "loaded") return;
 
-        return <>
-            <button
-                className={classNames("fancy", { "loading": this.state.healing })}
-                style={{ alignSelf: "center" }}
-                onClick={this.handleHealClick}
-                disabled={this.state.healing}
-            >
-                Heal Squad{this.state.healing ? " (Loading…)" : ""}
-            </button>
-            {this.state.squad.units.map(unit => <PBBGUnit key={unit.id} unit={unit} style={{ margin: "4px" }} />)}
-        </>;
-    }
+        healRequestRef.current?.unsubscribe();
 
-    handleHealClick = () => {
-        if (this.state.status !== "loaded") throw Error();
-        this.setState(prevState => {
+        setState(prevState => {
             if (prevState.status !== "loaded") return prevState;
             return { ...prevState, healing: true };
         });
 
-        this.request = squadService.healSquad().subscribe({
+        healRequestRef.current = squadService.healSquad().subscribe({
             next: value => {
-                this.setState(prevState => {
+                setState(prevState => {
                     if (prevState.status !== "loaded") return prevState;
                     return { ...prevState, healing: false, squad: value.data };
                 });
-                this.healingSound.play();
+                healingSound.current.play();
             },
-            error: err => this.setState({ status: "error" })
+            error: _err => setState({ status: "error" })
         });
     };
-}
+
+    if (state.status === "loading") return <LoadingSpinner />;
+    else if (state.status === "error") return <>ERROR</>;
+
+    return <>
+        <title>Squad - PBBG</title>
+        <button
+            className={classNames("fancy", { "loading": state.healing })}
+            style={{ alignSelf: "center" }}
+            onClick={handleHealClick}
+            disabled={state.healing}
+        >
+            Heal Squad{state.healing ? " (Loading…)" : ""}
+        </button>
+        {state.squad.units.map(unit => <PBBGUnit key={unit.id} unit={unit} style={{ margin: "4px" }} />)}
+    </>;
+};
 
 export default SquadPage;

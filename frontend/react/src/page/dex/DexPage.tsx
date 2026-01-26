@@ -12,18 +12,13 @@ const DexPage: React.FC = () => <Routes>
     <Route path="/plants/*" element={<DexPlantsPage />} />
 </Routes>;
 
-class Index extends React.Component {
-    componentDidMount() {
-        document.title = "Dex - PBBG";
-    }
-
-    render() {
-        return <div className="DexPage">
-            <Link to="/dex/items">Items</Link>
-            <Link to="/dex/units">Units</Link>
-            <Link to="/dex/plants">Plants</Link>
-        </div>;
-    }
-}
+const Index: React.FC = () => <>
+    <title>Dex - PBBG</title>
+    <div className="DexPage">
+        <Link to="/dex/items">Items</Link>
+        <Link to="/dex/units">Units</Link>
+        <Link to="/dex/plants">Plants</Link>
+    </div>
+</>;
 
 export default DexPage;

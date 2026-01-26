@@ -1,9 +1,8 @@
-import React, { CSSProperties } from "react";
-import "./AboutPage.scss";
+import React, { CSSProperties, useEffect, useState } from "react";
 import aboutService from "../backend/about.service";
-import { Subscription } from "rxjs";
 import LoadingSpinner from "../component/LoadingSpinner";
 import PatchNotesModal from "../component/about/PatchNotesModal";
+import "./AboutPage.scss";
 
 interface LoadingState {
     status: "loading";
@@ -18,82 +17,72 @@ type State = (LoadingState | LoadedState) & {
     patchNotesOpen: "backend" | "frontend" | null;
 };
 
-class AboutPage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        status: "loading",
-        patchNotesOpen: null
-    };
+const AboutPage: React.FC = () => {
+    const [state, setState] = useState<State>({ status: "loading", patchNotesOpen: null });
 
-    private request: Subscription | null = null;
-
-    componentDidMount() {
-        document.title = "About - PBBG";
-
-        this.request = aboutService.getBackendVersion().subscribe(res =>
-            this.setState({
+    useEffect(() => {
+        const subscription = aboutService.getBackendVersion().subscribe(res =>
+            setState({
                 status: "loaded",
                 backendVersion: res.data,
                 patchNotesOpen: null
             }));
-    }
 
-    componentWillUnmount() {
-        this.request?.unsubscribe();
-    }
+        return () => subscription.unsubscribe();
+    }, []);
 
-    render() {
-        return <div className="AboutPage">
-            <table>
-                <tbody>
-                    <tr>
-                        <td>
-                            Client version:
-                        </td>
-                        <td className="version">
-                            {aboutService.getFrontendVersion()}
-                        </td>
-                        <td>
-                            <button onClick={this.handleFrontendPatchNotesOpen}>Patch notes</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Server version:
-                        </td>
-                        <td className="version">
-                            {this.backendVersion()}
-                        </td>
-                        <td>
-                            <button onClick={this.handleBackendPatchNotesOpen}>Patch notes</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <PatchNotesModal patchNotesOpen={this.state.patchNotesOpen} onClose={this.handlePatchNotesClose} />
-        </div>;
-    }
-
-    private backendVersion = () => {
-        switch (this.state.status) {
+    const backendVersion = () => {
+        switch (state.status) {
             case "loading":
                 return <LoadingSpinner style={loadingStyle} />;
             case "loaded":
-                return <span className="version">{this.state.backendVersion}</span>;
+                return <span className="version">{state.backendVersion}</span>;
         }
-    }
+    };
 
-    private handleFrontendPatchNotesOpen = () => {
-        this.setState({ patchNotesOpen: "frontend" });
-    }
+    const handleFrontendPatchNotesOpen = () => {
+        setState(prev => ({ ...prev, patchNotesOpen: "frontend" }));
+    };
 
-    private handleBackendPatchNotesOpen = () => {
-        this.setState({ patchNotesOpen: "backend" });
-    }
+    const handleBackendPatchNotesOpen = () => {
+        setState(prev => ({ ...prev, patchNotesOpen: "backend" }));
+    };
 
-    private handlePatchNotesClose = () => {
-        this.setState({ patchNotesOpen: null });
-    }
-}
+    const handlePatchNotesClose = () => {
+        setState(prev => ({ ...prev, patchNotesOpen: null }));
+    };
+
+    return <div className="AboutPage">
+        <title>About - PBBG</title>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        Client version:
+                    </td>
+                    <td className="version">
+                        {aboutService.getFrontendVersion()}
+                    </td>
+                    <td>
+                        <button onClick={handleFrontendPatchNotesOpen}>Patch notes</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Server version:
+                    </td>
+                    <td className="version">
+                        {backendVersion()}
+                    </td>
+                    <td>
+                        <button onClick={handleBackendPatchNotesOpen}>Patch notes</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <PatchNotesModal patchNotesOpen={state.patchNotesOpen} onClose={handlePatchNotesClose} />
+    </div>;
+};
 
 const loadingStyle: CSSProperties = {
     width: "18px",

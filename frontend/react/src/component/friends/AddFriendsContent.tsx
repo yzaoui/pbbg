@@ -1,8 +1,8 @@
-import React, { ChangeEventHandler } from "react";
-import FriendsSectionHeader from "./FriendsSectionHeader";
+import React, { ChangeEventHandler, useRef, useState } from "react";
 import { FriendInfo } from "../../backend/friends";
 import LoadingSpinner from "../LoadingSpinner";
 import AddFriendsContentBody from "./AddFriendsContentBody";
+import FriendsSectionHeader from "./FriendsSectionHeader";
 
 interface LoadingProps {
     loading: true;
@@ -17,47 +17,41 @@ interface LoadedProps {
 
 type Props = LoadingProps | LoadedProps;
 
-interface State {
-    value: string;
-}
+const AddFriendsContent: React.FC<Props> = (props) => {
+    const [value, setValue] = useState("");
+    const searchTimeoutRef = useRef<number>(null);
 
-class AddFriendsContent extends React.Component<Props, State> {
-    readonly state: Readonly<State> = {
-        value: ""
-    };
-
-    searchTimeout: (number | null) = null;
-
-    render() {
-        return <div className="AddFriendsContent">
-            <FriendsSectionHeader>
-                <span>ADD A FRIEND</span>
-            </FriendsSectionHeader>
-            {this.props.loading ?
-                <LoadingSpinner />
-            :
-                <AddFriendsContentBody
-                    searchText={this.state.value}
-                    searching={this.props.searching}
-                    searchResults={this.props.searchResults}
-                    handleValueChange={this.handleValueChange}
-                />
-            }
-        </div>;
-    }
-
-    handleValueChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const handleValueChange: ChangeEventHandler<HTMLInputElement> = (event) => {
         const text = event.target.value;
 
-        this.setState({ value: text });
+        setValue(text);
 
-        if (this.searchTimeout !== null) clearTimeout(this.searchTimeout);
+        if (searchTimeoutRef.current !== null) clearTimeout(searchTimeoutRef.current);
 
-        if (text.length > 0) this.searchTimeout = window.setTimeout(() => {
-            if (this.props.loading) return;
-            this.props.onSearchUser(text)
-        }, 600);
-    }
-}
+        if (text.length > 0) {
+            searchTimeoutRef.current = window.setTimeout(() => {
+                if (!props.loading) {
+                    props.onSearchUser(text);
+                }
+            }, 600);
+        }
+    };
+
+    return <div className="AddFriendsContent">
+        <FriendsSectionHeader>
+            <span>ADD A FRIEND</span>
+        </FriendsSectionHeader>
+        {props.loading ?
+            <LoadingSpinner />
+        :
+            <AddFriendsContentBody
+                searchText={value}
+                searching={props.searching}
+                searchResults={props.searchResults}
+                handleValueChange={handleValueChange}
+            />
+        }
+    </div>;
+};
 
 export default AddFriendsContent;

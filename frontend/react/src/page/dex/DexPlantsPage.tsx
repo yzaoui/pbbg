@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import { Subscription } from "rxjs";
 import { DexPlants } from "../../backend/dex";
 import dexService from "../../backend/dex.service";
 import DexPlantEntry from "../../component/dex/DexPlantEntry";
@@ -27,38 +26,24 @@ type State = {
     dexPlants: DexPlants;
 };
 
-class IndexPage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
-    };
+const IndexPage: React.FC = () => {
+    const [state, setState] = useState<State>({ status: "loading" });
 
-    request?: Subscription;
-
-    componentDidMount() {
-        this.request = dexService.getPlants()
+    useEffect(() => {
+        const subscription = dexService.getPlants()
             .subscribe({
-                next: value => this.setState({ status: "loaded", dexPlants: value.data }),
-                error: err => this.setState({ status: "error" })
+                next: value => setState({ status: "loaded", dexPlants: value.data }),
+                error: _err => setState({ status: "error" })
             });
-    }
 
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
+        return () => subscription.unsubscribe();
+    }, []);
 
-    render() {
-        return <>
-            <DexReturnLink to="/dex" label="Return to Dex" />
-            <div className="dex-header"><h1>Plant Dex</h1></div>
-            <div className="dex-container">{this.renderContainer()}</div>
-        </>;
-    }
+    const renderContainer = () => {
+        if (state.status === "loading") return <LoadingSpinner />;
+        else if (state.status === "error") return "ERROR";
 
-    renderContainer = () => {
-        if (this.state.status === "loading") return <LoadingSpinner />;
-        else if (this.state.status === "error") return "ERROR";
-
-        const { discoveredPlants, lastPlantId } = this.state.dexPlants;
+        const { discoveredPlants, lastPlantId } = state.dexPlants;
 
         const allEntries: Record<number, BasePlant | null> = {};
         for (let i = 1; i <= lastPlantId; i++) {
@@ -77,6 +62,12 @@ class IndexPage extends React.Component<{}, State> {
             </ol>
         </>;
     };
-}
+
+    return <>
+        <DexReturnLink to="/dex" label="Return to Dex" />
+        <div className="dex-header"><h1>Plant Dex</h1></div>
+        <div className="dex-container">{renderContainer()}</div>
+    </>;
+};
 
 export default DexPlantsPage;

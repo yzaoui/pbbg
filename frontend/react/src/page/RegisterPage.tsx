@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./LoginRegisterPage.scss";
 import RegisterForm from "../component/RegisterForm";
 import authenticationService from "./../authentication.service";
+import "./LoginRegisterPage.scss";
 
 interface State {
     submitting: boolean;
@@ -18,13 +18,17 @@ const RegisterPage: React.FC = () => {
         if (authenticationService.currentUserValue !== null) {
             navigate("/", { replace: true });
         }
-    }, [navigate]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleSubmit = (username: string, password: string) => {
         setState({ submitting: true, error: false });
 
         authenticationService.register(username, password)
-            .catch(_error => setState({ submitting: false, error: true }));
+            .then(
+                _token => navigate("/", { replace: true }),
+                _error => setState({ submitting: false, error: true })
+            )
     };
 
     return <>

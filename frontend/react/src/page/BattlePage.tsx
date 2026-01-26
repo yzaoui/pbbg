@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
-import LoadingSpinner from "../component/LoadingSpinner";
-import battleService from "../backend/battle.service";
 import { Battle as BattleData, BattleReward, MappedUnitEffects } from "../backend/battle";
+import battleService from "../backend/battle.service";
 import Battle from "../component/battle/Battle";
 import LoadingButton from "../component/LoadingButton";
+import LoadingSpinner from "../component/LoadingSpinner";
 
 interface LoadingState {
     status: "loading";
@@ -32,52 +32,11 @@ interface ErrorState {
 
 type State = LoadingState | InBattleState | NoBattleState | GeneratingBattleState | ErrorState;
 
-class BattlePage extends React.Component<{}, State> {
-    readonly state: Readonly<State> = {
-        status: "loading"
-    };
+const BattlePage: React.FC = () => {
+    const [state, setState] = useState<State>({ status: "loading" });
+    const battleRequestRef = useRef<Subscription>(null);
 
-    request?: Subscription;
-
-    componentDidMount() {
-        document.title = "Battle - PBBG";
-
-        this.request = battleService.getBattle()
-            .subscribe({
-                next: value => this.setState(value.data !== null ? this.stateInitialInBattle(value.data) : { status: "no battle" }),
-                error: err => this.setState({ status: "error" })
-            });
-    }
-
-    componentWillUnmount() {
-        this.request && this.request.unsubscribe();
-    }
-
-    render() {
-        switch (this.state.status) {
-            case "loading":
-                return <LoadingSpinner style={{ alignSelf: "center" }} />;
-            case "error":
-                return <>ERROR</>;
-            case "no battle":
-                return <button className="fancy" style={{ alignSelf: "center" }} onClick={this.handleGenerateBattleClick}>
-                    <span>Generate battle</span>
-                </button>;
-            case "generating battle":
-                return <LoadingButton loading={true} style={{ alignSelf: "center" }}>Generating battle…</LoadingButton>;
-            case "in battle":
-                return <Battle
-                    battle={this.state.battle}
-                    performingAction={this.state.performingAction}
-                    onAllyTurn={this.handleAllyTurn}
-                    onEnemyTurn={this.handleEnemyTurn}
-                    effects={this.state.effectsList}
-                    reward={this.state.reward}
-                />;
-        }
-    }
-
-    stateInitialInBattle = (battle: BattleData): InBattleState => ({
+    const stateInitialInBattle = (battle: BattleData): InBattleState => ({
         status: "in battle",
         battle: battle,
         performingAction: false,
@@ -85,65 +44,108 @@ class BattlePage extends React.Component<{}, State> {
         reward: null
     });
 
-    handleGenerateBattleClick = () => {
-        this.setState({ status: "generating battle" });
+    useEffect(() => {
+        const subscription = battleService.getBattle().subscribe({
+            next: value => setState(value.data !== null ? stateInitialInBattle(value.data) : { status: "no battle" }),
+            error: _err => setState({ status: "error" })
+        });
 
-        this.request = battleService.generateBattle()
-            .subscribe({
-                next: value => this.setState(this.stateInitialInBattle(value.data)),
-                error: err => this.setState({ status: "error" })
-            });
+        return () => {
+            subscription.unsubscribe();
+            battleRequestRef.current?.unsubscribe();
+        };
+    }, []);
+
+    const handleGenerateBattleClick = () => {
+        battleRequestRef.current?.unsubscribe();
+        setState({ status: "generating battle" });
+
+        battleRequestRef.current = battleService.generateBattle().subscribe({
+            next: value => setState(stateInitialInBattle(value.data)),
+            error: _err => setState({ status: "error" })
+        });
     };
 
-    handleAllyTurn = (targetUnitId: number) => {
-        if (this.state.status !== "in battle") throw Error();
+    const handleAllyTurn = (targetUnitId: number) => {
+        if (state.status !== "in battle") return;
 
-        this.setState(prevState => {
+        battleRequestRef.current?.unsubscribe();
+
+        setState(prevState => {
             if (prevState.status !== "in battle") return prevState;
             return { ...prevState, performingAction: true };
         });
 
-        this.request = battleService.allyTurn({ targetUnitId })
-            .subscribe({
-                next: value => {
-                    this.setState(prevState => {
-                        if (prevState.status !== "in battle") return prevState;
-                        return { ...prevState,
-                            battle: value.data.battle,
-                            performingAction: false,
-                            effectsList: prevState.effectsList.concat(value.data.unitEffects),
-                            reward: value.data.reward
-                        };
-                    });
-                },
-                error: err => this.setState({ status: "error" })
-            });
+        battleRequestRef.current = battleService.allyTurn({ targetUnitId }).subscribe({
+            next: value => {
+                setState(prevState => {
+                    if (prevState.status !== "in battle") return prevState;
+                    return {
+                        ...prevState,
+                        battle: value.data.battle,
+                        performingAction: false,
+                        effectsList: prevState.effectsList.concat(value.data.unitEffects),
+                        reward: value.data.reward
+                    };
+                });
+            },
+            error: _err => setState({ status: "error" })
+        });
     };
 
-    handleEnemyTurn = () => {
-        if (this.state.status !== "in battle") throw Error();
+    const handleEnemyTurn = () => {
+        if (state.status !== "in battle") return;
 
-        this.setState(prevState => {
+        battleRequestRef.current?.unsubscribe();
+
+        setState(prevState => {
             if (prevState.status !== "in battle") return prevState;
             return { ...prevState, performingAction: true };
         });
 
-        this.request = battleService.enemyTurn()
-            .subscribe({
-                next: value => {
-                    this.setState(prevState => {
-                        if (prevState.status !== "in battle") return prevState;
-                        return { ...prevState,
-                            battle: value.data.battle,
-                            performingAction: false,
-                            effectsList: prevState.effectsList.concat(value.data.unitEffects),
-                            reward: value.data.reward
-                        };
-                    });
-                },
-                error: err => this.setState({ status: "error" })
-            });
+        battleRequestRef.current = battleService.enemyTurn().subscribe({
+            next: value => {
+                setState(prevState => {
+                    if (prevState.status !== "in battle") return prevState;
+                    return {
+                        ...prevState,
+                        battle: value.data.battle,
+                        performingAction: false,
+                        effectsList: prevState.effectsList.concat(value.data.unitEffects),
+                        reward: value.data.reward
+                    };
+                });
+            },
+            error: _err => setState({ status: "error" })
+        });
     };
-}
+
+    return <>
+        <title>Battle - PBBG</title>
+        {(() => {
+            switch (state.status) {
+                case "loading":
+                    return <LoadingSpinner style={{ alignSelf: "center" }} />;
+                case "error":
+                    return <>ERROR</>;
+                case "no battle":
+                    return <button className="fancy" style={{ alignSelf: "center" }} onClick={handleGenerateBattleClick}>
+                        <span>Generate battle</span>
+                    </button>;
+                case "generating battle":
+                    return <LoadingButton loading={true} style={{ alignSelf: "center" }}>Generating battle…</LoadingButton>;
+                case "in battle":
+                    return <Battle
+                        battle={state.battle}
+                        performingAction={state.performingAction}
+                        onAllyTurn={handleAllyTurn}
+                        onEnemyTurn={handleEnemyTurn}
+                        effects={state.effectsList}
+                        reward={state.reward}
+                    />;
+            }
+        })()}
+    </>;
+};
 
 export default BattlePage;
