@@ -1,0 +1,165 @@
+@use "sass:map";
+
+// ============================================================================
+// BASE LAYER: COLOR SCHEMES (light/dark)
+// ============================================================================
+// Complete set of color properties that ALL themes use as a base
+
+$color-schemes: (
+  light: (
+    // Primary colors
+    color-primary: #007bff,
+    color-primary-hover: #0069d9,
+    color-primary-active: #0062cc,
+    color-secondary: #6c757d,
+    color-secondary-hover: #5a6268,
+    color-secondary-active: #545b62,
+    color-danger: #dc3545,
+    color-danger-hover: #bd2130,
+    color-danger-active: #b21f2d,
+
+    // Text colors
+    color-text: #000000,
+    color-link: #0070ff,
+
+    // Background colors
+    color-surface-primary: #e1e4ffcf,
+    color-bg-alternate: #d6d9f7cf,
+    color-bg-alternate2: #edf1ffcf,
+
+    // Border colors
+    color-border-primary: #000000,
+    color-border-secondary: grey,
+
+    // Sidebar colors
+    color-sidebar-hover: #0390f9,
+    color-sidebar-active: #0370c4,
+    color-sidebar-active-hover: #0487ec,
+
+    // Battle colors
+    color-battle-ally: #1d1dd2,
+    color-battle-ally-shadow: #9a9aff,
+    color-battle-ally-hover-bg: #aeb0ff96,
+    color-battle-enemy: #c30000,
+    color-battle-enemy-shadow: #bb9a96,
+    color-battle-enemy-hover-bg: #ffaeae96,
+
+    // Overlay colors
+    color-overlay-dark: #0000008f,
+    color-overlay-medium: #0000004f,
+
+    // Progress bar colors
+    color-progress-start: #6de1ff,
+    color-progress-end: #00789c,
+
+    // Misc colors
+    color-equipped-badge: #c0ffbe,
+  ),
+  dark: (
+    // Primary colors
+    color-primary: #4da6ff,
+    color-primary-hover: #66b3ff,
+    color-primary-active: #80c0ff,
+    color-secondary: #a0a0a0,
+    color-secondary-hover: #b8b8b8,
+    color-secondary-active: #c0c0c0,
+    color-danger: #ff6b7a,
+    color-danger-hover: #ff8591,
+    color-danger-active: #ff99a6,
+
+    // Text colors
+    color-text: #e0e0e0,
+    color-link: #66b3ff,
+
+    // Background colors
+    color-surface-primary: #1a1d2e,
+    color-bg-alternate: #252836,
+    color-bg-alternate2: #2d3142,
+
+    // Border colors
+    color-border-primary: #4a4a4a,
+    color-border-secondary: #3a3a3a,
+
+    // Sidebar colors
+    color-sidebar-hover: #3a5f8f,
+    color-sidebar-active: #2d4a6e,
+    color-sidebar-active-hover: #476b99,
+
+    // Battle colors
+    color-battle-ally: #6b6bff,
+    color-battle-ally-shadow: #3a3a8f,
+    color-battle-ally-hover-bg: #4a4aaa66,
+    color-battle-enemy: #ff5555,
+    color-battle-enemy-shadow: #8f3a3a,
+    color-battle-enemy-hover-bg: #aa4a4a66,
+
+    // Overlay colors
+    color-overlay-dark: #000000cc,
+    color-overlay-medium: #00000099,
+
+    // Progress bar colors
+    color-progress-start: #4da6ff,
+    color-progress-end: #2d7a9e,
+
+    // Misc colors
+    color-equipped-badge: #5ead5c,
+  )
+);
+
+// ============================================================================
+// OVERRIDE LAYER: THEME-SPECIFIC COLORS
+// ============================================================================
+// Themes only need to define colors that differ from the base color scheme
+// Any property not defined here will use the base color scheme value
+
+$theme-overrides: (
+  default: (
+    light: (),
+    dark: ()
+  ),
+  halloween: (
+    light: (),
+    dark: ()
+  ),
+  christmas: (
+    light: (),
+    dark: ()
+  )
+);
+
+// ============================================================================
+// AUTO-GENERATE CSS CUSTOM PROPERTIES
+// ============================================================================
+
+// Loop through each theme and color scheme combination
+@each $theme-name, $schemes in $theme-overrides {
+  @each $scheme-name, $overrides in $schemes {
+    // Get base colors for this color scheme
+    $base-colors: map.get($color-schemes, $scheme-name);
+
+    // Merge base colors with theme-specific overrides
+    $final-colors: map.merge($base-colors, $overrides);
+
+    // Generate CSS custom properties
+    :root[data-theme="#{$theme-name}"][data-color-scheme="#{$scheme-name}"] {
+      @each $property, $value in $final-colors {
+        --#{$property}: #{$value};
+      }
+    }
+  }
+}
+
+// Default fallback selectors (when attributes are not set)
+:root:not([data-theme]):not([data-color-scheme]),
+:root:not([data-theme])[data-color-scheme="light"],
+:root[data-theme="default"]:not([data-color-scheme]) {
+  @each $property, $value in map.get($color-schemes, light) {
+    --#{$property}: #{$value};
+  }
+}
+
+:root:not([data-theme])[data-color-scheme="dark"] {
+  @each $property, $value in map.get($color-schemes, dark) {
+    --#{$property}: #{$value};
+  }
+}
