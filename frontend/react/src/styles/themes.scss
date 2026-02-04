@@ -118,12 +118,144 @@ $theme-overrides: (
     dark: ()
   ),
   halloween: (
-    light: (),
-    dark: ()
+    light: (
+      color-primary: #ff6b00,
+      color-primary-hover: #ff8533,
+      color-primary-active: #ff9966,
+      color-secondary: #8b00ff,
+      color-secondary-hover: #9d33ff,
+      color-secondary-active: #b366ff,
+
+      color-text: #2d1b0e,
+      color-link: #ff6b00,
+
+      color-surface-primary: #fff5e6,
+      color-bg-alternate: #ffe8cc,
+      color-bg-alternate2: #ffd9b3,
+
+      color-border-primary: #8b4513,
+      color-border-secondary: #a0522d,
+
+      color-sidebar-hover: #ffb366,
+      color-sidebar-active: #ff8533,
+      color-sidebar-active-hover: #ffcc99,
+
+      color-battle-ally: #8b00ff,
+      color-battle-ally-shadow: #b366ff,
+      color-battle-ally-hover-bg: #d9b3ff96,
+      color-battle-enemy: #ff4500,
+      color-battle-enemy-shadow: #ff8533,
+      color-battle-enemy-hover-bg: #ffb38096,
+
+      color-progress-start: #ffb366,
+      color-progress-end: #ff6b00,
+
+      color-equipped-badge: #ffd700,
+    ),
+    dark: (
+      color-primary: #ff8533,
+      color-primary-hover: #ff9966,
+      color-primary-active: #ffb399,
+      color-secondary: #a64dff,
+      color-secondary-hover: #b87fff,
+      color-secondary-active: #cc99ff,
+
+      color-text: #f5dcc8,
+      color-link: #ff9966,
+
+      color-surface-primary: #1a1412,
+      color-bg-alternate: #2d2420,
+      color-bg-alternate2: #3d312a,
+
+      color-border-primary: #5a3825,
+      color-border-secondary: #4a2d1f,
+
+      color-sidebar-hover: #6b4423,
+      color-sidebar-active: #5a3825,
+      color-sidebar-active-hover: #7d5230,
+
+      color-battle-ally: #a64dff,
+      color-battle-ally-shadow: #7a3abd,
+      color-battle-ally-hover-bg: #8b47d966,
+      color-battle-enemy: #ff6b33,
+      color-battle-enemy-shadow: #b34d24,
+      color-battle-enemy-hover-bg: #cc5f3366,
+
+      color-progress-start: #ff9966,
+      color-progress-end: #ff6b00,
+
+      color-equipped-badge: #d4a574,
+    )
   ),
   christmas: (
-    light: (),
-    dark: ()
+    light: (
+      color-primary: #c41e3a,
+      color-primary-hover: #a01829,
+      color-primary-active: #8b1523,
+      color-secondary: #165b33,
+      color-secondary-hover: #0f4526,
+      color-secondary-active: #0a3319,
+
+      color-text: #212529,
+      color-link: #c41e3a,
+
+      color-surface-primary: #f8f9fa,
+      color-bg-alternate: #e9ecef,
+      color-bg-alternate2: #dee2e6,
+
+      color-border-primary: #165b33,
+      color-border-secondary: #6c757d,
+
+      color-sidebar-hover: #e74c3c,
+      color-sidebar-active: #c41e3a,
+      color-sidebar-active-hover: #d9534f,
+
+      color-battle-ally: #165b33,
+      color-battle-ally-shadow: #27ae60,
+      color-battle-ally-hover-bg: #58d68d96,
+      color-battle-enemy: #c41e3a,
+      color-battle-enemy-shadow: #e74c3c,
+      color-battle-enemy-hover-bg: #f1948a96,
+
+      color-progress-start: #e74c3c,
+      color-progress-end: #c41e3a,
+
+      color-equipped-badge: #ffd700,
+    ),
+    dark: (
+      color-primary: #ff6b6b,
+      color-primary-hover: #ff8787,
+      color-primary-active: #ffa3a3,
+      color-secondary: #4ecca3,
+      color-secondary-hover: #6dd5b4,
+      color-secondary-active: #8cdec5,
+
+      color-text: #f1f3f5,
+      color-link: #ff8787,
+
+      color-surface-primary: #1a1e23,
+      color-bg-alternate: #252a31,
+      color-bg-alternate2: #2f353e,
+
+      color-border-primary: #3d4956,
+      color-border-secondary: #2d3542,
+
+      color-sidebar-hover: #4a2f32,
+      color-sidebar-active: #3d262a,
+      color-sidebar-active-hover: #5a3a3d,
+
+      color-battle-ally: #4ecca3,
+      color-battle-ally-shadow: #3da88a,
+      color-battle-ally-hover-bg: #4ecca366,
+      color-battle-enemy: #ff6b6b,
+      color-battle-enemy-shadow: #d45555,
+      color-battle-enemy-hover-bg: #ff6b6b66,
+
+      color-progress-start: #ff8787,
+      color-progress-end: #ff6b6b,
+
+      color-equipped-badge: #ffd700,
+    )
   )
 );
 
