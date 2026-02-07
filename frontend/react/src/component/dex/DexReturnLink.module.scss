@@ -1,13 +1,14 @@
 .return {
     padding: 8px;
-    border: 1px solid black;
+    border: 1px solid var(--color-border-primary);
     border-radius: 10px;
     text-decoration: none;
     text-align: center;
     margin-bottom: 6px;
+    color: var(--color-text);
 
     &:hover {
         color: white;
-        background-color: #0390f9;
+        background-color: var(--color-primary);
     }
 }

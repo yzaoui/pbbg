@@ -9,28 +9,31 @@
         font-size: 1em;
         border-width: 1px 1px 0 1px;
         border-style: solid;
-        border-color: black;
+        border-color: var(--color-border-primary);
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
         align-self: start;
+        background: var(--color-surface-secondary);
+        color: var(--color-text);
     }
 
     > div {
         flex-grow: 1;
-        border: 1px solid black;
+        border: 1px solid var(--color-border-primary);
         overflow-y: scroll;
 
         > ol {
             list-style-type: none;
             padding: 0;
             margin: 0;
-            background-color: #d6d9f7cf;
+            background-color: var(--color-surface-secondary);
 
             > li {
                 padding: 6px;
+                color: var(--color-text);
 
                 &:nth-child(even) {
-                    background-color: #edf1ffcf;
+                    background-color: var(--color-surface-tertiary);
                 }
             }
         }
@@ -39,7 +42,7 @@
 
 .HealthEffectResult {
     > .damage {
-        color: red;
+        color: var(--color-danger);
     }
 
     > .ally, > .enemy {
@@ -50,21 +53,21 @@
     }
 
     > .ally {
-        color: #1d1dd2;
-        text-shadow: 1px 1px 1px #9a9aff;
+        color: var(--color-battle-ally);
+        text-shadow: 1px 1px 1px var(--color-overlay-dark);
 
         &:hover {
-            background-color: #aeb0ff96;
+            background-color: var(--color-battle-ally-hover-bg);
             text-shadow: none;
         }
     }
 
     > .enemy {
-        color: #c31600;
-        text-shadow: 1px 1px 1px #bb9a96;
+        color: var(--color-battle-enemy);
+        text-shadow: 1px 1px 1px var(--color-overlay-dark);
 
         &:hover {
-            background-color: #ffaeae96;
+            background-color: var(--color-battle-enemy-hover-bg);
             text-shadow: none;
         }
     }

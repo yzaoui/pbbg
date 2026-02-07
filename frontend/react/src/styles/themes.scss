@@ -20,12 +20,13 @@ $color-schemes: (
 
     // Text colors
     color-text: #000000,
+    color-text-secondary: #5a5a5a,
     color-link: #0070ff,
 
     // Background colors
     color-surface-primary: #e1e4ffcf,
-    color-bg-alternate: #d6d9f7cf,
-    color-bg-alternate2: #edf1ffcf,
+    color-surface-secondary: #d6d9f7cf,
+    color-surface-tertiary: #edf1ffcf,
 
     // Border colors
     color-border-primary: #000000,
@@ -47,6 +48,11 @@ $color-schemes: (
     // Overlay colors
     color-overlay-dark: #0000008f,
     color-overlay-medium: #0000004f,
+    color-overlay-hover: rgba(0, 0, 0, 0.08),
+
+    // Action colors
+    color-action-background-default: transparent,
+    color-action-background-hover: rgba(0, 0, 0, 0.08),
 
     // Progress bar colors
     color-progress-start: #6de1ff,
@@ -68,17 +74,18 @@ $color-schemes: (
     color-danger-active: #ff99a6,
 
     // Text colors
-    color-text: #e0e0e0,
+    color-text: #f0f0f0,
+    color-text-secondary: #b0b3c1,
     color-link: #66b3ff,
 
     // Background colors
     color-surface-primary: #1a1d2e,
-    color-bg-alternate: #252836,
-    color-bg-alternate2: #2d3142,
+    color-surface-secondary: #252836,
+    color-surface-tertiary: #2f3346,
 
     // Border colors
-    color-border-primary: #4a4a4a,
-    color-border-secondary: #3a3a3a,
+    color-border-primary: #3f4358,
+    color-border-secondary: #32364a,
 
     // Sidebar colors
     color-sidebar-hover: #3a5f8f,
@@ -96,6 +103,11 @@ $color-schemes: (
     // Overlay colors
     color-overlay-dark: #000000cc,
     color-overlay-medium: #00000099,
+    color-overlay-hover: rgba(255, 255, 255, 0.1),
+
+    // Action colors
+    color-action-background-default: transparent,
+    color-action-background-hover: rgba(255, 255, 255, 0.1),
 
     // Progress bar colors
     color-progress-start: #4da6ff,
@@ -130,8 +142,8 @@ $theme-overrides: (
       color-link: #ff6b00,
 
       color-surface-primary: #fff5e6,
-      color-bg-alternate: #ffe8cc,
-      color-bg-alternate2: #ffd9b3,
+      color-surface-secondary: #ffe8cc,
+      color-surface-tertiary: #ffd9b3,
 
       color-border-primary: #8b4513,
       color-border-secondary: #a0522d,
@@ -164,8 +176,8 @@ $theme-overrides: (
       color-link: #ff9966,
 
       color-surface-primary: #1a1412,
-      color-bg-alternate: #2d2420,
-      color-bg-alternate2: #3d312a,
+      color-surface-secondary: #2d2420,
+      color-surface-tertiary: #3d312a,
 
       color-border-primary: #5a3825,
       color-border-secondary: #4a2d1f,
@@ -200,8 +212,8 @@ $theme-overrides: (
       color-link: #c41e3a,
 
       color-surface-primary: #f8f9fa,
-      color-bg-alternate: #e9ecef,
-      color-bg-alternate2: #dee2e6,
+      color-surface-secondary: #e9ecef,
+      color-surface-tertiary: #dee2e6,
 
       color-border-primary: #165b33,
       color-border-secondary: #6c757d,
@@ -234,8 +246,8 @@ $theme-overrides: (
       color-link: #ff8787,
 
       color-surface-primary: #1a1e23,
-      color-bg-alternate: #252a31,
-      color-bg-alternate2: #2f353e,
+      color-surface-secondary: #252a31,
+      color-surface-tertiary: #2f353e,
 
       color-border-primary: #3d4956,
       color-border-secondary: #2d3542,

@@ -89,7 +89,17 @@ const PlantModal: React.FC<Props> = ({ open, onClose, onSelect }) => {
             }
             overrides={{
                 Dialog: {
-                    style: { padding: 0 }
+                    style: {
+                        padding: 0,
+                        backgroundColor: 'var(--color-surface-secondary)',
+                        color: 'var(--color-text)',
+                        border: '2px solid var(--color-border-primary)'
+                    }
+                },
+                Overlay: {
+                    style: {
+                        backgroundColor: 'var(--color-overlay-dark)'
+                    }
                 }
             }}
         />;

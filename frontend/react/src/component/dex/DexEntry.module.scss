@@ -9,13 +9,13 @@
     width: 245px;
     height: 32px;
     padding: 4px;
-    background-color: #f4f6ff;
+    background-color: var(--color-surface-secondary);
     border-radius: 4px;
     border-style: solid;
-    border-color: #4064e0;
+    border-color: var(--color-primary);
     border-width: 1px 1px 1px 6px;
     text-decoration: none;
-    color: black;
+    color: var(--color-text);
 
     &.unknown-entry {
         opacity: 0.5;
@@ -34,8 +34,8 @@
     }
 
     &:hover {
-        background-color: #dfe5fc;
-        border-color: #2248d3;
+        background-color: var(--color-surface-tertiary);
+        border-color: var(--color-primary-hover);
 
         &.unit > img {
             animation-name: unit-icon-hover;

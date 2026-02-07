@@ -6,19 +6,20 @@
     > a {
         display: inline-block;
         width: 200px;
-        border: 3px solid black;
+        border: 3px solid var(--color-border-primary);
         border-top: 0;
         padding: 20px;
         text-align: center;
         text-decoration: none;
+        color: var(--color-text);
 
         &:hover {
             color: white;
-            background-color: #0390f9;
+            background-color: var(--color-primary);
         }
 
         &:first-child {
-            border-top: 3px solid black;
+            border-top: 3px solid var(--color-border-primary);
             border-radius: 10px 10px 0 0;
         }
 
@@ -30,12 +31,13 @@
 
 div.dex-header {
     padding: 4px;
-    background-color: #c4ceff;
-    border: 1px solid #7aa2f9;
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
     text-align: center;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     border-bottom: none;
+    color: var(--color-text);
 }
 
 div.dex-header > h1 {
@@ -45,9 +47,10 @@ div.dex-header > h1 {
 
 div.dex-container {
     padding: 4px;
-    background-color: #c4ceff;
-    border: 1px solid #7aa2f9;
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
     text-align: center;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+    color: var(--color-text);
 }

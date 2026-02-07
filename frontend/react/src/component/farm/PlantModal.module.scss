@@ -1,17 +1,20 @@
 .PlantModal {
     min-width: 400px;
     min-height: 100px;
+    background: var(--color-surface-secondary);
+    color: var(--color-text);
 
     > * {
         padding: 16px;
     }
 
     header {
-        border-bottom: 1px solid #dee2e6;
+        border-bottom: 1px solid var(--color-border-primary);
 
         h1 {
             margin: 0;
             font-size: 1.3em;
+            color: var(--color-text);
         }
     }
 
@@ -26,7 +29,7 @@
         flex-direction: row;
         align-items: center;
         justify-content: flex-end;
-        border-top: 1px solid #dee2e6;
+        border-top: 1px solid var(--color-border-primary);
 
         > :not(:last-child) {
             margin-right: 4px;

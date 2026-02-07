@@ -17,14 +17,15 @@
                     display: block;
                     padding: 10px;
                     text-decoration: none;
+                    color: var(--color-text);
 
                     &.active, &.active:hover {
-                        background-color: #4784f1;
+                        background-color: var(--color-sidebar-active);
                         color: white;
                     }
 
                     &:hover {
-                        background-color: #6295f1;;
+                        background-color: var(--color-sidebar-hover);
                         color: white;
                     }
                 }
@@ -37,7 +38,7 @@
             .FriendsSectionHeader {
                 display: flex;
                 width: 100%;
-                background-color: #0086d4;
+                background-color: var(--color-primary);
                 color: white;
 
                 span {
@@ -73,12 +74,12 @@
             height: 40px;
             line-height: 35px;
             text-align: center;
-            border: 1px solid black;
-            background-color: cornflowerblue;
+            border: 1px solid var(--color-border-primary);
+            background-color: var(--color-primary);
             color: white;
 
             &:hover {
-                box-shadow: 2px 2px 5px rgba( 0, 0, 0, 0.4);
+                box-shadow: var(--color-overlay-dark) 2px 2px 5px;
             }
         }
     }
