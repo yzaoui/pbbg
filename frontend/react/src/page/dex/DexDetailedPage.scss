@@ -1,11 +1,12 @@
 .detailed-dex {
-    background-color: #c4ceff;
-    border: 1px solid #7aa2f9;
+    background-color: var(--color-surface-secondary);
+    border: 1px solid var(--color-border-primary);
     border-radius: 10px;
     text-align: center;
+    color: var(--color-text);
 
     > div.body {
-        background-color: #e0e6ff;
+        background-color: var(--color-surface-tertiary);
     }
 
     > * {
@@ -13,7 +14,7 @@
         margin: 0;
 
         &:not(:last-child) {
-            border-bottom: 1px solid #7aa2f9;
+            border-bottom: 1px solid var(--color-border-secondary);
         }
 
         &:first-child {

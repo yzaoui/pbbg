@@ -27,28 +27,28 @@
             display: flex;
             flex-direction: row;
             margin: 0;
-            border: 1px solid black;
+            border: 1px solid var(--color-border-primary);
             list-style-type: none;
             padding: 8px;
+            background: var(--color-surface-secondary);
+            gap: 8px;
         }
     }
 
-    .MarketItemEntry {
-        margin-right: 6px;
-    }
-
     .footer {
-        border: 1px solid black;
+        border: 1px solid var(--color-border-primary);
         border-top-width: 0;
         text-align: right;
         padding: 4px;
+        background: var(--color-surface-secondary);
+        color: var(--color-text);
 
         > :not(:last-child) {
             margin-right: 8px;
         }
 
         &[data-not-enough-gold] {
-            color: red;
+            color: var(--color-danger);
         }
     }
 }

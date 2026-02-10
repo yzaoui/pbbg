@@ -39,7 +39,18 @@ const PatchNotesModal: React.FC<Props> = ({ patchNotesOpen, onClose }) => {
         }
         overrides={{
             Dialog: {
-                style: { padding: "16px", maxWidth: "600px" }
+                style: {
+                    padding: 0,
+                    maxWidth: "600px",
+                    backgroundColor: "var(--color-surface-secondary)",
+                    color: "var(--color-text)",
+                    border: "2px solid var(--color-border-primary)"
+                }
+            },
+            Overlay: {
+                style: {
+                    backgroundColor: "var(--color-overlay-dark)"
+                }
             }
         }}
     />;

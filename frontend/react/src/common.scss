@@ -1,3 +1,5 @@
+@use './styles/themes.scss';
+
 body {
     font-size: 16px;
     background-image: url(./img/background.png);
@@ -7,6 +9,7 @@ body {
     sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color: var(--color-text);
 }
 
 html, body {
@@ -24,7 +27,7 @@ button, input, optgroup, select, textarea {
 }
 
 a {
-    color: #0070ff;
+    color: var(--color-link);
 }
 
 img {
@@ -57,10 +60,10 @@ main.pbbg-main {
     display: flex;
     flex-direction: column;
     flex: 1;
-    border-top: 1px solid black;
+    border-top: 1px solid var(--color-border-primary);
     padding: 6px;
     box-sizing: border-box;
-    background: #e1e4ffcf;
+    background: var(--color-surface-primary);
     overflow: auto;
 }
 
@@ -72,14 +75,14 @@ main.pbbg-main {
     overflow: auto;
     flex-shrink: 0;
     flex-basis: 150px;
-    border: 1px solid black;
+    border: 1px solid var(--color-border-primary);
     order: -1;
-    background: #e1e4ffcf;
+    background: var(--color-surface-primary);
 
     > .username {
         text-align: center;
         font-weight: bold;
-        border-bottom: grey 1px solid;
+        border-bottom: var(--color-border-secondary) 1px solid;
         padding: 10px;
     }
 }
@@ -100,7 +103,7 @@ a.sidebar-item {
     padding: 10px 10px 10px 40px;
 
     &:hover {
-        background-color: #0390f9;
+        background-color: var(--color-sidebar-hover);
         color: white;
     }
 }
@@ -113,12 +116,12 @@ span.sidebar-item-icon {
 }
 
 a.current-site-section {
-    background-color: #0370c4;
-    color: white;
+    background-color: var(--color-sidebar-active);
+    color: white; // TODO: Text foreground token
 }
 
 a.current-site-section.sidebar-item:hover {
-    background-color: #0487ec;
+    background-color: var(--color-sidebar-active-hover);
 }
 
 .sidebar-login-form > * {
@@ -127,17 +130,17 @@ a.current-site-section.sidebar-item:hover {
 }
 
 a.btn {
-    color: #fff;
-    background-color: #007bff;
-    border-color: #007bff;
+    color: #fff; // TODO: Text foreground token
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
     border-radius: 3px;
     padding: 7px;
     text-decoration: none;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 
     &:hover {
-        background-color: #0069d9;
-        border-color: #0062cc;
+        background-color: var(--color-primary-hover);
+        border-color: var(--color-primary-active);
     }
 
     &:focus {
@@ -146,11 +149,11 @@ a.btn {
 }
 
 button.fancy {
-    --background-color: #007bff;
-    --border-color: #007bff;
-    --hover-background-color: #0069d9;
-    --hover-border-color: #0062cc;
-    --box-shadow-color: rgba(38, 143, 255, .5);
+    --background-color: var(--color-primary);
+    --border-color: var(--color-primary);
+    --hover-background-color: var(--color-primary-hover);
+    --hover-border-color: var(--color-primary-active);
+    --box-shadow-color: rgba(38, 143, 255, .5); // TODO: Token
 
     cursor: pointer;
     padding: 6px 15px;
@@ -158,7 +161,7 @@ button.fancy {
     background-color: var(--background-color);
     border: 1px outset var(--border-color);
     border-radius: 4px;
-    box-shadow: rgba(0, 0, 0, 0.12) 0 1px 6px, rgba(0, 0, 0, 0.12) 0 1px 4px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0 1px 6px, rgba(0, 0, 0, 0.12) 0 1px 4px; // TODO: Token
     transition: all 150ms ease-in, box-shadow 0ms;
 
     &:hover:not(:disabled) {
@@ -183,19 +186,19 @@ button.fancy {
     }
 
     &.secondary {
-        --background-color: #6c757d;
-        --border-color: #6c757d;
-        --hover-background-color: #5a6268;
-        --hover-border-color: #545b62;
-        --box-shadow-color: rgba(108, 117, 125, .5);
+        --background-color: var(--color-secondary);
+        --border-color: var(--color-secondary);
+        --hover-background-color: var(--color-secondary-hover);
+        --hover-border-color: var(--color-secondary-active);
+        --box-shadow-color: rgba(108, 117, 125, .5); // TODO: Token
     }
 
     &.danger {
-        --background-color: #dc3545;
-        --border-color: #dc3545;
-        --hover-background-color: #bd2130;
-        --hover-border-color: #b21f2d;
-        --box-shadow-color: rgba(220, 53, 69, .5);
+        --background-color: var(--color-danger);
+        --border-color: var(--color-danger);
+        --hover-background-color: var(--color-danger-hover);
+        --hover-border-color: var(--color-danger-active);
+        --box-shadow-color: rgba(220, 53, 69, .5); // TODO: Token
     }
 }
 
@@ -204,9 +207,9 @@ a.fancy {
     align-items: center;
     text-decoration: none;
     padding: 0 15px;
-    color: white;
+    color: white; // TODO: Text foreground token
     height: 32px;
-    background-color: #0086d4;
+    background-color: var(--color-primary);
     border: none;
     border-radius: 2px;
     box-shadow: rgba(0, 0, 0, 0.12) 0 1px 6px, rgba(0, 0, 0, 0.12) 0 1px 4px;
@@ -220,7 +223,7 @@ button.loading, button.loading.fancy, button.loading.fancy:disabled {
 @media screen and (max-width: 600px) {
     .sidebar {
         position: absolute;
-        background-color: white;
+        background-color: var(--color-surface-primary);
         z-index: 1;
         transform: translateX(-100%);
         transition: transform .2s ease-in-out;

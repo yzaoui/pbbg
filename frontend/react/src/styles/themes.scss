@@ -1,0 +1,309 @@
+@use "sass:map";
+
+// ============================================================================
+// BASE LAYER: COLOR SCHEMES (light/dark)
+// ============================================================================
+// Complete set of color properties that ALL themes use as a base
+
+$color-schemes: (
+  light: (
+    // Primary colors
+    color-primary: #007bff,
+    color-primary-hover: #0069d9,
+    color-primary-active: #0062cc,
+    color-secondary: #6c757d,
+    color-secondary-hover: #5a6268,
+    color-secondary-active: #545b62,
+    color-danger: #dc3545,
+    color-danger-hover: #bd2130,
+    color-danger-active: #b21f2d,
+
+    // Text colors
+    color-text: #000000,
+    color-text-secondary: #5a5a5a,
+    color-link: #0070ff,
+
+    // Background colors
+    color-surface-primary: #e1e4ffcf,
+    color-surface-secondary: #d6d9f7cf,
+    color-surface-tertiary: #edf1ffcf,
+
+    // Border colors
+    color-border-primary: #000000,
+    color-border-secondary: grey,
+
+    // Sidebar colors
+    color-sidebar-hover: #0390f9,
+    color-sidebar-active: #0370c4,
+    color-sidebar-active-hover: #0487ec,
+
+    // Battle colors
+    color-battle-ally: #1d1dd2,
+    color-battle-ally-shadow: #9a9aff,
+    color-battle-ally-hover-bg: #aeb0ff96,
+    color-battle-enemy: #c30000,
+    color-battle-enemy-shadow: #bb9a96,
+    color-battle-enemy-hover-bg: #ffaeae96,
+
+    // Overlay colors
+    color-overlay-dark: #0000008f,
+    color-overlay-medium: #0000004f,
+    color-overlay-hover: rgba(0, 0, 0, 0.08),
+
+    // Action colors
+    color-action-background-default: transparent,
+    color-action-background-hover: rgba(0, 0, 0, 0.08),
+
+    // Progress bar colors
+    color-progress-start: #6de1ff,
+    color-progress-end: #00789c,
+
+    // Misc colors
+    color-equipped-badge: #c0ffbe,
+  ),
+  dark: (
+    // Primary colors
+    color-primary: #4da6ff,
+    color-primary-hover: #66b3ff,
+    color-primary-active: #80c0ff,
+    color-secondary: #a0a0a0,
+    color-secondary-hover: #b8b8b8,
+    color-secondary-active: #c0c0c0,
+    color-danger: #ff6b7a,
+    color-danger-hover: #ff8591,
+    color-danger-active: #ff99a6,
+
+    // Text colors
+    color-text: #f0f0f0,
+    color-text-secondary: #b0b3c1,
+    color-link: #66b3ff,
+
+    // Background colors
+    color-surface-primary: #1a1d2e,
+    color-surface-secondary: #252836,
+    color-surface-tertiary: #2f3346,
+
+    // Border colors
+    color-border-primary: #3f4358,
+    color-border-secondary: #32364a,
+
+    // Sidebar colors
+    color-sidebar-hover: #3a5f8f,
+    color-sidebar-active: #2d4a6e,
+    color-sidebar-active-hover: #476b99,
+
+    // Battle colors
+    color-battle-ally: #6b6bff,
+    color-battle-ally-shadow: #3a3a8f,
+    color-battle-ally-hover-bg: #4a4aaa66,
+    color-battle-enemy: #ff5555,
+    color-battle-enemy-shadow: #8f3a3a,
+    color-battle-enemy-hover-bg: #aa4a4a66,
+
+    // Overlay colors
+    color-overlay-dark: #000000cc,
+    color-overlay-medium: #00000099,
+    color-overlay-hover: rgba(255, 255, 255, 0.1),
+
+    // Action colors
+    color-action-background-default: transparent,
+    color-action-background-hover: rgba(255, 255, 255, 0.1),
+
+    // Progress bar colors
+    color-progress-start: #4da6ff,
+    color-progress-end: #2d7a9e,
+
+    // Misc colors
+    color-equipped-badge: #5ead5c,
+  )
+);
+
+// ============================================================================
+// OVERRIDE LAYER: THEME-SPECIFIC COLORS
+// ============================================================================
+// Themes only need to define colors that differ from the base color scheme
+// Any property not defined here will use the base color scheme value
+
+$theme-overrides: (
+  default: (
+    light: (),
+    dark: ()
+  ),
+  halloween: (
+    light: (
+      color-primary: #ff6b00,
+      color-primary-hover: #ff8533,
+      color-primary-active: #ff9966,
+      color-secondary: #8b00ff,
+      color-secondary-hover: #9d33ff,
+      color-secondary-active: #b366ff,
+
+      color-text: #2d1b0e,
+      color-link: #ff6b00,
+
+      color-surface-primary: #fff5e6,
+      color-surface-secondary: #ffe8cc,
+      color-surface-tertiary: #ffd9b3,
+
+      color-border-primary: #8b4513,
+      color-border-secondary: #a0522d,
+
+      color-sidebar-hover: #ffb366,
+      color-sidebar-active: #ff8533,
+      color-sidebar-active-hover: #ffcc99,
+
+      color-battle-ally: #8b00ff,
+      color-battle-ally-shadow: #b366ff,
+      color-battle-ally-hover-bg: #d9b3ff96,
+      color-battle-enemy: #ff4500,
+      color-battle-enemy-shadow: #ff8533,
+      color-battle-enemy-hover-bg: #ffb38096,
+
+      color-progress-start: #ffb366,
+      color-progress-end: #ff6b00,
+
+      color-equipped-badge: #ffd700,
+    ),
+    dark: (
+      color-primary: #ff8533,
+      color-primary-hover: #ff9966,
+      color-primary-active: #ffb399,
+      color-secondary: #a64dff,
+      color-secondary-hover: #b87fff,
+      color-secondary-active: #cc99ff,
+
+      color-text: #f5dcc8,
+      color-link: #ff9966,
+
+      color-surface-primary: #1a1412,
+      color-surface-secondary: #2d2420,
+      color-surface-tertiary: #3d312a,
+
+      color-border-primary: #5a3825,
+      color-border-secondary: #4a2d1f,
+
+      color-sidebar-hover: #6b4423,
+      color-sidebar-active: #5a3825,
+      color-sidebar-active-hover: #7d5230,
+
+      color-battle-ally: #a64dff,
+      color-battle-ally-shadow: #7a3abd,
+      color-battle-ally-hover-bg: #8b47d966,
+      color-battle-enemy: #ff6b33,
+      color-battle-enemy-shadow: #b34d24,
+      color-battle-enemy-hover-bg: #cc5f3366,
+
+      color-progress-start: #ff9966,
+      color-progress-end: #ff6b00,
+
+      color-equipped-badge: #d4a574,
+    )
+  ),
+  christmas: (
+    light: (
+      color-primary: #c41e3a,
+      color-primary-hover: #a01829,
+      color-primary-active: #8b1523,
+      color-secondary: #165b33,
+      color-secondary-hover: #0f4526,
+      color-secondary-active: #0a3319,
+
+      color-text: #212529,
+      color-link: #c41e3a,
+
+      color-surface-primary: #f8f9fa,
+      color-surface-secondary: #e9ecef,
+      color-surface-tertiary: #dee2e6,
+
+      color-border-primary: #165b33,
+      color-border-secondary: #6c757d,
+
+      color-sidebar-hover: #e74c3c,
+      color-sidebar-active: #c41e3a,
+      color-sidebar-active-hover: #d9534f,
+
+      color-battle-ally: #165b33,
+      color-battle-ally-shadow: #27ae60,
+      color-battle-ally-hover-bg: #58d68d96,
+      color-battle-enemy: #c41e3a,
+      color-battle-enemy-shadow: #e74c3c,
+      color-battle-enemy-hover-bg: #f1948a96,
+
+      color-progress-start: #e74c3c,
+      color-progress-end: #c41e3a,
+
+      color-equipped-badge: #ffd700,
+    ),
+    dark: (
+      color-primary: #ff6b6b,
+      color-primary-hover: #ff8787,
+      color-primary-active: #ffa3a3,
+      color-secondary: #4ecca3,
+      color-secondary-hover: #6dd5b4,
+      color-secondary-active: #8cdec5,
+
+      color-text: #f1f3f5,
+      color-link: #ff8787,
+
+      color-surface-primary: #1a1e23,
+      color-surface-secondary: #252a31,
+      color-surface-tertiary: #2f353e,
+
+      color-border-primary: #3d4956,
+      color-border-secondary: #2d3542,
+
+      color-sidebar-hover: #4a2f32,
+      color-sidebar-active: #3d262a,
+      color-sidebar-active-hover: #5a3a3d,
+
+      color-battle-ally: #4ecca3,
+      color-battle-ally-shadow: #3da88a,
+      color-battle-ally-hover-bg: #4ecca366,
+      color-battle-enemy: #ff6b6b,
+      color-battle-enemy-shadow: #d45555,
+      color-battle-enemy-hover-bg: #ff6b6b66,
+
+      color-progress-start: #ff8787,
+      color-progress-end: #ff6b6b,
+
+      color-equipped-badge: #ffd700,
+    )
+  )
+);
+
+// ============================================================================
+// AUTO-GENERATE CSS CUSTOM PROPERTIES
+// ============================================================================
+
+// Loop through each theme and color scheme combination
+@each $theme-name, $schemes in $theme-overrides {
+  @each $scheme-name, $overrides in $schemes {
+    // Get base colors for this color scheme
+    $base-colors: map.get($color-schemes, $scheme-name);
+
+    // Merge base colors with theme-specific overrides
+    $final-colors: map.merge($base-colors, $overrides);
+
+    // Generate CSS custom properties
+    :root[data-theme="#{$theme-name}"][data-color-scheme="#{$scheme-name}"] {
+      @each $property, $value in $final-colors {
+        --#{$property}: #{$value};
+      }
+    }
+  }
+}
+
+// Default fallback selectors (when attributes are not set)
+:root:not([data-theme]):not([data-color-scheme]),
+:root:not([data-theme])[data-color-scheme="light"],
+:root[data-theme="default"]:not([data-color-scheme]) {
+  @each $property, $value in map.get($color-schemes, light) {
+    --#{$property}: #{$value};
+  }
+}
+
+:root:not([data-theme])[data-color-scheme="dark"] {
+  @each $property, $value in map.get($color-schemes, dark) {
+    --#{$property}: #{$value};
+  }
+}

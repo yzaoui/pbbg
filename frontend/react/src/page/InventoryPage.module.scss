@@ -18,7 +18,7 @@
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        border: 1px solid #717171;
+        border: 1px solid var(--color-border-primary);
 
         .inventory-item {
             list-style-type: none;

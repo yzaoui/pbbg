@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import LoadingSpinner from "../component/LoadingSpinner";
-import itemService from "../backend/item.service";
+import { Link, useParams } from "react-router";
 import { ItemDetails, ItemHistoryInfo } from "../backend/item";
+import itemService from "../backend/item.service";
+import LoadingSpinner from "../component/LoadingSpinner";
 import "./ItemPage.scss";
 
 type State = {
@@ -80,16 +80,16 @@ const ItemHistoryEntryDescription: React.FC<{ info: ItemHistoryInfo, userDetails
 
     switch (info.type) {
         case "created-user":
-            content = <>Created with <a href={`/user/${info.userId}`}>{userDetails[info.userId]}</a></>;
+            content = <>Created with <Link to={`/user/${info.userId}`}>{userDetails[info.userId]}</Link></>;
             break;
         case "created-market":
             content = <>Created in market</>;
             break;
         case "first-mined":
-            content = <>Mined by <a href={`/user/${info.userId}`}>{userDetails[info.userId]}</a></>;
+            content = <>Mined by <Link to={`/user/${info.userId}`}>{userDetails[info.userId]}</Link></>;
             break;
         case "first-harvested":
-            content = <>Harvested by <a href={`/user/${info.userId}`}>{userDetails[info.userId]}</a></>;
+            content = <>Harvested by <Link to={`/user/${info.userId}`}>{userDetails[info.userId]}</Link></>;
             break;
         default:
             throw Error();
