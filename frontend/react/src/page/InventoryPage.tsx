@@ -1,19 +1,18 @@
 import { Howl } from "howler";
 import React, { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
+
+import equipMP3 from "../audio/equip_effect.mp3";
+import equipOGG from "../audio/equip_effect.ogg";
 import { Inventory, isEquippable } from "../backend/inventory";
 import inventoryService from "../backend/inventory.service";
-import LoadingSpinner from "../component/LoadingSpinner";
 import EquipmentSlot from "../component/inventory/EquipmentSlot";
 import InventoryItem from "../component/inventory/InventoryItem";
 import InventoryItemTooltip from "../component/inventory/InventoryItemTooltip";
+import LoadingSpinner from "../component/LoadingSpinner";
 import noPickaxe from "../img/no-pickaxe.png";
 import player from "../img/player.png";
 import styles from "./InventoryPage.module.scss";
-// @ts-ignore
-import equipMP3 from "../audio/equip_effect.mp3";
-// @ts-ignore
-import equipOGG from "../audio/equip_effect.ogg";
 
 type State = {
     status: "loading";

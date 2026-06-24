@@ -1,7 +1,9 @@
+import "./MineListRow.scss";
+
 import React from "react";
+
 import { MineType } from "../../backend/mine";
 import LoadingButton from "../LoadingButton";
-import "./MineListRow.scss";
 
 type Props = {
     status: "default";

@@ -1,6 +1,7 @@
-import styles from "./AppHeader.module.scss";
-import MenuIcon from "../img/menu.svg";
 import React from "react";
+
+import MenuIcon from "../img/menu.svg";
+import styles from "./AppHeader.module.scss";
 
 interface Props {
     onClickMenu: () => void;

@@ -1,8 +1,9 @@
-import React, { CSSProperties } from "react";
-import styles from "./EquipmentSlot.module.scss";
-import { InventoryEntry } from "../../backend/inventory";
 import classNames from "classnames";
+import React, { CSSProperties } from "react";
+
+import { InventoryEntry } from "../../backend/inventory";
 import LoadingSpinner from "../LoadingSpinner";
+import styles from "./EquipmentSlot.module.scss";
 
 interface Props {
     item: InventoryEntry | "loading" | null;

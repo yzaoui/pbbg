@@ -1,8 +1,10 @@
+import "./Mine.scss";
+
 import React, { HTMLAttributes, MouseEventHandler, RefObject, useEffect, useMemo, useRef } from "react";
+
 import { isGridPreviewable } from "../../backend/dex";
 import { InventoryEntry, Point } from "../../backend/inventory";
 import { Mine as MineData } from "../../backend/mine";
-import "./Mine.scss";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     mine: MineData;

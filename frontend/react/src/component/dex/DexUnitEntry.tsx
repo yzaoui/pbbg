@@ -1,8 +1,9 @@
+import classNames from "classnames";
 import React from "react";
 import { Link } from "react-router-dom";
+
 import { MyUnitEnum } from "../../backend/dex";
 import styles from "./DexEntry.module.scss";
-import classNames from "classnames";
 
 interface Props {
     id: string;

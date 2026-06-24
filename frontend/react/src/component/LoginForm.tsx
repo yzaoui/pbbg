@@ -1,5 +1,7 @@
-import React, { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
 import "../page/LoginRegisterPage.scss";
+
+import React, { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
+
 import LoadingButton from "./LoadingButton";
 
 interface Props {

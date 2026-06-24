@@ -13,7 +13,6 @@
     },
     "editor.suggest.showWords": false,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit",
         "source.fixAll.eslint": "explicit"
     },
     "eslint.enable": true,

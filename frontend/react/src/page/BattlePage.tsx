@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
+
 import { Battle as BattleData, BattleReward, MappedUnitEffects } from "../backend/battle";
 import battleService from "../backend/battle.service";
 import Battle from "../component/battle/Battle";

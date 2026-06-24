@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import styles from "./DexEntry.module.scss";
+
 import { BasePlant } from "../../model/farm";
+import styles from "./DexEntry.module.scss";
 
 type Props = {
     id: string;

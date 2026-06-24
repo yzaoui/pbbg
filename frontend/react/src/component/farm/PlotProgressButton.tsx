@@ -1,4 +1,5 @@
 import React, { MouseEventHandler } from "react";
+
 import styles from "./PlotProgressButton.module.scss";
 
 type Props = {

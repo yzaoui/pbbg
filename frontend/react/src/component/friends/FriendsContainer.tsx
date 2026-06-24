@@ -1,7 +1,8 @@
 import React from "react";
-import FriendsNav from "./FriendsNav";
-import FriendsContent from "./FriendsContent";
+
 import { FriendInfo, Friends } from "../../backend/friends";
+import FriendsContent from "./FriendsContent";
+import FriendsNav from "./FriendsNav";
 
 interface LoadingProps {
     loading: true;

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import { isOccupiedPlotData, PlotData } from "../../model/farm";
 import Plot from "./Plot";
 

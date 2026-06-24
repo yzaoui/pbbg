@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Friends } from "../../backend/friends";
 import FriendsSectionHeader from "./FriendsSectionHeader";
 import FriendUL from "./FriendUL";

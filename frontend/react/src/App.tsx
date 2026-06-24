@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from "react";
 import "normalize.css";
 import "./common.scss";
+
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+
+import authenticationService from "./authentication.service";
 import AppHeader from "./component/AppHeader";
 import GuestNav from "./component/GuestNav";
 import MemberNav from "./component/MemberNav";
 import MemberRoute from "./MemberRoute";
+import AboutPage from "./page/AboutPage";
+import BattlePage from "./page/BattlePage";
+import DexPage from "./page/dex/DexPage";
+import FarmPage from "./page/FarmPage";
+import FriendsPage from "./page/FriendsPage";
 import IndexGuestPage from "./page/IndexGuestPage";
 import IndexMemberPage from "./page/IndexMemberPage";
-import RegisterPage from "./page/RegisterPage";
-import LoginPage from "./page/LoginPage";
-import SquadPage from "./page/SquadPage";
-import MinePage from "./page/mine/MinePage";
-import FarmPage from "./page/FarmPage";
 import InventoryPage from "./page/InventoryPage";
 import ItemPage from "./page/ItemPage";
-import DexPage from "./page/dex/DexPage";
-import SettingsPage from "./page/SettingsPage";
-import authenticationService from "./authentication.service";
-import BattlePage from "./page/BattlePage";
+import LoginPage from "./page/LoginPage";
 import MarketPage from "./page/MarketPage";
+import MinePage from "./page/mine/MinePage";
+import RegisterPage from "./page/RegisterPage";
+import SettingsPage from "./page/SettingsPage";
+import SquadPage from "./page/SquadPage";
 import UserPage from "./page/UserPage";
-import FriendsPage from "./page/FriendsPage";
-import AboutPage from "./page/AboutPage";
 
 const App: React.FC = () => {
     const [currentUserToken, setCurrentUserToken] = useState<string | null>(null);

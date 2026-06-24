@@ -1,10 +1,11 @@
-import React, { DragEventHandler } from "react";
-import PlotImage from "./PlotImage";
-import PlotFooter from "./PlotFooter";
-import LoadingSpinner from "../LoadingSpinner";
-import { isMaturableMaterializedPlant, OccupiedPlotData, PlotData } from "../../model/farm";
-import PlotHeader from "./PlotHeader";
 import classNames from "classnames";
+import React, { DragEventHandler } from "react";
+
+import { isMaturableMaterializedPlant, OccupiedPlotData, PlotData } from "../../model/farm";
+import LoadingSpinner from "../LoadingSpinner";
+import PlotFooter from "./PlotFooter";
+import PlotHeader from "./PlotHeader";
+import PlotImage from "./PlotImage";
 
 interface EmptyPlotProps {
     plot: PlotData;

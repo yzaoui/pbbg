@@ -1,7 +1,9 @@
+import "./DexPage.scss";
+
 import React from "react";
 import { Link, Route, Routes } from "react-router-dom";
+
 import DexItemsPage from "./DexItemsPage";
-import "./DexPage.scss";
 import DexPlantsPage from "./DexPlantsPage";
 import DexUnitsPage from "./DexUnitsPage";
 

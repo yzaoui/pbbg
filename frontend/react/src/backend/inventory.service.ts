@@ -1,8 +1,9 @@
-import authHeader from "../helper/auth-header";
-import jsonHeader from "../helper/json-header";
-import handleResponse from "../helper/handle-response";
-import * as InventoryEndpoint from "../backend/inventory";
 import * as RxJS from "rxjs";
+
+import * as InventoryEndpoint from "../backend/inventory";
+import authHeader from "../helper/auth-header";
+import handleResponse from "../helper/handle-response";
+import jsonHeader from "../helper/json-header";
 
 const inventoryService = {
     getInventory: (filter?: "plantable") => {

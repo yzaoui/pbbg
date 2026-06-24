@@ -1,6 +1,8 @@
-import React, { ChangeEventHandler, useState } from "react";
-import audioService from "../../audio.service";
 import "./VolumeSetting.scss";
+
+import React, { ChangeEventHandler, useState } from "react";
+
+import audioService from "../../audio.service";
 
 const VolumeSetting: React.FC = () => {
     const [volume, setVolume] = useState(audioService.getVolume);

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+
 import { BaseItem } from "../../backend/dex";
 import styles from "./DexEntry.module.scss";
 

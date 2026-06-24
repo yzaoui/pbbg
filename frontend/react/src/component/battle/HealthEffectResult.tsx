@@ -1,6 +1,7 @@
 import React from "react";
-import { SidedUnit } from "./Battle";
+
 import { HealthEffect } from "../../backend/battle";
+import { SidedUnit } from "./Battle";
 import styles from "./BattleLog.module.scss";
 
 interface Props {

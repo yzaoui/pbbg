@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import aboutService from "../../backend/about.service";
-import LoadingSpinner from "../LoadingSpinner";
+
 import { PatchNotes } from "../../backend/about";
+import aboutService from "../../backend/about.service";
 import { patchNotesToHTML } from "../../helper/patch-notes";
+import LoadingSpinner from "../LoadingSpinner";
 
 interface LoadingState {
     status: "loading";

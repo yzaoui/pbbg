@@ -1,6 +1,7 @@
 import React, { ChangeEventHandler } from "react";
-import InventoryItem from "../inventory/InventoryItem";
+
 import { InventoryEntry } from "../../backend/inventory";
+import InventoryItem from "../inventory/InventoryItem";
 import styles from "./PlantRadioOption.module.scss";
 
 type Props = {

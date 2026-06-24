@@ -1,15 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Subscription } from "rxjs";
 import classNames from "classnames";
 import { Howl } from "howler";
+import React, { useEffect, useRef, useState } from "react";
+import { Subscription } from "rxjs";
+
+import healingEffectMP3 from "../audio/healing_effect.mp3";
+import healingEffectOGG from "../audio/healing_effect.ogg";
 import { Squad } from "../backend/squad";
 import squadService from "../backend/squad.service";
 import LoadingSpinner from "../component/LoadingSpinner";
 import PBBGUnit from "../component/PBBGUnit";
-// @ts-ignore
-import healingEffectMP3 from "../audio/healing_effect.mp3";
-// @ts-ignore
-import healingEffectOGG from "../audio/healing_effect.ogg";
 
 type State = {
     status: "loading";

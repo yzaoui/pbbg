@@ -1,4 +1,5 @@
 import React from "react";
+
 import goldSrc from "../img/gold.png";
 
 export const USERNAME_REGEX = {

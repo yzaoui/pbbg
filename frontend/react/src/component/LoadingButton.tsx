@@ -1,5 +1,6 @@
-import React, { ButtonHTMLAttributes } from "react";
 import classNames from "classnames";
+import React, { ButtonHTMLAttributes } from "react";
+
 import LoadingSpinner from "./LoadingSpinner";
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {

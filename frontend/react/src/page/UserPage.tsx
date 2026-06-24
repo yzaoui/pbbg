@@ -1,13 +1,15 @@
+import "./UserPage.scss";
+
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { Subscription } from "rxjs";
+
 import { Friendship } from "../backend/friends";
 import friendsService from "../backend/friends.service";
 import { UserProfile } from "../backend/user";
 import userService from "../backend/user.service";
 import LoadingSpinner from "../component/LoadingSpinner";
 import UserProfileComponent from "../component/UserProfileComponent";
-import "./UserPage.scss";
 
 interface LoadingState {
     status: "loading";

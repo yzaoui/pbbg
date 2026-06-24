@@ -1,8 +1,9 @@
 import * as RxJS from "rxjs";
+
 import authHeader from "../helper/auth-header";
 import handleResponse from "../helper/handle-response";
-import * as BattleEndpoint from "./battle";
 import jsonHeader from "../helper/json-header";
+import * as BattleEndpoint from "./battle";
 
 const battleService = {
     getBattle: () => RxJS.from(

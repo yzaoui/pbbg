@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+
 import { COLOR_SCHEMES, ColorScheme, THEMES, ThemeStyle } from "../styles/themeRegistry";
 
 interface ThemeContextType {

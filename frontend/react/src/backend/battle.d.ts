@@ -1,5 +1,5 @@
-import { MyUnit } from "./squad";
 import { MaterializedItem } from "./inventory";
+import { MyUnit } from "./squad";
 
 /**
  * /battle/session

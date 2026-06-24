@@ -1,5 +1,8 @@
+import "./DexSubpage.scss";
+
 import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
+
 import { BaseItem, DexItems } from "../../backend/dex";
 import dexService from "../../backend/dex.service";
 import DexItemEntry from "../../component/dex/DexItemEntry";
@@ -7,7 +10,6 @@ import DexReturnLink from "../../component/dex/DexReturnLink";
 import DexUnknownEntry from "../../component/dex/DexUnknownEntry";
 import LoadingSpinner from "../../component/LoadingSpinner";
 import DexItemDetailedPage from "./DexItemDetailedPage";
-import "./DexSubpage.scss";
 
 const DexItemsPage: React.FC = () => <Routes>
     <Route path="/" element={<IndexPage />} />

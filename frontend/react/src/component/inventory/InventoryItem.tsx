@@ -1,6 +1,7 @@
 import React, { HTMLAttributes } from "react";
-import styles from "./InventoryItem.module.scss";
+
 import { InventoryEntry, isEquippable, isStackable } from "../../backend/inventory";
+import styles from "./InventoryItem.module.scss";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     inventoryEntry: InventoryEntry;

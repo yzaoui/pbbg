@@ -1,4 +1,5 @@
 import React, { ChangeEventHandler, useRef, useState } from "react";
+
 import { FriendInfo } from "../../backend/friends";
 import LoadingSpinner from "../LoadingSpinner";
 import AddFriendsContentBody from "./AddFriendsContentBody";

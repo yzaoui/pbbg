@@ -1,5 +1,5 @@
-import { Point } from "./inventory";
 import { BasePlantJSON } from "./farm";
+import { Point } from "./inventory";
 
 /**
  * /dex/items

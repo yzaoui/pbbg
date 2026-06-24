@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import MicroModal from "react-micro-modal";
 import { Subscription } from "rxjs";
+
 import { Inventory } from "../../backend/inventory";
 import inventoryService from "../../backend/inventory.service";
 import LoadingSpinner from "../LoadingSpinner";
@@ -91,14 +92,14 @@ const PlantModal: React.FC<Props> = ({ open, onClose, onSelect }) => {
                 Dialog: {
                     style: {
                         padding: 0,
-                        backgroundColor: 'var(--color-surface-secondary)',
-                        color: 'var(--color-text)',
-                        border: '2px solid var(--color-border-primary)'
+                        backgroundColor: "var(--color-surface-secondary)",
+                        color: "var(--color-text)",
+                        border: "2px solid var(--color-border-primary)"
                     }
                 },
                 Overlay: {
                     style: {
-                        backgroundColor: 'var(--color-overlay-dark)'
+                        backgroundColor: "var(--color-overlay-dark)"
                     }
                 }
             }}

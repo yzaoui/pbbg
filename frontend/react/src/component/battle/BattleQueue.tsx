@@ -1,7 +1,8 @@
+import classNames from "classnames";
 import React from "react";
+
 import { Battle as BattleData } from "../../backend/battle";
 import styles from "./BattleQueue.module.scss";
-import classNames from "classnames";
 
 interface Props {
     battle: BattleData;
