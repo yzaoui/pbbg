@@ -1,8 +1,9 @@
 import React from "react";
-import { FriendInfo } from "../../backend/friends";
-import FriendItem from "./FriendItem";
 import { Link } from "react-router-dom";
+
+import { FriendInfo } from "../../backend/friends";
 import LoadingSpinner from "../LoadingSpinner";
+import FriendItem from "./FriendItem";
 
 interface LoadingProps {
     loading: true;

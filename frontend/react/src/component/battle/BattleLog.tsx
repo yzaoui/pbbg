@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useRef } from "react";
+
 import { BattleReward, MappedUnitEffects } from "../../backend/battle";
 import { SidedUnit } from "./Battle";
 import styles from "./BattleLog.module.scss";

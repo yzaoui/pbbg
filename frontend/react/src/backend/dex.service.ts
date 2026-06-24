@@ -1,7 +1,8 @@
+import * as RxJS from "rxjs";
+
 import authHeader from "../helper/auth-header";
 import handleResponse from "../helper/handle-response";
 import * as DexEndpoint from "./dex";
-import * as RxJS from "rxjs";
 
 const dexService = {
     getUnits: () => RxJS.from(

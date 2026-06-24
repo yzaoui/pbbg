@@ -1,9 +1,10 @@
-import React from "react";
 import classNames from "classnames";
+import React from "react";
 import MicroModal from "react-micro-modal";
-import styles from "./PatchNotesModal.module.scss";
+
 import BackendPatchNotesModalBody from "./BackendPatchNotesModalBody";
 import FrontendPatchNotesModalBody from "./FrontendPatchNotesModalBody";
+import styles from "./PatchNotesModal.module.scss";
 
 type Props = {
     patchNotesOpen: "backend" | "frontend" | null;

@@ -1,11 +1,12 @@
 import React, { CSSProperties } from "react";
-import goldSrc from "../img/gold.png";
-import LoadingSpinner from "./LoadingSpinner";
-import lvlMiningSrc from "../img/lvl-mining.png";
-import LevelInfo from "./LevelInfo";
-import lvlFarmingSrc from "../img/lvl-farming.png";
+
 import { UserStats } from "../backend/user-stats";
+import goldSrc from "../img/gold.png";
+import lvlFarmingSrc from "../img/lvl-farming.png";
+import lvlMiningSrc from "../img/lvl-mining.png";
 import styles from "./HomeUserStats.module.scss";
+import LevelInfo from "./LevelInfo";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface LoadingProps {
     status: "loading";

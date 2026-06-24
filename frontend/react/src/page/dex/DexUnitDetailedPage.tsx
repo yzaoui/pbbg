@@ -1,10 +1,12 @@
+import "./DexDetailedPage.scss";
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
+
 import { MyUnitEnum } from "../../backend/dex";
-import "./DexDetailedPage.scss";
-import LoadingSpinner from "../../component/LoadingSpinner";
 import dexService from "../../backend/dex.service";
 import DexReturnLink from "../../component/dex/DexReturnLink";
+import LoadingSpinner from "../../component/LoadingSpinner";
 
 type State = {
     status: "loading";

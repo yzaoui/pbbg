@@ -1,9 +1,11 @@
+import "./ItemPage.scss";
+
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
+
 import { ItemDetails, ItemHistoryInfo } from "../backend/item";
 import itemService from "../backend/item.service";
 import LoadingSpinner from "../component/LoadingSpinner";
-import "./ItemPage.scss";
 
 type State = {
     status: "loading";

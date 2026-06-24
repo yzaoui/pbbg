@@ -1,6 +1,7 @@
 import React from "react";
-import styles from "./GridPreview.module.scss";
+
 import { Point } from "../backend/inventory";
+import styles from "./GridPreview.module.scss";
 
 interface Props {
     grid: Point[];

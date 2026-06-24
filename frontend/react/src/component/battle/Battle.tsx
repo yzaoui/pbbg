@@ -1,11 +1,12 @@
 import React, { useState } from "react";
+
 import { Battle as BattleData, BattleReward, MappedUnitEffects } from "../../backend/battle";
-import BattleQueue from "./BattleQueue";
+import { MyUnit } from "../../backend/squad";
 import PBBGUnit from "../PBBGUnit";
 import styles from "./Battle.module.scss";
 import BattleActions from "./BattleActions";
 import BattleLog from "./BattleLog";
-import { MyUnit } from "../../backend/squad";
+import BattleQueue from "./BattleQueue";
 
 export type SidedUnit = MyUnit & { side: "ally" | "enemy" };
 

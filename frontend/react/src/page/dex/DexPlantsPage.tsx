@@ -1,5 +1,8 @@
+import "./DexSubpage.scss";
+
 import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
+
 import { DexPlants } from "../../backend/dex";
 import dexService from "../../backend/dex.service";
 import DexPlantEntry from "../../component/dex/DexPlantEntry";
@@ -8,7 +11,6 @@ import DexUnknownEntry from "../../component/dex/DexUnknownEntry";
 import LoadingSpinner from "../../component/LoadingSpinner";
 import { BasePlant } from "../../model/farm";
 import DexPlantDetailedPage from "./DexPlantDetailedPage";
-import "./DexSubpage.scss";
 
 const DexPlantsPage: React.FC = () => <>
     <Routes>

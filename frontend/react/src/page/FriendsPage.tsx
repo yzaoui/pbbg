@@ -1,10 +1,12 @@
+import "./FriendsPage.scss";
+
 import React, { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
-import friendsService from "../backend/friends.service";
+
 import { FriendInfo, Friends } from "../backend/friends";
-import FriendsContainer from "../component/friends/FriendsContainer";
-import "./FriendsPage.scss";
+import friendsService from "../backend/friends.service";
 import userService from "../backend/user.service";
+import FriendsContainer from "../component/friends/FriendsContainer";
 
 interface LoadingState {
     status: "loading";

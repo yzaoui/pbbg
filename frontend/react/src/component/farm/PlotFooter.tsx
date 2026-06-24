@@ -1,6 +1,7 @@
 import React from "react";
-import PlotProgress from "./PlotProgress";
+
 import { PlantProgress } from "../../model/farm";
+import PlotProgress from "./PlotProgress";
 import PlotProgressButton from "./PlotProgressButton";
 
 type Props = {

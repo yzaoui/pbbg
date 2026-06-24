@@ -1,9 +1,10 @@
+import classNames from "classnames";
 import React, {HTMLAttributes} from "react";
-import styles from "./PBBGUnit.module.scss";
+
+import { LevelProgress } from "../backend/user-stats";
 import PBBGLevelProgress from "./PBBGLevelProgress";
 import PBBGProgressBar from "./PBBGProgressBar";
-import classNames from "classnames";
-import { LevelProgress } from "../backend/user-stats";
+import styles from "./PBBGUnit.module.scss";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
     unit: Unit;

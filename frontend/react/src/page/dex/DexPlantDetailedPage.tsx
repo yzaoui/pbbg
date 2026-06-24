@@ -1,11 +1,13 @@
+import "./DexDetailedPage.scss";
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
+
 import dexService from "../../backend/dex.service";
 import DexReturnLink from "../../component/dex/DexReturnLink";
 import PlantPreview from "../../component/farm/PlantPreview";
 import LoadingSpinner from "../../component/LoadingSpinner";
 import { BasePlant, basePlantFromJSON, isMaturableBasePlant, secondsToDurationString } from "../../model/farm";
-import "./DexDetailedPage.scss";
 
 type State = {
     status: "loading";

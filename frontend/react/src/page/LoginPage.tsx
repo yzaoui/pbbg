@@ -1,8 +1,10 @@
+import "./LoginRegisterPage.scss";
+
 import React, { useEffect, useState } from "react";
 import { Link, Location, useLocation, useNavigate } from "react-router-dom";
+
 import LoginForm, { IncorrectCredentialsError } from "../component/LoginForm";
 import authenticationService from "./../authentication.service";
-import "./LoginRegisterPage.scss";
 
 export interface LocationState {
     error?: IncorrectCredentialsError;

@@ -1,5 +1,6 @@
-import React from "react";
 import "./MineListUnknownRow.scss";
+
+import React from "react";
 
 interface Props {
     nextUnlockLevel: number;

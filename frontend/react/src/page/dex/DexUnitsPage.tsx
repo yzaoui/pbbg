@@ -1,12 +1,14 @@
+import "./DexSubpage.scss";
+
 import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
+
 import { DexUnits, MyUnitEnum } from "../../backend/dex";
 import dexService from "../../backend/dex.service";
 import DexReturnLink from "../../component/dex/DexReturnLink";
 import DexUnitEntry from "../../component/dex/DexUnitEntry";
 import DexUnknownEntry from "../../component/dex/DexUnknownEntry";
 import LoadingSpinner from "../../component/LoadingSpinner";
-import "./DexSubpage.scss";
 import DexUnitDetailedPage from "./DexUnitDetailedPage";
 
 const DexUnitsPage: React.FC = () => <Routes>

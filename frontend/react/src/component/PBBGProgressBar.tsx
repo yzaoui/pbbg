@@ -1,6 +1,7 @@
-import React from "react";
-import styles from "./PBBGProgressBar.module.scss";
 import classNames from "classnames";
+import React from "react";
+
+import styles from "./PBBGProgressBar.module.scss";
 
 interface Props {
     className?: string;

@@ -1,8 +1,9 @@
 import * as RxJS from "rxjs";
+
 import authHeader from "../helper/auth-header";
 import handleResponse from "../helper/handle-response";
-import * as SettingsEndpoint from "./settings";
 import jsonHeader from "../helper/json-header";
+import * as SettingsEndpoint from "./settings";
 
 const settingsService = {
     changePassword: (req: SettingsEndpoint.ChangePasswordRequest) => RxJS.from(

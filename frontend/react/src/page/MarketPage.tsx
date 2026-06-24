@@ -1,17 +1,17 @@
+import "./MarketPage.scss";
+
 import { Howl } from "howler";
 import React, { useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
+
+import transactionMP3 from "../audio/transaction.mp3";
+import transactionOGG from "../audio/transaction.ogg";
 import { UserAndGameMarkets } from "../backend/market";
 import marketService from "../backend/market.service";
 import LoadingSpinner from "../component/LoadingSpinner";
 import GameMarket from "../component/market/GameMarket";
 import UserMarket from "../component/market/UserMarket";
 import goldSrc from "../img/gold.png";
-import "./MarketPage.scss";
-// @ts-ignore
-import transactionMP3 from "../audio/transaction.mp3";
-// @ts-ignore
-import transactionOGG from "../audio/transaction.ogg";
 
 interface LoadingState {
     status: "loading";

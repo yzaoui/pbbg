@@ -1,6 +1,7 @@
 import { BehaviorSubject } from "rxjs";
-import handleResponse from "./helper/handle-response";
+
 import * as LoginRegisterEndpoint from "./backend/loginregister";
+import handleResponse from "./helper/handle-response";
 
 const CURRENT_USER_KEY = "currentUser";
 

@@ -1,8 +1,10 @@
+import "./LoginRegisterPage.scss";
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import RegisterForm from "../component/RegisterForm";
 import authenticationService from "./../authentication.service";
-import "./LoginRegisterPage.scss";
 
 interface State {
     submitting: boolean;

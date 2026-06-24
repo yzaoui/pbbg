@@ -1,8 +1,9 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Route,Routes } from "react-router-dom";
+
 import { FriendInfo, Friends } from "../../backend/friends";
-import FriendsListContent from "./FriendsListContent";
 import AddFriendsContent from "./AddFriendsContent";
+import FriendsListContent from "./FriendsListContent";
 import PendingFriendsContent from "./PendingFriendsContent";
 
 interface LoadingProps {

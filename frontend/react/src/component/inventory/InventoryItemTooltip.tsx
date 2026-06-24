@@ -1,10 +1,11 @@
+import classNames from "classnames";
 import React from "react";
 import { Link } from "react-router-dom";
-import { InventoryEntry, isEquippable, isStackable } from "../../backend/inventory";
-import styles from "./InventoryItemTooltip.module.scss";
-import GridPreview from "../GridPreview";
+
 import { isGridPreviewable } from "../../backend/dex";
-import classNames from "classnames";
+import { InventoryEntry, isEquippable, isStackable } from "../../backend/inventory";
+import GridPreview from "../GridPreview";
+import styles from "./InventoryItemTooltip.module.scss";
 
 interface Props {
     inventoryEntry: InventoryEntry;

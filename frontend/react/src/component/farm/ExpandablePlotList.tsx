@@ -1,7 +1,8 @@
 import React from "react";
+
 import { PlotData } from "../../model/farm";
-import PlotList from "./PlotList";
 import ExpandPlots from "./ExpandPlots";
+import PlotList from "./PlotList";
 
 type Props = {
     plots: PlotData[];

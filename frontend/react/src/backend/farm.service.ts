@@ -1,8 +1,9 @@
 import * as RxJS from "rxjs";
-import * as FarmEndpoint from "./farm";
+
 import authHeader from "../helper/auth-header";
 import handleResponse from "../helper/handle-response";
 import jsonHeader from "../helper/json-header";
+import * as FarmEndpoint from "./farm";
 
 const farmService = {
     getPlots: () => RxJS.from(

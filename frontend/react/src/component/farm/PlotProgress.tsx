@@ -1,4 +1,5 @@
 import React from "react";
+
 import { PlantProgress } from "../../model/farm";
 
 type Props = {

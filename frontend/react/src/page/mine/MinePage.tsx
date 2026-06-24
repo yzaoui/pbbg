@@ -1,6 +1,20 @@
 import { Howl } from "howler";
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import { Link, Location, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Subscription } from "rxjs";
+
+import exitMineMP3 from "../../audio/enter_mine.mp3";
+import exitMineOGG from "../../audio/enter_mine.ogg";
+import levelUpMP3 from "../../audio/level-up.mp3";
+import levelUpOGG from "../../audio/level-up.ogg";
+import pickaxe1MP3 from "../../audio/pickaxe1.mp3";
+import pickaxe1OGG from "../../audio/pickaxe1.ogg";
+import pickaxe2MP3 from "../../audio/pickaxe2.mp3";
+import pickaxe2OGG from "../../audio/pickaxe2.ogg";
+import pickaxe3MP3 from "../../audio/pickaxe3.mp3";
+import pickaxe3OGG from "../../audio/pickaxe3.ogg";
+import pickaxe4MP3 from "../../audio/pickaxe4.mp3";
+import pickaxe4OGG from "../../audio/pickaxe4.ogg";
 import { InventoryEntry, Point } from "../../backend/inventory";
 import inventoryService from "../../backend/inventory.service";
 import { LevelUp, Mine as MineData, MinedItemResult } from "../../backend/mine";
@@ -9,36 +23,11 @@ import { LevelProgress } from "../../backend/user-stats";
 import userStatsService from "../../backend/user-stats.service";
 import InventoryItem from "../../component/inventory/InventoryItem";
 import LevelInfo from "../../component/LevelInfo";
+import LoadingButton from "../../component/LoadingButton";
 import LoadingSpinner from "../../component/LoadingSpinner";
 import Mine from "../../component/mine/Mine";
 import MineLog from "../../component/mine/MineLog";
 import MineListPage from "./MineListPage";
-// @ts-ignore
-import pickaxe1MP3 from "../../audio/pickaxe1.mp3";
-// @ts-ignore
-import pickaxe1OGG from "../../audio/pickaxe1.ogg";
-// @ts-ignore
-import pickaxe2MP3 from "../../audio/pickaxe2.mp3";
-// @ts-ignore
-import pickaxe2OGG from "../../audio/pickaxe2.ogg";
-// @ts-ignore
-import pickaxe3MP3 from "../../audio/pickaxe3.mp3";
-// @ts-ignore
-import pickaxe3OGG from "../../audio/pickaxe3.ogg";
-// @ts-ignore
-import pickaxe4MP3 from "../../audio/pickaxe4.mp3";
-// @ts-ignore
-import pickaxe4OGG from "../../audio/pickaxe4.ogg";
-// @ts-ignore
-import levelUpMP3 from "../../audio/level-up.mp3";
-// @ts-ignore
-import levelUpOGG from "../../audio/level-up.ogg";
-// @ts-ignore
-import exitMineMP3 from "../../audio/enter_mine.mp3";
-// @ts-ignore
-import { Subscription } from "rxjs";
-import exitMineOGG from "../../audio/enter_mine.ogg";
-import LoadingButton from "../../component/LoadingButton";
 
 const MinePage: React.FC = () => <Routes>
     <Route path="/" element={<IndexPage />} />

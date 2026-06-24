@@ -1,6 +1,7 @@
 import * as RxJS from "rxjs";
-import { APP_VERSIONS } from "../helper/const";
+
 import authHeader from "../helper/auth-header";
+import { APP_VERSIONS } from "../helper/const";
 import handleResponse from "../helper/handle-response";
 import * as AboutEndpoint from "./about";
 

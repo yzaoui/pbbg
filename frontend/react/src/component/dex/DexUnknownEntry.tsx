@@ -1,8 +1,10 @@
-import React from "react";
 import "../../page/dex/DexSubpage.scss"
+
+import classNames from "classnames";
+import React from "react";
+
 import unknownImg from "./../../img/dex-unknown.png";
 import styles from "./DexEntry.module.scss";
-import classNames from "classnames";
 
 interface Props {
     id: string;

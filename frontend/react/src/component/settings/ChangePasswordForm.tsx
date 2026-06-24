@@ -1,5 +1,7 @@
-import React, { ChangeEventHandler, CSSProperties, FormEventHandler, useState } from "react";
 import "./ChangePasswordForm.scss";
+
+import React, { ChangeEventHandler, CSSProperties, FormEventHandler, useState } from "react";
+
 import { PASSWORD_REGEX } from "../../helper/const";
 import LoadingSpinner from "../LoadingSpinner";
 

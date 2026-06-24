@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from "react";
-import classNames from "classnames";
 import "./MineLog.scss";
-import { LevelUp as LevelUpData, MinedItemResult } from "../../backend/mine";
+
+import classNames from "classnames";
+import React, { useEffect, useRef } from "react";
+
 import { isStackable } from "../../backend/inventory";
+import { LevelUp as LevelUpData, MinedItemResult } from "../../backend/mine";
 
 interface Props {
     results: (MinedItemResult | LevelUpData)[];

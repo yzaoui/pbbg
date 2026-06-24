@@ -1,7 +1,8 @@
+import * as RxJS from "rxjs";
+
 import authHeader from "../helper/auth-header";
 import handleResponse from "../helper/handle-response";
 import * as SquadEndpoint from "./squad";
-import * as RxJS from "rxjs";
 
 const squadService = {
     getSquad: () => RxJS.from(

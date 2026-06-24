@@ -1,6 +1,8 @@
-import React, { ChangeEventHandler, FormEventHandler, useState } from "react";
 import "../page/LoginRegisterPage.scss";
-import { USERNAME_REGEX, PASSWORD_REGEX } from "../helper/const";
+
+import React, { ChangeEventHandler, FormEventHandler, useState } from "react";
+
+import { PASSWORD_REGEX,USERNAME_REGEX } from "../helper/const";
 import LoadingButton from "./LoadingButton";
 
 interface Props {

@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useRef } from "react";
+
 import styles from "./PBBGLevelProgress.module.scss";
 
 interface Props {

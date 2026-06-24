@@ -1,14 +1,13 @@
+import { Howl } from "howler";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Subscription } from "rxjs";
+
+import enterMineMP3 from "../../audio/enter_mine.mp3";
+import enterMineOGG from "../../audio/enter_mine.ogg";
 import { MineTypeList } from "../../backend/mine";
 import mineService from "../../backend/mine.service";
 import MineList from "../../component/mine/MineList";
-// @ts-ignore
-import enterMineMP3 from "../../audio/enter_mine.mp3";
-// @ts-ignore
-import { Howl } from "howler";
-import enterMineOGG from "../../audio/enter_mine.ogg";
 import { LocationState } from "./MinePage";
 
 type State = {

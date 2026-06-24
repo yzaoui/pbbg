@@ -1,8 +1,10 @@
-import React, { CSSProperties, useEffect, useState } from "react";
-import aboutService from "../backend/about.service";
-import LoadingSpinner from "../component/LoadingSpinner";
-import PatchNotesModal from "../component/about/PatchNotesModal";
 import "./AboutPage.scss";
+
+import React, { CSSProperties, useEffect, useState } from "react";
+
+import aboutService from "../backend/about.service";
+import PatchNotesModal from "../component/about/PatchNotesModal";
+import LoadingSpinner from "../component/LoadingSpinner";
 
 interface LoadingState {
     status: "loading";

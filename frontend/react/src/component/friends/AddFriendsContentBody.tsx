@@ -1,6 +1,7 @@
 import React, { ChangeEventHandler } from "react";
-import FriendUL from "./FriendUL";
+
 import { FriendInfo } from "../../backend/friends";
+import FriendUL from "./FriendUL";
 
 interface Props {
     searchText: string;

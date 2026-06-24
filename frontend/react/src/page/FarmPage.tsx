@@ -1,14 +1,16 @@
+import "./FarmPage.scss";
+
 import cloneDeep from "lodash-es/cloneDeep";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Subscription } from "rxjs";
+
 import { PlotJSON } from "../backend/farm";
 import farmService from "../backend/farm.service";
-import LoadingSpinner from "../component/LoadingSpinner";
 import ExpandablePlotList from "../component/farm/ExpandablePlotList";
 import PlantModal from "../component/farm/PlantModal";
+import LoadingSpinner from "../component/LoadingSpinner";
 import { arrayReorder } from "../helper/array";
 import { getPlantProgress, isMaturableMaterializedPlant, isOccupiedPlotData, PlotData, plotFromJSON } from "../model/farm";
-import "./FarmPage.scss";
 
 interface LoadingState {
     status: "loading";

@@ -1,7 +1,8 @@
 import React from "react";
+
+import { Friendship } from "../backend/friends";
 import { UserProfile } from "../backend/user";
 import LoadingButton from "./LoadingButton";
-import { Friendship } from "../backend/friends";
 
 interface Props {
     userProfile: UserProfile;

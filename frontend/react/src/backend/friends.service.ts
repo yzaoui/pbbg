@@ -1,8 +1,9 @@
-import handleResponse from "../helper/handle-response";
-import * as FriendsEndpoint from "./friends";
 import * as RxJS from "rxjs";
+
 import authHeader from "../helper/auth-header";
+import handleResponse from "../helper/handle-response";
 import jsonHeader from "../helper/json-header";
+import * as FriendsEndpoint from "./friends";
 
 const friendsService = {
     getFriends: () => RxJS.from(

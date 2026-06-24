@@ -1,7 +1,8 @@
+import classNames from "classnames";
 import React from "react";
+
 import LoadingButton from "../LoadingButton";
 import styles from "./BattleActions.module.scss";
-import classNames from "classnames";
 
 type Props = {
     performingAction: boolean;

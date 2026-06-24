@@ -1,8 +1,9 @@
-import authHeader from "../helper/auth-header";
-import jsonHeader from "../helper/json-header";
-import handleResponse from "../helper/handle-response";
-import * as MineEndpoint from "./mine";
 import * as RxJS from "rxjs";
+
+import authHeader from "../helper/auth-header";
+import handleResponse from "../helper/handle-response";
+import jsonHeader from "../helper/json-header";
+import * as MineEndpoint from "./mine";
 
 const mineService = {
     getMine: () => RxJS.from(

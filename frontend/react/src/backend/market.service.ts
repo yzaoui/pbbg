@@ -1,8 +1,9 @@
 import * as RxJS from "rxjs";
+
 import authHeader from "../helper/auth-header";
 import handleResponse from "../helper/handle-response";
-import * as MarketEndpoint from "./market";
 import jsonHeader from "../helper/json-header";
+import * as MarketEndpoint from "./market";
 
 const marketService = {
     getMarkets: () => RxJS.from(
