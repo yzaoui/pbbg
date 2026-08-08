@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    runs-on: docker
+    container:
+      image: docker.io/oven/bun:1.2.22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: frontend-bun-${{ hashFiles('frontend/react/bun.lock') }}
+          restore-keys: frontend-bun-
+      - name: Install frontend dependencies
+        working-directory: frontend/react
+        run: bun install --frozen-lockfile
+      - name: Typecheck frontend
+        working-directory: frontend/react
+        run: bun run typecheck
+      - name: Lint frontend
+        continue-on-error: true
+        working-directory: frontend/react
+        run: bun run lint
+      - name: Build frontend
+        working-directory: frontend/react
+        run: bun run build
+
+  backend:
+    runs-on: docker
+    env:
+      DOCKER_HOST: tcp://docker-in-docker.docker.internal:2375
+      TESTCONTAINERS_HOST_OVERRIDE: docker-in-docker.docker.internal
+      TESTCONTAINERS_RYUK_DISABLED: true
+      PBBG_TEST_JDBC_ADDRESS: postgresql://postgres:5432/testdb?user=testuser&password=testpass
+    services:
+      postgres:
+        image: docker.io/library/postgres:15-alpine
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+        options: >-
+          --health-cmd "pg_isready -U testuser -d testdb"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    container:
+      image: docker.io/library/node:22-bookworm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "24"
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
+      - name: Verify Docker daemon
+        run: |
+          node -e "fetch('http://docker-in-docker.docker.internal:2375/_ping').then(async response => { const body = await response.text(); console.log(response.status, body); if (!response.ok || body.trim() !== 'OK') process.exit(1); }).catch(error => { console.error(error); process.exit(1); })"
+      - name: Test backend
+        working-directory: backend
+        run: ./gradlew test
+      - name: Integration test backend
+        working-directory: backend
+        run: ./gradlew testIntegration

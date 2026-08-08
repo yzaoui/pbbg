@@ -78,7 +78,7 @@ const ItemPage: React.FC = () => {
 };
 
 const ItemHistoryEntryDescription: React.FC<{ info: ItemHistoryInfo, userDetails: Record<number, string> }> = ({ info, userDetails }) => {
-    let content: JSX.Element;
+    let content: React.ReactElement;
 
     switch (info.type) {
         case "created-user":

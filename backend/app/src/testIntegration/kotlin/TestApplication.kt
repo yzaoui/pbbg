@@ -31,20 +31,41 @@ object PostgreSQLTestContainer {
         .withReuse(true) // Reuse container across test runs for faster execution
 }
 
-fun clearDatabase() {
-    val container = PostgreSQLTestContainer.postgres
+private val ciJdbcAddress = System.getenv("PBBG_TEST_JDBC_ADDRESS")
 
-    // Ensure container is started
-    if (!container.isRunning) {
-        container.start()
+private fun ensureDatabaseStarted() {
+    if (ciJdbcAddress == null && !PostgreSQLTestContainer.postgres.isRunning) {
+        PostgreSQLTestContainer.postgres.start()
+    }
+}
+
+private fun testJdbcAddress(): String {
+    if (ciJdbcAddress != null) {
+        return ciJdbcAddress
     }
 
-    // Create a connection to clear all data
-    val connection = java.sql.DriverManager.getConnection(
+    val container = PostgreSQLTestContainer.postgres
+
+    return "postgresql://${container.host}:${container.getMappedPort(5432)}/${container.databaseName}?user=${container.username}&password=${container.password}"
+}
+
+private fun testDatabaseConnection() = if (ciJdbcAddress != null) {
+    java.sql.DriverManager.getConnection("jdbc:$ciJdbcAddress")
+} else {
+    val container = PostgreSQLTestContainer.postgres
+
+    java.sql.DriverManager.getConnection(
         container.jdbcUrl,
         container.username,
         container.password
     )
+}
+
+fun clearDatabase() {
+    ensureDatabaseStarted()
+
+    // Create a connection to clear all data
+    val connection = testDatabaseConnection()
 
     connection.use { conn ->
         val statement = conn.createStatement()
@@ -97,19 +118,15 @@ suspend fun ApplicationTestBuilder.registerUserAndGetToken(
 }
 
 fun testApp(clock: Clock, block: suspend ApplicationTestBuilder.() -> Unit) = testApplication {
-    val container = PostgreSQLTestContainer.postgres
-
     // Ensure container is started before configuring the application
-    if (!container.isRunning) {
-        container.start()
-    }
+    ensureDatabaseStarted()
 
     application {
         mainWithDependencies(
             clock = clock,
             config = AppConfig(
                 ktorEnv = "dev",
-                jdbcAddress = "postgresql://${container.host}:${container.getMappedPort(5432)}/${container.databaseName}?user=${container.username}&password=${container.password}",
+                jdbcAddress = testJdbcAddress(),
                 jwtSecret = "test-jwt-secret-for-integration-tests"
             )
         )
