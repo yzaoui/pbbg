@@ -16,7 +16,7 @@ interface UserTable {
 
     fun userExists(userId: Int): Boolean
 
-    fun searchUsers(text: String): List<User>
+    fun searchUsers(text: String, limit: Long): List<User>
 
     fun updatePassword(userId: Int, newPassword: ByteArray)
 }
@@ -50,8 +50,8 @@ class UserTableImpl(private val database: Database) : UserTable {
         database.userQueries.userExists(userId)
             .executeAsOne()
 
-    override fun searchUsers(text: String): List<User> =
-        database.userQueries.searchUsers(text)
+    override fun searchUsers(text: String, limit: Long): List<User> =
+        database.userQueries.searchUsers(escapeLikeMetacharacters(text), limit)
             .executeAsList()
             .map { it.toDomainModel() }
 
@@ -65,4 +65,18 @@ class UserTableImpl(private val database: Database) : UserTable {
         passwordHash = password_hash,
         joinedInstant = Instant.fromEpochMilliseconds(joined_epoch_millis),
     )
+
+    companion object {
+        /**
+         * Escapes the characters that are wildcards in a SQL `LIKE` pattern, so that user-supplied
+         * search text is matched literally.
+         *
+         * The backslash itself must be escaped first, otherwise the backslashes introduced for `%`
+         * and `_` would be escaped a second time.
+         */
+        internal fun escapeLikeMetacharacters(text: String): String = text
+            .replace("""\""", """\\""")
+            .replace("%", """\%""")
+            .replace("_", """\_""")
+    }
 }

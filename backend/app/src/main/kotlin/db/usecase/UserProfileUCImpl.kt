@@ -23,7 +23,7 @@ class UserProfileUCImpl(private val transaction: Transaction, private val friend
 
     override fun searchUsers(userId: Int, text: String): List<FriendInfo> = transaction {
         // TODO: EXTREMELY inefficient
-        return@transaction userTable.searchUsers(text)
+        return@transaction userTable.searchUsers(text, limit = 50L)
             .filterNot { it.id == userId }
             .map { FriendInfo(it.id, it.username, friendsTable.getFriendship(userId, it.id)) }
     }

@@ -29,7 +29,10 @@ SELECT EXISTS(SELECT 1 FROM "User" WHERE id = ?);
 
 -- Search users by username (case insensitive)
 searchUsers:
-SELECT id, username, password_hash, joined_epoch_millis FROM "User" WHERE LOWER(username) LIKE LOWER('%' || ? || '%');
+SELECT id, username, password_hash, joined_epoch_millis FROM "User"
+WHERE LOWER(username) LIKE LOWER('%' || ? || '%') ESCAPE '\'
+ORDER BY username
+LIMIT ?;
 
 -- Update user password
 updatePassword:
