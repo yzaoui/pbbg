@@ -6,14 +6,17 @@ import com.bitwiserain.pbbg.app.domain.model.MaterializedItem
 import com.bitwiserain.pbbg.app.domain.model.MyUnit
 import com.bitwiserain.pbbg.app.domain.model.MyUnitEnum
 
-fun Unit.toDomainModel(): MyUnit {
-    return when (MyUnitEnum.fromId(unit_enum_id)) {
-        MyUnitEnum.ICE_CREAM_WIZARD -> MyUnit.IceCreamWizard(id, hp, max_hp, atk, def, int, res, exp)
-        MyUnitEnum.TWOLIP -> MyUnit.Twolip(id, hp, max_hp, atk, def, int, res, exp)
-        MyUnitEnum.CARPSHOOTER -> MyUnit.Carpshooter(id, hp, max_hp, atk, def, int, res, exp)
-        MyUnitEnum.FLAMANGO -> MyUnit.Flamango(id, hp, max_hp, atk, def, int, res, exp)
-    }
-}
+fun Unit.toDomainModel(): MyUnit = MyUnit(
+    id = id,
+    enum = MyUnitEnum.fromId(unit_enum_id),
+    hp = hp,
+    maxHP = max_hp,
+    atk = atk,
+    def = def,
+    int = int,
+    res = res,
+    exp = exp
+)
 
 fun toMaterializedItem(itemEnum: ItemEnum, quantity: Int?): MaterializedItem {
     return when (itemEnum) {

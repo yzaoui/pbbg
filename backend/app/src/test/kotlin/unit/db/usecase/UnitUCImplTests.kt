@@ -5,6 +5,7 @@ import com.bitwiserain.pbbg.app.db.repository.UnitTable
 import com.bitwiserain.pbbg.app.db.repository.battle.BattleSessionTable
 import com.bitwiserain.pbbg.app.db.usecase.UnitUCImpl
 import com.bitwiserain.pbbg.app.domain.model.MyUnit
+import com.bitwiserain.pbbg.app.domain.model.MyUnitEnum
 import com.bitwiserain.pbbg.app.domain.model.Squad
 import com.bitwiserain.pbbg.app.domain.usecase.SquadInBattleException
 import com.bitwiserain.pbbg.app.test.db.TestTransaction
@@ -30,9 +31,9 @@ class UnitUCImplTests {
     @Test
     fun `When calling getSquad(), should return the user's squad`() {
         val expectedAllies = listOf(
-            MyUnit.IceCreamWizard(0L, 9, 9, 1, 1, 1, 1, 0L),
-            MyUnit.Carpshooter(1L, 8, 8, 1, 2, 1, 1, 0L),
-            MyUnit.Twolip(2L, 11, 11, 2, 1, 1, 1, 0L)
+            MyUnit(0L, MyUnitEnum.ICE_CREAM_WIZARD, 9, 9, 1, 1, 1, 1, 0L),
+            MyUnit(1L, MyUnitEnum.CARPSHOOTER, 8, 8, 1, 2, 1, 1, 0L),
+            MyUnit(2L, MyUnitEnum.TWOLIP, 11, 11, 2, 1, 1, 1, 0L)
         )
         every { squadTable.getAllies(userId) } returns expectedAllies
 
@@ -47,9 +48,9 @@ class UnitUCImplTests {
     fun `Given a damaged squad out of battle, when healing it, all units should be fully healed`() {
         every { battleSessionTable.isBattleInProgress(userId) } returns false
         val expectedAllies = listOf(
-            MyUnit.IceCreamWizard(0L, 2, 9, 1, 1, 1, 1, 0L),
-            MyUnit.Carpshooter(1L, 4, 8, 1, 2, 1, 1, 0L),
-            MyUnit.Twolip(2L, 0, 11, 2, 1, 1, 1, 0L)
+            MyUnit(0L, MyUnitEnum.ICE_CREAM_WIZARD, 2, 9, 1, 1, 1, 1, 0L),
+            MyUnit(1L, MyUnitEnum.CARPSHOOTER, 4, 8, 1, 2, 1, 1, 0L),
+            MyUnit(2L, MyUnitEnum.TWOLIP, 0, 11, 2, 1, 1, 1, 0L)
         )
         // Squad is not fully healed
         assert(expectedAllies.any { it.hp < it.maxHP })

@@ -16,12 +16,17 @@ class UnitTableTestImpl(private val units: MutableMap<Long, MyUnit> = mutableMap
         val res = unit.res
         val exp = 0L
 
-        units[id] = when (unitEnum) {
-            MyUnitEnum.ICE_CREAM_WIZARD -> MyUnit.IceCreamWizard(id, hp, maxHP, atk, def, int, res, exp)
-            MyUnitEnum.TWOLIP -> MyUnit.Twolip(id, hp, maxHP, atk, def, int, res, exp)
-            MyUnitEnum.CARPSHOOTER -> MyUnit.Carpshooter(id, hp, maxHP, atk, def, int, res, exp)
-            MyUnitEnum.FLAMANGO -> MyUnit.Flamango(id, hp, maxHP, atk, def, int, res, exp)
-        }
+        units[id] = MyUnit(
+            id = id,
+            enum = unitEnum,
+            hp = hp,
+            maxHP = maxHP,
+            atk = atk,
+            def = def,
+            int = int,
+            res = res,
+            exp = exp
+        )
 
         return id
     }
