@@ -43,6 +43,7 @@ dependencies {
     // Database
     implementation(libs.h2)
     implementation(libs.postgresql)
+    implementation(libs.hikaricp)
 
     // SQLDelight
     implementation(libs.sqldelight.runtime)

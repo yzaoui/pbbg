@@ -67,11 +67,14 @@ import com.bitwiserain.pbbg.app.route.api.squadAPI
 import com.bitwiserain.pbbg.app.route.api.unit
 import com.bitwiserain.pbbg.app.route.api.user
 import com.bitwiserain.pbbg.app.route.api.userStats
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.ApplicationStopped
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -95,10 +98,8 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
-import java.sql.Connection
-import java.sql.DriverManager
 import java.time.Clock
-import javax.sql.DataSource
+import kotlin.time.Duration.Companion.seconds
 
 enum class ApplicationEnvironment {
     DEV,
@@ -149,23 +150,23 @@ suspend fun Application.mainWithDependencies(
      *************/
     val jdbcAddress = config.jdbcAddress
 
-    // Create DataSource and driver
-    val dataSource = object : DataSource {
-        override fun getConnection(): Connection = DriverManager.getConnection("jdbc:$jdbcAddress")
-        override fun getConnection(username: String?, password: String?): Connection = DriverManager.getConnection("jdbc:$jdbcAddress", username, password)
-        override fun getLogWriter() = null
-        override fun setLogWriter(out: java.io.PrintWriter?) {}
-        override fun setLoginTimeout(seconds: Int) {}
-        override fun getLoginTimeout() = 0
-        override fun getParentLogger() = throw UnsupportedOperationException()
-        override fun <T : Any?> unwrap(iface: Class<T>?): T = throw UnsupportedOperationException()
-        override fun isWrapperFor(iface: Class<*>?): Boolean = false
-    }
+    val dataSource = HikariDataSource(HikariConfig().apply {
+        jdbcUrl = "jdbc:$jdbcAddress"
+        poolName = "pbbg-db-pool"
+        maximumPoolSize = 10
+        minimumIdle = 2
+        connectionTimeout = 10.seconds.inWholeMilliseconds
+    })
+
     val driver = dataSource.asJdbcDriver()
     val database = Database(driver)
     val transaction: Transaction = SQLDelightTransaction(database)
 
     Database.Schema.create(driver)
+
+    monitor.subscribe(ApplicationStopped) {
+        dataSource.close()
+    }
 
     install(CallLogging)
 
