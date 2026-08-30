@@ -1,6 +1,5 @@
 package com.bitwiserain.pbbg.app.db.model
 
-import io.ktor.server.auth.Principal
 import kotlin.time.Instant
 
 /**
@@ -16,7 +15,7 @@ data class User( // TODO: This class is being used across multiple layers
     val username: String,
     val passwordHash: ByteArray,
     val joinedInstant: Instant,
-) : Principal {
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
