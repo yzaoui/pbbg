@@ -30,7 +30,9 @@ fun Route.user(userProfileUC: UserProfileUC) = route("/user") {
             call.respondFail()
         }
     }
+}
 
+fun Route.userSearch(userProfileUC: UserProfileUC) = route("/user") {
     route("/search") {
         param("text") {
             get {

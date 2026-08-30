@@ -66,6 +66,7 @@ import com.bitwiserain.pbbg.app.route.api.settings
 import com.bitwiserain.pbbg.app.route.api.squadAPI
 import com.bitwiserain.pbbg.app.route.api.unit
 import com.bitwiserain.pbbg.app.route.api.user
+import com.bitwiserain.pbbg.app.route.api.userSearch
 import com.bitwiserain.pbbg.app.route.api.userStats
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -267,6 +268,7 @@ suspend fun Application.mainWithDependencies(
             }
             rateLimit(AUTHENTICATED_RATE_LIMIT_NAME) {
                 authenticate(optional = false) {
+                    userSearch(userProfileUC)
                     userStats(getUserStats)
                     inventoryAPI(inventoryUC, equipmentUC)
                     market(marketUC)
