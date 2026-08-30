@@ -17,14 +17,14 @@ WHERE user_id = ? AND id = ?;
 
 -- Get all plots for user with plant details
 getPlots:
-SELECT p.id, p.plant_id, mp.plant_enum_id, mp.cycle_start, mp.harvests
+SELECT p.id, p.plant_id, mp.plant_enum_id, mp.cycle_start_epoch_millis, mp.harvests
 FROM "Plot" p
 LEFT JOIN "MaterializedPlant" mp ON p.plant_id = mp.id
 WHERE p.user_id = ?;
 
 -- Get specific plot for user with plant details
 getPlot:
-SELECT p.id, p.plant_id, mp.plant_enum_id, mp.cycle_start, mp.harvests
+SELECT p.id, p.plant_id, mp.plant_enum_id, mp.cycle_start_epoch_millis, mp.harvests
 FROM "Plot" p
 LEFT JOIN "MaterializedPlant" mp ON p.plant_id = mp.id
 WHERE p.user_id = ? AND p.id = ?;

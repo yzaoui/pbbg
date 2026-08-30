@@ -7,9 +7,8 @@ import com.bitwiserain.pbbg.app.db.generated.Database
 import com.bitwiserain.pbbg.app.domain.model.farm.MaterializedPlant
 import com.bitwiserain.pbbg.app.domain.model.farm.PlantEnum
 import com.bitwiserain.pbbg.app.domain.model.farm.Plot
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.time.Instant
+import kotlin.time.Instant
 
 interface PlotTable {
 
@@ -62,7 +61,7 @@ class PlotTableImpl(
     private fun GetPlots.toMaterializedPlant(): MaterializedPlant {
         // This function assumes `plant_id` isn't false, therefore neither is `plant_enum_id` nor `cycle_start`
         val plantEnum = PlantEnum.fromId(plant_enum_id!!)
-        val cycleStart = Instant.ofEpochSecond(cycle_start!!)
+        val cycleStart = Instant.fromEpochMilliseconds(cycle_start_epoch_millis!!)
 
         return when (plantEnum) {
             PlantEnum.APPLE_TREE -> MaterializedPlant.AppleTree(cycleStart, harvests!!)
@@ -80,7 +79,7 @@ class PlotTableImpl(
     private fun GetPlot.toMaterializedPlant(): MaterializedPlant {
         // This function assumes `plant_id` isn't false, therefore neither is `plant_enum_id` nor `cycle_start`
         val plantEnum = PlantEnum.fromId(plant_enum_id!!)
-        val cycleStart = Instant.ofEpochSecond(cycle_start!!)
+        val cycleStart = Instant.fromEpochMilliseconds(cycle_start_epoch_millis!!)
 
         return when (plantEnum) {
             PlantEnum.APPLE_TREE -> MaterializedPlant.AppleTree(cycleStart, harvests!!)

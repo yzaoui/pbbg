@@ -38,7 +38,7 @@ fun ItemDetails.toJSON(itemId: Long) = ItemDetailsJSON(
 )
 
 fun ItemHistory.toJSON() = ItemHistoryJSON(
-    date = date.epochSecond,
+    date = date.toEpochMilliseconds(),
     info = info.toJSON()
 )
 

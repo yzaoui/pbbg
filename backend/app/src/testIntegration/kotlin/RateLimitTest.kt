@@ -20,11 +20,13 @@ import org.junit.jupiter.api.TestInstance
 import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.time.Clock
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Testcontainers
 class RateLimitTest {
-    private val clock = MutableClock()
+    // Ktor's RateLimitInterceptors seems to rely on real system time
+    private val clock = MutableClock(Clock.System.now())
     private val json = Json { ignoreUnknownKeys = true }
 
     @AfterEach

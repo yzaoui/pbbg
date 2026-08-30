@@ -7,7 +7,7 @@ import dexService from "../../backend/dex.service";
 import DexReturnLink from "../../component/dex/DexReturnLink";
 import PlantPreview from "../../component/farm/PlantPreview";
 import LoadingSpinner from "../../component/LoadingSpinner";
-import { BasePlant, basePlantFromJSON, isMaturableBasePlant, secondsToDurationString } from "../../model/farm";
+import { BasePlant, basePlantFromJSON, isMaturableBasePlant, millisecondsToDurationString } from "../../model/farm";
 
 type State = {
     status: "loading";
@@ -62,10 +62,10 @@ const DexPlantDetailedPage: React.FC = () => {
             <h2>Details</h2>
             <div className="body">
                 {isMaturableBasePlant(basePlant) ? <>
-                    <div>Time to harvest (first time): {secondsToDurationString(basePlant.growingPeriod)}</div>
-                    <div>Time to harvest (mature): {secondsToDurationString(basePlant.maturePeriod)}</div>
+                    <div>Time to harvest (first time): {millisecondsToDurationString(basePlant.growingPeriod)}</div>
+                    <div>Time to harvest (mature): {millisecondsToDurationString(basePlant.maturePeriod)}</div>
                 </> : <>
-                    <div>Time to harvest: {secondsToDurationString(basePlant.growingPeriod)}</div>
+                    <div>Time to harvest: {millisecondsToDurationString(basePlant.growingPeriod)}</div>
                 </>}
             </div>
         </>;

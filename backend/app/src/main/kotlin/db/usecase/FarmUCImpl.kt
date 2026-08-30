@@ -25,11 +25,10 @@ import com.bitwiserain.pbbg.app.domain.usecase.ItemNotPlantableException
 import com.bitwiserain.pbbg.app.domain.usecase.OccupiedPlotException
 import com.bitwiserain.pbbg.app.domain.usecase.PlantNotHarvestableException
 import com.bitwiserain.pbbg.app.domain.usecase.UserPlotNotFoundException
-import java.time.Clock
+import kotlin.time.Instant
 
 class FarmUCImpl(
     private val transaction: Transaction,
-    private val clock: Clock,
     private val dexTable: DexTable,
     private val inventoryTable: InventoryTable,
     private val itemHistoryTable: ItemHistoryTable,
@@ -50,9 +49,7 @@ class FarmUCImpl(
         return plotTable.getPlots(userId).sortedBy { plotIdList.indexOf(it.id) }
     }
 
-    override fun plant(userId: Int, plotId: Long, itemId: Long): Plot = transaction {
-        val now = clock.instant()
-
+    override fun plant(userId: Int, plotId: Long, itemId: Long, now: Instant): Plot = transaction {
         /* Make sure user owns this plot */
         val plot = plotTable.getPlot(userId, plotId) ?: throw UserPlotNotFoundException()
 
@@ -89,9 +86,7 @@ class FarmUCImpl(
         return@transaction plotTable.getPlot(userId, plot.id)!!
     }
 
-    override fun harvest(userId: Int, plotId: Long): Plot = transaction {
-        val now = clock.instant()
-
+    override fun harvest(userId: Int, plotId: Long, now: Instant): Plot = transaction {
         /* Make sure user owns this plot */
         val plot = plotTable.getPlot(userId, plotId) ?: throw UserPlotNotFoundException()
 
@@ -122,14 +117,12 @@ class FarmUCImpl(
             }
 
             materializedPlantTable.setNewPlantCycleAndHarvest(plantId, harvestedPlant.cycleStart, harvestedPlant.harvests)
-
-            return@transaction plot.copy(plant = plantId to harvestedPlant)
         } else {
             /* For non-maturable plants, delete */
             materializedPlantTable.deletePlant(plantId)
-
-            return@transaction plot.copy(plant = null)
         }
+
+        return@transaction plotTable.getPlot(userId, plot.id)!!
     }
 
     override fun expand(userId: Int): Plot = transaction {

@@ -1,6 +1,6 @@
 package com.bitwiserain.pbbg.app.domain.model.itemdetails
 
-import java.time.Instant
+import kotlin.time.Instant
 
 class ItemHistory(
     val date: Instant,

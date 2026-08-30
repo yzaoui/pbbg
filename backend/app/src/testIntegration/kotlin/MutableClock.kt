@@ -1,18 +1,14 @@
 package com.bitwiserain.pbbg.app.testintegration
 
-import java.time.Clock
-import java.time.Instant
-import java.time.ZoneId
-import java.time.temporal.TemporalAmount
+import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Instant
 
-data class MutableClock(private var instant: Instant = Instant.now(), private val zone: ZoneId = ZoneId.systemDefault()) : Clock() {
-    override fun getZone(): ZoneId = zone
+class MutableClock(private var instant: Instant = Instant.fromEpochSeconds(946_684_800L)) : Clock {
 
-    override fun withZone(zone: ZoneId): MutableClock = MutableClock(instant, zone)
+    override fun now(): Instant = instant
 
-    override fun instant(): Instant = instant
-
-    operator fun plusAssign(amount: TemporalAmount) {
-        instant = instant.plus(amount)
+    operator fun plusAssign(duration: Duration) {
+        instant += duration
     }
 }

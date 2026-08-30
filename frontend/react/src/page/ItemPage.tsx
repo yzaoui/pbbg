@@ -100,6 +100,6 @@ const ItemHistoryEntryDescription: React.FC<{ info: ItemHistoryInfo, userDetails
     return <span className="ItemHistoryEntryDescription">{content}</span>;
 };
 
-const ItemHistoryEntryDate: React.FC<{ date: number }> = ({ date }) => <span className="ItemHistoryEntryDate">—{(new Date(date * 1000)).toString()}</span>;
+const ItemHistoryEntryDate: React.FC<{ date: number }> = ({ date }) => <span className="ItemHistoryEntryDate">—{(new Date(date)).toString()}</span>;
 
 export default ItemPage;

@@ -98,7 +98,7 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
-import java.time.Clock
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 
 enum class ApplicationEnvironment {
@@ -129,7 +129,7 @@ fun main() {
         Netty,
         port = System.getenv("PORT")?.toInt() ?: 8080,
         watchPaths = listOf("classes", "resources"),
-        module = { mainWithDependencies(Clock.systemUTC(), AppConfig.fromEnvironment()) }
+        module = { mainWithDependencies(Clock.System, AppConfig.fromEnvironment()) }
     ).start(wait = true)
 }
 
@@ -205,7 +205,7 @@ suspend fun Application.mainWithDependencies(
     val marketUC = MarketUCImpl(transaction, dexTable, inventoryTable, marketInventoryTable, materializedItemTable, userStatsTable)
     val inventoryUC = InventoryUCImpl(transaction, inventoryTable)
     val itemUC = ItemUCImpl(transaction, itemHistoryTable, materializedItemTable, userTable)
-    val farmUC = FarmUCImpl(transaction, clock, dexTable, inventoryTable, itemHistoryTable, materializedItemTable, materializedPlantTable, plotTable, plotListTable, userStatsTable)
+    val farmUC = FarmUCImpl(transaction, dexTable, inventoryTable, itemHistoryTable, materializedItemTable, materializedPlantTable, plotTable, plotListTable, userStatsTable)
     val equipmentUC = EquipmentUCImpl(transaction, inventoryTable)
     val unitUC = UnitUCImpl(transaction, battleSessionTable, squadTable, unitTable)
     val battleUC = BattleUCImpl(transaction, battleEnemyTable, battleSessionTable, squadTable, unitTable)

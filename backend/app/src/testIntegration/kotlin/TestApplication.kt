@@ -18,7 +18,7 @@ import kotlinx.serialization.json.put
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.time.Clock
+import kotlin.time.Clock
 
 @Testcontainers
 object PostgreSQLTestContainer {

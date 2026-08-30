@@ -5,7 +5,7 @@ import io.ktor.server.application.install
 import io.ktor.server.plugins.origin
 import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.plugins.ratelimit.RateLimitName
-import java.time.Clock
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
@@ -29,19 +29,21 @@ object RateLimitConfig {
      * Configures rate limiting for the application.
      */
     fun Application.configureRateLimiting(clock: Clock) {
+        val epochMillis: () -> Long = { clock.now().toEpochMilliseconds() }
+
         install(RateLimit) {
             register(PUBLIC_RATE_LIMIT_NAME) {
-                rateLimiter(limit = PUBLIC_RATE_LIMIT, refillPeriod = 1.minutes, clock = clock::millis)
+                rateLimiter(limit = PUBLIC_RATE_LIMIT, refillPeriod = 1.minutes, clock = epochMillis)
                 requestKey { call -> call.request.origin.remoteHost }
             }
 
             register(AUTHENTICATED_RATE_LIMIT_NAME) {
-                rateLimiter(limit = AUTHENTICATED_RATE_LIMIT, refillPeriod = 1.minutes, clock = clock::millis)
+                rateLimiter(limit = AUTHENTICATED_RATE_LIMIT, refillPeriod = 1.minutes, clock = epochMillis)
                 requestKey { call -> call.user.id }
             }
 
             register(SENSITIVE_OPERATION_RATE_LIMIT_NAME) {
-                rateLimiter(limit = SENSITIVE_OPERATION_RATE_LIMIT, refillPeriod = 1.hours, clock = clock::millis)
+                rateLimiter(limit = SENSITIVE_OPERATION_RATE_LIMIT, refillPeriod = 1.hours, clock = epochMillis)
                 requestKey { call -> call.request.origin.remoteHost }
             }
         }

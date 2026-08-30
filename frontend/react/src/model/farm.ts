@@ -102,7 +102,7 @@ export const maturableBasePlantFromJSON = (basePlant: MaturableBasePlantJSON): M
 export const getPlantProgress = (plant: MaterializedPlant, nowDate: Date): PlantProgress => {
     const start = Date.parse(plant.cycleStart);
     const period = isMaturableMaterializedPlant(plant) && plant.isMature ? plant.basePlant.maturePeriod : plant.basePlant.growingPeriod;
-    const end = start + period * 1000;
+    const end = start + period;
     const now = nowDate.getTime();
 
     if (now > end) {
@@ -123,7 +123,7 @@ export const getPlantProgress = (plant: MaterializedPlant, nowDate: Date): Plant
     }
 };
 
-const millisecondsToDurationString = (ms: number): string => {
+export const millisecondsToDurationString = (ms: number): string => {
     const hours = Math.floor(ms / 1000 / 60 / 60) + "h";
     const minutes = Math.floor((ms / 1000 / 60) % 60) + "m";
     const seconds = Math.floor((ms / 1000) % 60) + "s";
@@ -133,4 +133,3 @@ const millisecondsToDurationString = (ms: number): string => {
         : hours + minutes + seconds
 };
 
-export const secondsToDurationString = (s: number): string => millisecondsToDurationString(s * 1000);

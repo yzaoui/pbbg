@@ -21,7 +21,7 @@ import com.bitwiserain.pbbg.app.domain.model.mine.MineActionResult
 import com.bitwiserain.pbbg.app.domain.model.mine.MineEntity
 import com.bitwiserain.pbbg.app.domain.model.mine.MinedItemResult
 import com.bitwiserain.pbbg.app.domain.usecase.mine.SubmitMineAction.Result
-import java.time.Clock
+import kotlin.time.Clock
 
 fun interface SubmitMineAction : (Int, Int, Int) -> Result {
     override fun invoke(userId: Int, x: Int, y: Int): Result
@@ -57,7 +57,7 @@ class SubmitMineActionImpl(
 ) : SubmitMineAction {
 
     override fun invoke(userId: Int, x: Int, y: Int): Result = transaction {
-        val now = clock.instant()
+        val now = clock.now()
 
         /* Get currently running mine session */
         val mineSession = mineSessionTable.getSession(userId) ?: return@transaction Result.NotInMineSession

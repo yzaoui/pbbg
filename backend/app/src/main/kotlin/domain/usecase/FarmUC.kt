@@ -1,6 +1,7 @@
 package com.bitwiserain.pbbg.app.domain.usecase
 
 import com.bitwiserain.pbbg.app.domain.model.farm.Plot
+import kotlin.time.Instant
 
 interface FarmUC {
     /**
@@ -19,7 +20,7 @@ interface FarmUC {
      * @throws InsufficientItemQuantity when there aren't enough of this item to plant.
      * @throws ItemNotPlantableException when this item is not plantable.
      */
-    fun plant(userId: Int, plotId: Long, itemId: Long): Plot
+    fun plant(userId: Int, plotId: Long, itemId: Long, now: Instant): Plot
 
     /**
      * Harvests from a plantable entity from the user's given plot.
@@ -30,7 +31,7 @@ interface FarmUC {
      * @throws EmptyPlotException when this plot does not have a plant in it.
      * @throws PlantNotHarvestableException when this plot's plant is not ready for harvest.
      */
-    fun harvest(userId: Int, plotId: Long): Plot
+    fun harvest(userId: Int, plotId: Long, now: Instant): Plot
 
     /**
      * Expands number of plots by one.

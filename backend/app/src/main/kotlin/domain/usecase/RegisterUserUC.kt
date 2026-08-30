@@ -24,8 +24,7 @@ import com.bitwiserain.pbbg.app.domain.model.MyUnitEnum
 import com.bitwiserain.pbbg.app.domain.model.itemdetails.ItemHistory
 import com.bitwiserain.pbbg.app.domain.model.itemdetails.ItemHistoryInfo
 import com.bitwiserain.pbbg.app.domain.usecase.RegisterUserUC.Result
-import java.time.Clock
-import java.time.temporal.ChronoUnit
+import kotlin.time.Clock
 
 /**
  * Registers a user, providing the user with default inventory items and units.
@@ -88,7 +87,7 @@ class RegisterUserUCImpl(
             /* Make sure username is available */
             if (userTable.getUserByUsername(username) != null) return@transaction Result.UsernameNotAvailableError
 
-            val now = clock.instant().truncatedTo(ChronoUnit.SECONDS)
+            val now = clock.now()
 
             /* Create user */
             val userId = userTable.createUserAndGetId(

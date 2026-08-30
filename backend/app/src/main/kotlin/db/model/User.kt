@@ -1,7 +1,7 @@
 package com.bitwiserain.pbbg.app.db.model
 
 import io.ktor.server.auth.Principal
-import java.time.Instant
+import kotlin.time.Instant
 
 /**
  * Represents user account.

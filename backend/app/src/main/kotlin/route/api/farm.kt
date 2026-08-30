@@ -17,44 +17,44 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlinx.serialization.Serializable
-import java.time.Clock
-import java.time.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 fun Route.farm(farmUC: FarmUC, clock: Clock) = route("/farm") {
     get("/plots") {
-        val now = clock.instant()
+        val now = clock.now()
         val plots = farmUC.getPlots(call.user.id)
 
         call.respondSuccess(plots.map { it.toJSON(now) })
     }
 
     post("/plant") {
-        val now = clock.instant()
+        val now = clock.now()
         val params = call.receive<PlantParams>()
 
-        val updatedPlot = farmUC.plant(call.user.id, params.plotId, params.itemId)
+        val updatedPlot = farmUC.plant(call.user.id, params.plotId, params.itemId, now)
 
         call.respondSuccess(updatedPlot.toJSON(now))
     }
 
     post("/harvest") {
-        val now = clock.instant()
+        val now = clock.now()
         val params = call.receive<HarvestParams>()
 
-        val updatedPlot = farmUC.harvest(call.user.id, params.plotId)
+        val updatedPlot = farmUC.harvest(call.user.id, params.plotId, now)
 
         call.respondSuccess(updatedPlot.toJSON(now))
     }
 
     post("/expand") {
-        val now = clock.instant()
+        val now = clock.now()
         val newPlot = farmUC.expand(call.user.id)
 
         call.respondSuccess(newPlot.toJSON(now))
     }
 
     post("/reorder") {
-        val now = clock.instant()
+        val now = clock.now()
         val params = call.receive<ReorderParams>()
 
         val updatedPlots = farmUC.reorder(call.user.id, params.plotId, params.targetIndex)
@@ -89,8 +89,8 @@ fun IBasePlant.toJSON() = BasePlantJSON(
     name = friendlyName,
     description = description,
     icon = "/img/plant-icon/$spriteName.png",
-    growingPeriod = growingPeriod.inWholeSeconds,
+    growingPeriod = growingPeriod.inWholeMilliseconds,
     growingSprite = "/img/plant/$spriteName-growing.gif",
-    maturePeriod = if (this is IBasePlant.Maturable) maturePeriod.inWholeSeconds else null,
+    maturePeriod = if (this is IBasePlant.Maturable) maturePeriod.inWholeMilliseconds else null,
     matureSprite = if (this is IBasePlant.Maturable) "/img/plant/$spriteName-mature.gif" else null
 )

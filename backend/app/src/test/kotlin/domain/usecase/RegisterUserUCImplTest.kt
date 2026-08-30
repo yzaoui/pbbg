@@ -31,13 +31,15 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
+import io.mockk.verify
 import io.mockk.verifyAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.time.Clock
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class RegisterUserUCImplTest {
 
@@ -51,7 +53,10 @@ class RegisterUserUCImplTest {
 
     private val marketIds: MutableMap<Int, Int> = mutableMapOf()
 
-    private val clock = Clock.systemUTC()
+    private val fixedNow = Instant.fromEpochMilliseconds(123456789L)
+    private val clock = object : Clock {
+        override fun now(): Instant = fixedNow
+    }
     private val dexTable: DexTable = mockk(relaxUnitFun = true)
     private val inventoryTable: InventoryTable = mockk(relaxUnitFun = true)
     private val itemHistoryTable: ItemHistoryTable = mockk(relaxUnitFun = true)
@@ -67,7 +72,7 @@ class RegisterUserUCImplTest {
     private val userTable: UserTable = mockk {
         every { getUserByUsername(any()) } returns null
         every { getUserByUsername(existingUser) } returns mockk()
-        every { createUserAndGetId(validUsername, validPasswordHash, any()) } returns userId
+        every { createUserAndGetId(validUsername, validPasswordHash, fixedNow) } returns userId
     }
     private val userStatsTable: UserStatsTable = mockk(relaxUnitFun = true)
 
@@ -98,6 +103,13 @@ class RegisterUserUCImplTest {
 
             // Assuming that this query sets those attributes to 0
             verifyAll { userStatsTable.createUserStats(userId) }
+        }
+
+        @Test
+        fun `When registering a new user, the user should be recorded as having joined at the current instant`() {
+            registerUser(validUsername, validPassword) shouldBe Result.Success(userId)
+
+            verify { userTable.createUserAndGetId(validUsername, validPasswordHash, fixedNow) }
         }
 
         @Test

@@ -1,20 +1,20 @@
 CREATE TABLE IF NOT EXISTS "MaterializedPlant" (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     plant_enum_id INTEGER NOT NULL,
-    cycle_start BIGINT NOT NULL,
+    cycle_start_epoch_millis BIGINT NOT NULL,
     harvests INTEGER
 );
 
 -- Insert plant and get ID
 insertPlantAndGetId:
-INSERT INTO "MaterializedPlant" (plant_enum_id, cycle_start, harvests)
+INSERT INTO "MaterializedPlant" (plant_enum_id, cycle_start_epoch_millis, harvests)
 VALUES (?, ?, ?)
 RETURNING id;
 
 -- Set new plant cycle and harvest count
 setNewPlantCycleAndHarvest:
 UPDATE "MaterializedPlant"
-SET cycle_start = ?, harvests = ?
+SET cycle_start_epoch_millis = ?, harvests = ?
 WHERE id = ?;
 
 -- Delete plant by ID

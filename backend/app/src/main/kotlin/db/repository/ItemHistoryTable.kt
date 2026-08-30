@@ -2,9 +2,8 @@ package com.bitwiserain.pbbg.app.db.repository
 
 import com.bitwiserain.pbbg.app.db.generated.Database
 import com.bitwiserain.pbbg.app.domain.model.itemdetails.ItemHistory
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.time.Instant
+import kotlin.time.Instant
 
 interface ItemHistoryTable {
 
@@ -19,7 +18,7 @@ class ItemHistoryTableImpl(private val database: Database) : ItemHistoryTable {
         database.itemHistoryQueries.insertItemHistory(
             itemId,
             Json.encodeToString(itemHistory.info),
-            itemHistory.date.epochSecond,
+            itemHistory.date.toEpochMilliseconds(),
         )
     }
 
@@ -28,7 +27,7 @@ class ItemHistoryTableImpl(private val database: Database) : ItemHistoryTable {
             .executeAsList()
             .map {
                 ItemHistory(
-                    date = Instant.ofEpochSecond(it.time_epoch_seconds),
+                    date = Instant.fromEpochMilliseconds(it.time_epoch_millis),
                     info = Json.decodeFromString(it.item_history_type),
                 )
             }

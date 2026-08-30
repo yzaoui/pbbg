@@ -3,7 +3,7 @@ package com.bitwiserain.pbbg.app.db.repository.farm
 import com.bitwiserain.pbbg.app.db.generated.Database
 import com.bitwiserain.pbbg.app.db.repository.farm.MaterializedPlantTable.PlantForm
 import com.bitwiserain.pbbg.app.domain.model.farm.PlantEnum
-import java.time.Instant
+import kotlin.time.Instant
 
 interface MaterializedPlantTable {
 
@@ -25,13 +25,13 @@ class MaterializedPlantTableImpl(private val database: Database) : MaterializedP
     override fun insertPlantAndGetId(plant: PlantForm): Long =
         database.materializedPlantQueries.insertPlantAndGetId(
             plant_enum_id = plant.enum.id,
-            cycle_start = plant.cycleStart.epochSecond,
+            cycle_start_epoch_millis = plant.cycleStart.toEpochMilliseconds(),
             harvests = if (plant.isMaturable) 0 else null,
         ).executeAsOne()
 
     override fun setNewPlantCycleAndHarvest(plantId: Long, newCycleStart: Instant, harvests: Int) {
         database.materializedPlantQueries.setNewPlantCycleAndHarvest(
-            cycle_start = newCycleStart.epochSecond,
+            cycle_start_epoch_millis = newCycleStart.toEpochMilliseconds(),
             harvests = harvests,
             id = plantId,
         )

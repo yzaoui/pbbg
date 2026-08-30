@@ -17,11 +17,13 @@ import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.Instant
+import kotlin.time.Instant
 
 class ChangePasswordUCImplTest {
 
     private val userId = 1234
+
+    private val joinedInstant = Instant.fromEpochSeconds(946_684_800L)
 
     private val userTable: UserTable = mockk(relaxUnitFun = true)
 
@@ -51,7 +53,7 @@ class ChangePasswordUCImplTest {
             id = userId,
             username = "user",
             passwordHash = currentPasswordHash,
-            joinedInstant = Instant.now()
+            joinedInstant = joinedInstant
         )
         every { BCryptHelper.verifyPassword(currentPassword, currentPasswordHash) } returns true
         every { BCryptHelper.hashPassword(newPassword) } returns newPasswordHash
@@ -74,7 +76,7 @@ class ChangePasswordUCImplTest {
             id = userId,
             username = "user",
             passwordHash = actualCurrentPasswordHash,
-            joinedInstant = Instant.now()
+            joinedInstant = joinedInstant
         )
         // Current password fails to verify
         every { BCryptHelper.verifyPassword(attemptedCurrentPassword, actualCurrentPasswordHash) } returns false
@@ -95,7 +97,7 @@ class ChangePasswordUCImplTest {
             id = userId,
             username = "user",
             passwordHash = currentPasswordHash,
-            joinedInstant = Instant.now()
+            joinedInstant = joinedInstant
         )
         every { BCryptHelper.verifyPassword(currentPassword, currentPasswordHash) } returns true
 
@@ -113,7 +115,7 @@ class ChangePasswordUCImplTest {
             id = userId,
             username = "user",
             passwordHash = currentPasswordHash,
-            joinedInstant = Instant.now()
+            joinedInstant = joinedInstant
         )
         every { BCryptHelper.verifyPassword(currentPassword, currentPasswordHash) } returns true
 
@@ -134,7 +136,7 @@ class ChangePasswordUCImplTest {
             id = userId,
             username = "user",
             passwordHash = currentPasswordHash,
-            joinedInstant = Instant.now()
+            joinedInstant = joinedInstant
         )
         every { BCryptHelper.verifyPassword(currentPassword, currentPasswordHash) } returns true
 

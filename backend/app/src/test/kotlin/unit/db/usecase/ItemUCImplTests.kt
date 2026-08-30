@@ -16,8 +16,9 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
-import java.time.Instant
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class ItemUCImplTests {
@@ -31,7 +32,7 @@ class ItemUCImplTests {
     @Test
     fun `Given an item in existence with a history, when calling for its details, should return all its expected details`() {
         val itemId = 0L
-        val creationDate = Instant.ofEpochSecond(946684800L)
+        val creationDate = Instant.fromEpochSeconds(946684800L)
         val userIds = setOf(2, 3)
         val users = userIds.associateWith<Int, User> {
             mockk {
@@ -45,10 +46,10 @@ class ItemUCImplTests {
                 date = creationDate,
                 info = ItemHistoryInfo.CreatedInMarket
             ), ItemHistory(
-                date = creationDate.plusSeconds(60),
+                date = creationDate + 60.seconds,
                 info = ItemHistoryInfo.FirstMined(2)
             ), ItemHistory(
-                date = creationDate.plusSeconds(120),
+                date = creationDate + 120.seconds,
                 info = ItemHistoryInfo.CreatedWithUser(3)
             )
         )

@@ -2,7 +2,7 @@ package com.bitwiserain.pbbg.app.db.repository
 
 import com.bitwiserain.pbbg.app.db.generated.Database
 import com.bitwiserain.pbbg.app.db.model.User
-import java.time.Instant
+import kotlin.time.Instant
 
 interface UserTable {
 
@@ -24,7 +24,7 @@ interface UserTable {
 class UserTableImpl(private val database: Database) : UserTable {
 
     override fun createUserAndGetId(username: String, passwordHash: ByteArray, joinedInstant: Instant): Int =
-            database.userQueries.insertUser(username, passwordHash, joinedInstant.epochSecond)
+            database.userQueries.insertUser(username, passwordHash, joinedInstant.toEpochMilliseconds())
                 .executeAsOne()
 
     override fun getUserByUsername(username: String): User? =
@@ -63,6 +63,6 @@ class UserTableImpl(private val database: Database) : UserTable {
         id = id,
         username = username,
         passwordHash = password_hash,
-        joinedInstant = Instant.ofEpochSecond(joined_epoch_seconds),
+        joinedInstant = Instant.fromEpochMilliseconds(joined_epoch_millis),
     )
 }
