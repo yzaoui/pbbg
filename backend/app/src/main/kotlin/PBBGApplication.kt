@@ -89,6 +89,7 @@ import io.ktor.server.http.content.static
 import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.forwardedheaders.XForwardedHeaders
 import io.ktor.server.plugins.ratelimit.rateLimit
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
@@ -170,6 +171,10 @@ suspend fun Application.mainWithDependencies(
     }
 
     install(CallLogging)
+
+    install(XForwardedHeaders) {
+        useLastProxy()
+    }
 
     // Tables
     val battleEnemyTable = BattleEnemyTableImpl(database)
